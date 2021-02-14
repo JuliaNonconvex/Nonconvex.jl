@@ -19,7 +19,8 @@ export  Model,
         IpoptCriteria,
         FunctionWrapper
 
-using Parameters, Zygote, ChainRulesCore, ForwardDiff, LinearAlgebra, ConvergencePlots, Setfield
+using Parameters, Zygote, ChainRulesCore, ForwardDiff
+using LinearAlgebra, Setfield, Requires
 using Optim: Optim, AbstractOptimizer
 
 abstract type Workspace end
