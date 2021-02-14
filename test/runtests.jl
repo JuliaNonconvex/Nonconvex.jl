@@ -1,6 +1,9 @@
-using Nonconvex
-using Test
+using SafeTestsets
 
-@testset "Nonconvex.jl" begin
-    # Write your tests here.
-end
+@safetestset "General" begin include("general.jl") end
+
+@safetestset "MMA approximation" begin include("approximation.jl") end
+
+@safetestset "MMA algorithm" begin include("mma.jl") end
+
+#@safetestset "AugLag" begin include("auglag.jl") end

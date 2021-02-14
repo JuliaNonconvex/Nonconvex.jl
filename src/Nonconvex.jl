@@ -1,5 +1,62 @@
 module Nonconvex
 
-# Write your package code here.
+const debugging = Ref(false)
+const show_residuals = Ref(false)
+
+export  Model,
+        addvar!,
+        add_ineq_constraint!,
+        getmin,
+        getmax,
+        setmin!,
+        setmax!,
+        optimize,
+        Workspace,
+        MMA87,
+        MMA02,
+        AugLag,
+        KKTCriteria,
+        IpoptCriteria,
+        FunctionWrapper
+
+using Parameters, Zygote, ChainRulesCore, ForwardDiff, LinearAlgebra, ConvergencePlots, Setfield
+using Optim: Optim, AbstractOptimizer
+
+abstract type Workspace end
+
+# General
+
+include("utilities/params.jl")
+include("functions/functions.jl")
+include("functions/value_jacobian.jl")
+include("functions/function_docs.jl")
+
+# Models
+
+include("models/model.jl")
+include("models/model_docs.jl")
+include("mma_approximation/mma_approx.jl")
+include("mma_approximation/xmma_approx.jl")
+include("mma_approximation/mma_approx_docs.jl")
+include("models/mma_model.jl")
+include("models/dual_model.jl")
+
+# MMA
+
+include("utilities/convergence.jl")
+include("utilities/callbacks.jl")
+include("utilities/options.jl")
+include("algorithms/mma_algorithm.jl")
+
+# MMA-AugLag
+
+include("functions/aggregations.jl")
+include("algorithms/stoch_optimizers.jl")
+include("algorithms/nonstoch_optimizers.jl")
+
+# Augmented Lagrangian
+
+include("models/auglag_model.jl")
+include("algorithms/auglag_algorithm.jl")
 
 end
