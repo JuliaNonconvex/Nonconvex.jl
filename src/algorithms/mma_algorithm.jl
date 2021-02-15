@@ -8,7 +8,7 @@ The original method of moving asymptotes (MMA) algorithm from the [1987 paper](h
 @params struct MMA87 <: AbstractOptimizer
     dualoptimizer::AbstractOptimizer
 end
-function MMA87(; dualoptimizer = Optim.ConjugateGradient())
+function MMA87(; dualoptimizer = Optim.GradientDescent())
     return MMA87(dualoptimizer)
 end
 
@@ -20,7 +20,7 @@ The globally convergent method of moving asymptotes (MMA) algorithm from the [20
 @params struct MMA02 <: AbstractOptimizer
     dualoptimizer::AbstractOptimizer
 end
-function MMA02(; dualoptimizer = Optim.ConjugateGradient())
+function MMA02(; dualoptimizer = Optim.GradientDescent())
     return MMA02(dualoptimizer)
 end
 

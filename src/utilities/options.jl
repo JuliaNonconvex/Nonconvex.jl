@@ -24,5 +24,10 @@ A struct that stores all the options of the MMA algorithms. Th following are the
     show_trace::Bool = false
     auto_scale::Bool = false
     keep_best::Bool = false
-    dual_options::TSubOptions = Optim.Options(allow_f_increases = false, iterations = 1000, outer_iterations=1000)
+    dual_options::TSubOptions = Optim.Options(
+        allow_outer_f_increases = true,
+        allow_f_increases = true,
+        iterations = 1000,
+        outer_iterations=1000,
+    )
 end

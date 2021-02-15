@@ -175,7 +175,7 @@ function assess_convergence!(
     kkt_residual, infeas = getresiduals(solution, model, KKTCriteria())
     ipopt_residual, infeas = getresiduals(solution, model, IpoptCriteria())
     if show_residuals[]
-        @show kkt_residual, ipopt_residual
+        @show kkt_residual, ipopt_residual, kkttol
     end
 
     x_converged = Δx < xtol
