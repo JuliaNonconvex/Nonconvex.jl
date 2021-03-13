@@ -4,7 +4,10 @@ const FDM = FiniteDifferences
 f(x::AbstractVector) = sqrt(x[2])
 g(x::AbstractVector, a, b) = (a*x[1] + b)^3 - x[2]
 
-options = Nonconvex.MMAOptions(tol = Nonconvex.Tolerance(kkt = 1e-6, f = 0.0))
+options = Nonconvex.MMAOptions(
+    tol = Nonconvex.Tolerance(kkt = 1e-6, f = 0.0),
+    s_init = 0.1,
+)
 
 @testset "Simple constraints" begin
     m = Model(f)
