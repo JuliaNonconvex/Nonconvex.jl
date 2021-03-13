@@ -16,10 +16,11 @@ x0 = [2.0, 2.0]
 
 alg1 = MMA02()
 r1 = optimize(m, alg1, x0)
-@test abs(r1.minimum - sqrt(8/27)) < 1e-2
-@test norm(r1.minimizer - [1/3, 8/27]) < 1e-2
+@test abs(r1.minimum - sqrt(8/27)) < 1e-4
+@test norm(r1.minimizer - [1/3, 8/27]) < 1e-4
 
-alg2 = AugLag(primaloptimizer = MMA87())
+#alg2 = AugLag(primaloptimizer = MMA87())
+alg2 = AugLag()
 r2 = optimize(m, alg2, x0)
-@test abs(r2.minimum - sqrt(8/27)) < 1e-2
-@test norm(r2.minimizer - [1/3, 8/27]) < 1e-2
+@test abs(r2.minimum - sqrt(8/27)) < 1e-4
+@test norm(r2.minimizer - [1/3, 8/27]) < 1e-4
