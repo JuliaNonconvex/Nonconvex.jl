@@ -65,6 +65,8 @@ r.minimizer
 alg = AugLag()
 options = Nonconvex.AugLagOptions(alg)
 r = optimize(m, alg, x0, options = options)
+r.minimum
+r.minimizer
 ```
 
 ## Ipopt
@@ -73,4 +75,6 @@ r = optimize(m, alg, x0, options = options)
 alg = IpoptAlg()
 options = Nonconvex.IpoptOptions()
 r = optimize(m, alg, x0, options = options)
+r.minimum
+r.minimizer
 ```
