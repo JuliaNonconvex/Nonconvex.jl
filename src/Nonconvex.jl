@@ -15,12 +15,13 @@ export  Model,
         MMA87,
         MMA02,
         AugLag,
+        IpoptAlg,
         KKTCriteria,
         IpoptCriteria,
         FunctionWrapper
 
-using Parameters, Zygote, ChainRulesCore, ForwardDiff
-using LinearAlgebra, Setfield, Requires
+using Parameters, Zygote, ChainRulesCore, ForwardDiff, Ipopt
+using LinearAlgebra, Setfield, Requires, SparseArrays
 using Optim: Optim, AbstractOptimizer
 
 abstract type Workspace end
@@ -59,5 +60,9 @@ include("algorithms/nonstoch_optimizers.jl")
 
 include("models/auglag_model.jl")
 include("algorithms/auglag_algorithm.jl")
+
+# Ipopt
+
+include("wrappers/ipopt.jl")
 
 end

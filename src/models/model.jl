@@ -90,6 +90,19 @@ getmin(m::AbstractModel, i::Integer) = getmin(m)[i]
 getmax(m::Model) = m.box_max
 getmax(m::AbstractModel, i::Integer) = getmax(m)[i]
 
+function getinit(m::AbstractModel)
+    ma = getmax(m)
+    mi = getmin(m)
+    return map(1:length(mi)) do i
+        _ma = ma[i]
+        _mi = mi[i]
+        _ma == Inf && _mi == -Inf && return 0.0
+        _ma == Inf && return _mi + 1.0
+        _mi == -Inf && return _ma - 1.0
+        return (_ma + _mi) / 2
+    end
+end
+
 function setmin!(m::AbstractModel, min)
     getmin(m) .= min
     return m
