@@ -21,8 +21,9 @@ export  Model,
         FunctionWrapper
 
 using Parameters, Zygote, ChainRulesCore, ForwardDiff, Ipopt
-using LinearAlgebra, Setfield, Requires, SparseArrays
+using LinearAlgebra, Setfield, Requires, SparseArrays, Reexport
 using Optim: Optim, AbstractOptimizer
+@reexport using LinearAlgebra
 
 abstract type Workspace end
 
