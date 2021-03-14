@@ -64,7 +64,7 @@ r.minimizer
 ```julia
 alg = AugLag()
 options = Nonconvex.AugLagOptions(alg)
-r = optimize(m, alg, x0, options = options)
+r = optimize(m, alg, [1.234, 2.345], options = options)
 r.minimum
 r.minimizer
 ```
@@ -74,7 +74,17 @@ r.minimizer
 ```julia
 alg = IpoptAlg()
 options = Nonconvex.IpoptOptions()
-r = optimize(m, alg, x0, options = options)
+r = optimize(m, alg, [1.234, 2.345], options = options)
+r.minimum
+r.minimizer
+```
+
+## NLopt
+
+```julia
+alg = NLoptAlg(:LD_MMA)
+options = Nonconvex.NLoptOptions()
+r = optimize(m, alg, [1.234, 2.345], options = options)
 r.minimum
 r.minimizer
 ```
