@@ -5,8 +5,24 @@ end
 @params struct NLoptOptions
     nt::NamedTuple
 end
-function NLoptOptions(; kwargs...)
-    NLoptOptions(NamedTuple(kwargs))
+function NLoptOptions(;
+    ftol_rel = 1e-6,
+    ftol_abs = 1e-6,
+    xtol_rel = 1e-6,
+    xtol_abs = 1e-6,
+    kwargs...,
+)
+    NLoptOptions(
+        merge(
+            NamedTuple(kwargs),
+            (
+                ftol_rel = ftol_rel,
+                ftol_abs = ftol_abs,
+                xtol_rel = xtol_rel,
+                xtol_abs = xtol_abs,
+            )
+        )
+    )
 end
 
 @params mutable struct NLoptWorkspace
