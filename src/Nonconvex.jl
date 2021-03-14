@@ -17,6 +17,7 @@ export  Model,
         AugLag,
         IpoptAlg,
         NLoptAlg,
+        PercivalAlg,
         KKTCriteria,
         IpoptCriteria,
         FunctionWrapper,
@@ -24,10 +25,11 @@ export  Model,
         AugLagOptions,
         IpoptOptions,
         NLoptOptions,
+        PercivalOptions,
         Tolerance
 
 using Parameters, Zygote, ChainRulesCore, ForwardDiff
-using Ipopt, NLopt
+using Ipopt, NLopt, Percival
 using LinearAlgebra, Setfield, Requires, SparseArrays, Reexport
 using Optim: Optim, AbstractOptimizer
 @reexport using LinearAlgebra
@@ -73,5 +75,6 @@ include("algorithms/auglag_algorithm.jl")
 
 include("wrappers/ipopt.jl")
 include("wrappers/nlopt.jl")
+include("wrappers/percival.jl")
 
 end
