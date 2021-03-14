@@ -16,11 +16,18 @@ export  Model,
         MMA02,
         AugLag,
         IpoptAlg,
+        NLoptAlg,
         KKTCriteria,
         IpoptCriteria,
-        FunctionWrapper
+        FunctionWrapper,
+        MMAOptions,
+        AugLagOptions,
+        IpoptOptions,
+        NLoptOptions,
+        Tolerance
 
-using Parameters, Zygote, ChainRulesCore, ForwardDiff, Ipopt
+using Parameters, Zygote, ChainRulesCore, ForwardDiff
+using Ipopt, NLopt
 using LinearAlgebra, Setfield, Requires, SparseArrays, Reexport
 using Optim: Optim, AbstractOptimizer
 @reexport using LinearAlgebra
@@ -65,5 +72,6 @@ include("algorithms/auglag_algorithm.jl")
 # Ipopt
 
 include("wrappers/ipopt.jl")
+include("wrappers/nlopt.jl")
 
 end
