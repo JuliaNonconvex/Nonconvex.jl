@@ -88,3 +88,13 @@ r = optimize(m, alg, [1.234, 2.345], options = options)
 r.minimum
 r.minimizer
 ```
+
+# Percival
+
+```julia
+alg = PercivalAlg()
+options = Nonconvex.PercivalOptions()
+r = optimize(m, alg, [1.234, 2.345], options = options)
+r.minimum
+r.minimizer
+```
