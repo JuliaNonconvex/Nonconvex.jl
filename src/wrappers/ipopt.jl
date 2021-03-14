@@ -16,11 +16,11 @@ function IpoptWorkspace(
     problem = getipopt_problem(model, x0)
     return IpoptWorkspace(model, problem, x0, options)
 end
-struct IpoptResult{X, O, P, S}
-    minimizer::X
-    minimum::O
-    problem::P
-    status::S
+@params struct IpoptResult
+    minimizer
+    minimum
+    problem
+    status
 end
 
 function optimize!(workspace::IpoptWorkspace)

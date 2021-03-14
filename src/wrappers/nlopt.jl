@@ -40,12 +40,12 @@ function NLoptWorkspace(
     problem = getnlopt_problem(optimizer.alg, model, x0)
     return NLoptWorkspace(model, problem, x0, options, optimizer)
 end
-struct NLoptResult{X, O, P, S, A}
-    minimizer::X
-    minimum::O
-    problem::P
-    status::S
-    alg::A
+@params struct NLoptResult
+    minimizer
+    minimum
+    problem
+    status
+    alg
 end
 
 function optimize!(workspace::NLoptWorkspace)
