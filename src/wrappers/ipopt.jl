@@ -25,7 +25,8 @@ end
 
 function optimize!(workspace::IpoptWorkspace)
     @unpack problem, options = workspace
-    foreach(options.nt) do (k, v)
+    foreach(keys(options.nt)) do k
+        v = options.nt[k]
         Ipopt.addOption(problem, string(k), v)
     end
     solvestat = Ipopt.solveProblem(problem)
