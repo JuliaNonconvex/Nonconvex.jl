@@ -206,7 +206,7 @@ function optimize!(workspace::AugLagWorkspace)
     solution.g .= getorigconstrval(lagmodel)
     callback(solution, update = true)
 
-    results = MMAResult(
+    results = GenericResult(
         optimizer,
         x0,
         solution.x,

@@ -34,7 +34,7 @@ struct Trace
 end
 
 """
-    MMAResult
+    GenericResult
 
 A summary result struct returned by [`optimize`](@ref) that includes the following fields:
  - `optimizer`: the optimization algorithm used
@@ -47,7 +47,7 @@ A summary result struct returned by [`optimize`](@ref) that includes the followi
  - `convstate`: an instance of [`ConvergenceCriteria`](@ref) that summarizes the convergenc state of the best solution found
  - `fcalls`: the number of times the objective and constraint functions were called during the optimization
 """
-@params mutable struct MMAResult{T}
+@params mutable struct GenericResult{T}
     optimizer
     initial_x::AbstractVector{T}
     minimizer::AbstractVector{T}
@@ -317,7 +317,7 @@ function optimize!(workspace::MMAWorkspace)
     set_objective_multiple!(model, 1)
     callback(best_solution, update = true)
     
-    results = MMAResult(
+    results = GenericResult(
         optimizer,
         x0,
         best_solution.x,
