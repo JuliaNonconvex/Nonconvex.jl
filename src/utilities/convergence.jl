@@ -185,7 +185,7 @@ function assess_convergence!(
 )
     xtol, fabstol, freltol, kkttol, infeastol = tol.x, tol.fabs, tol.frel, tol.kkt, tol.infeas
     Δx, Δf, infeas = getresiduals(solution, model, GenericCriteria())
-    Δfrel = Δf / (abs(solution.f) + freltol)
+    relΔf = Δf / (abs(solution.f) + freltol)
     kkt_residual, infeas = getresiduals(solution, model, KKTCriteria())
     ipopt_residual, infeas = getresiduals(solution, model, IpoptCriteria())
     if show_residuals[]
@@ -194,7 +194,7 @@ function assess_convergence!(
 
     x_converged = Δx < xtol
     fabs_converged = Δf < fabstol
-    frel_converged = Δfrel < freltol
+    frel_converged = relΔf < freltol
     if criteria isa ScaledKKTCriteria
         if debugging[]
             #@show get_objective_multiple(model)
@@ -224,7 +224,7 @@ function assess_convergence!(
                                 infeas_converged,
                                 Δx,
                                 Δf,
-                                Δfrel,
+                                relΔf,
                                 kkt_residual,
                                 ipopt_residual,
                                 infeas,
