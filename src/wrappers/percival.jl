@@ -3,13 +3,15 @@ struct PercivalAlg end
 @params struct PercivalOptions
     nt::NamedTuple
 end
-function PercivalOptions(; kwargs...)
-    return PercivalOptions(NamedTuple(kwargs))
+function PercivalOptions(; first_order = true, memory = 5, kwargs...)
+    return PercivalOptions(
+        (;first_order = first_order, memory = memory, kwargs...),
+    )
 end
 
 @params mutable struct PercivalWorkspace
     model::Model
-    problem::ADNLPModels.ADNLPModel
+    problem::Percival.NLPModels.AbstractNLPModel
     x0::AbstractVector
     options::PercivalOptions
 end
@@ -28,12 +30,23 @@ end
 end
 
 function optimize!(workspace::PercivalWorkspace)
-    @unpack problem, options = workspace
+    @unpack problem, options, x0 = workspace
     foreach(keys(options.nt)) do k
-        v = options.nt[k]
-        setproperty!(problem, k, v)
+        if k != :first_order && k != :memory
+            v = options.nt[k]
+            setproperty!(problem, k, v)
+        end
     end
-    result = percival(problem)
+    if options.nt.first_order
+        qnlp = Percival.LBFGSModel(
+            Percival.SlackModel(problem);
+            mem = options.nt.memory,
+        )
+        result = percival(qnlp)
+        result.solution = result.solution[1:length(x0)]
+    else
+        result = percival(problem)
+    end
     return PercivalResult(
         copy(result.solution), result.objective, problem, result,
     )
@@ -94,6 +107,6 @@ function getpercival_problem(obj, ineq_constr, eq_constr, x0, xlb, xub)
     end
     lcon = [fill(-Inf, ineq_nconstr); zeros(eq_nconstr)]
     ucon = zeros(ineq_nconstr + eq_nconstr)
-    nlp = ADNLPModels.ADNLPModel(obj, x0, xlb, xub, c, lcon, ucon)
+    nlp = ADNLPModels.ADNLPModel(obj, x0, xlb, xub, c, lcon, ucon, adbackend = ADNLPModels.ZygoteAD())
     return nlp
 end
