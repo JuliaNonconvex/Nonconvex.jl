@@ -3,12 +3,14 @@
 
 A struct that summarizes the convergence state of a solution. The fields in this struct are:
  - `Δx`: the infinity norm of the change in the solution `x`.
- - `Δf`: the ratio of change in the objective value `f`.
+ - `Δf`: the change in the objective value `f`.
+ - `relΔf`: the ratio of change in the objective value `f`.
  - `kkt_residual`: the Karush-Kuhn-Tucker (KKT) residual of the solution. If [`ScaledKKTCriteria`](@ref) is used instead of [`KKTCriteria`](@ref), the `kkt_residual` will be divided by a factor.
  - `ipopt_residual`: the modified KKT residual used in the IPOPT solver.
  - `infeas`: maximum infeasibility amount. This is 0 if the solution is feasible.
  - `x_converged`: true if `Δx` is less than the `x` tolerance in [`MMAOptions`](@ref).
- - `f_converged`: true if `Δf` is less than the `f` tolerance in [`MMAOptions`](@ref).
+ - `fabs_converged`: true if `Δf` is less than the `f` tolerance in [`MMAOptions`](@ref).
+ - `frel_converged`: true if `relΔf` is less than the `f` tolerance in [`MMAOptions`](@ref).
  - `kkt_converged`: true if the `kkt_residual` is less than the KKT tolerance in [`MMAOptions`](@ref).
  - `ipopt_converged`: true if the `ipopt_residual` is less than the KKT tolerance in [`MMAOptions`](@ref).
  - `infeas_converged`: true if `infeas` is less than the infeasibility tolerance in [`MMAOptions`](@ref).
@@ -18,11 +20,13 @@ A struct that summarizes the convergence state of a solution. The fields in this
 @with_kw mutable struct ConvergenceState{T}
     Δx::T = Inf
     Δf::T = Inf
+    relΔf::T = Inf
     kkt_residual::T = Inf
     ipopt_residual::T = Inf
     infeas::T = Inf
     x_converged::Bool = false
-    f_converged::Bool = false
+    fabs_converged::Bool = false
+    frel_converged::Bool = false
     kkt_converged::Bool = false
     ipopt_converged::Bool = false
     infeas_converged::Bool = false
@@ -96,24 +100,32 @@ hasconverged(s::Solution) = hasconverged(s.convstate)
 
 A struct specifying the different tolerances used to assess the convergence of the algorithms. The following are the fields of `Tolerance`:
  - `x`: the tolerance for `Δx` in [`ConvergenceState`](@ref). `x_converged` will be true if `Δx` is less than the `x` tolerance in `Tolerance`. This is used to assess convergence when the [`GenericCriteria`](@ref) is used as the convergence criteria. 
- - `f`: the tolerance for `Δf` in [`ConvergenceState`](@ref). `f_converged` will be true if `Δf` is less than the `f` tolerance in `Tolerance`. This is used to assess convergence when the [`GenericCriteria`](@ref) is used as the convergence criteria.
+ - `fabs`: the tolerance for `Δf` in [`ConvergenceState`](@ref). `f_converged` will be true if `Δf` is less than the `fabs` tolerance in `Tolerance`. This is used to assess convergence when the [`GenericCriteria`](@ref) is used as the convergence criteria.
+ - `frel`: the tolerance for `relΔf` in [`ConvergenceState`](@ref). `f_converged` will be true if `relΔf` is less than the `frel` tolerance in `Tolerance`. This is used to assess convergence when the [`GenericCriteria`](@ref) is used as the convergence criteria.
  - `kkt`: the KKT tolerance. `kkt_converged` in [`ConvergenceState`](@ref) will be true if the `kkt_residual` is less than the KKT tolerance. And `ipopt_converged` in [`ConvergenceState`](@ref) will be true if `ipopt_residual` is less than the KKT tolerance. This is used to assess convergence when the [`KKTCriteria`](@ref), the [`ScaledKKTCriteria`](@ref) or [`IpoptCriteria`](@ref) criteria is used as the convergence criteria.
  - `infeas`: the maximum infeasibility tolerance. `infeas_converged` in [`ConvergenceState`](@ref) will be true if the maximum infeasibility is less than the infeasibility tolerance. This is used to assess convergence regardless of the convergence criteria used.
 
 For more on convergence criteria, see [`GenericCriteria`](@ref), [`KKTCriteria`](@ref), [`ScaledKKTCriteria`](@ref) and [`IpoptCriteria`](@ref).
 """
-@with_kw struct Tolerance{Tx, Tf, Tkkt, Tinfeas}
-    x::Tx = 0.0
-    f::Tf = 1e-5
-    kkt::Tkkt = 1e-5
-    infeas::Tinfeas = 1e-5
+struct Tolerance{Tx, Tf, Tkkt, Tinfeas}
+    x::Tx
+    fabs::Tf
+    frel::Tf
+    kkt::Tkkt
+    infeas::Tinfeas
+end
+function Tolerance(;
+    x = 0.0, f = 1e-5, fabs = f, frel = f,
+    kkt = 1e-5, infeas = 1e-5,
+)
+    Tolerance(x, fabs, frel, kkt, infeas)
 end
 function (tol::Tolerance{<:Function, <:Function, <:Function})(i)
-    return Tolerance(tol.x(i), tol.f(i), tol.kkt(i), tol.infeas)
+    return Tolerance(tol.x(i), tol.fabs(i), tol.frel(i), tol.kkt(i), tol.infeas)
 end
 
 function Base.:*(t::Tolerance, m::Real)
-    return Tolerance(t.x * m, t.f * m, t.kkt * m, t.infeas * m)
+    return Tolerance(t.x * m, t.fabs * m, t.frel * m, t.kkt * m, t.infeas * m)
 end
 
 abstract type ConvergenceCriteria end
@@ -123,8 +135,9 @@ abstract type ConvergenceCriteria end
 
 This is a generic convergence criteria that uses:
 1. The maximum change in the solution, `Δx`,
-2. The change percentage in the objective value, `Δf`, and
-3. The maximum infeasibility `infeas`.
+2. The change in the objective value, `Δf`, and
+3. The change percentage in the objective value, `Δf`, and
+4. The maximum infeasibility `infeas`.
 to assess convergence. More details are given in [`assess_convergence!`](@ref).
 """
 struct GenericCriteria <: ConvergenceCriteria end
@@ -170,8 +183,9 @@ function assess_convergence!(
     tol::Tolerance,
     criteria::ConvergenceCriteria,
 )
-    xtol, ftol, kkttol, infeastol = tol.x, tol.f, tol.kkt, tol.infeas
+    xtol, fabstol, freltol, kkttol, infeastol = tol.x, tol.fabs, tol.frel, tol.kkt, tol.infeas
     Δx, Δf, infeas = getresiduals(solution, model, GenericCriteria())
+    Δfrel = Δf / (abs(solution.f) + freltol)
     kkt_residual, infeas = getresiduals(solution, model, KKTCriteria())
     ipopt_residual, infeas = getresiduals(solution, model, IpoptCriteria())
     if show_residuals[]
@@ -179,7 +193,8 @@ function assess_convergence!(
     end
 
     x_converged = Δx < xtol
-    f_converged = Δf / (abs(solution.f) + ftol) < ftol
+    fabs_converged = Δf < fabstol
+    frel_converged = Δfrel < freltol
     if criteria isa ScaledKKTCriteria
         if debugging[]
             #@show get_objective_multiple(model)
@@ -193,7 +208,7 @@ function assess_convergence!(
     f_increased = solution.f > solution.prevf
 
     if criteria isa GenericCriteria
-        converged = (x_converged || f_converged) && infeas_converged
+        converged = (x_converged || fabs_converged || frel_converged) && infeas_converged
     elseif criteria isa KKTCriteria || criteria isa ScaledKKTCriteria
         converged = kkt_converged && infeas_converged
     elseif criteria isa IpoptCriteria
@@ -202,12 +217,14 @@ function assess_convergence!(
         throw("Unsupported convergence criteria for MMA.")
     end
     @pack! solution.convstate = x_converged,
-                                f_converged,
+                                fabs_converged,
+                                frel_converged,
                                 kkt_converged,
                                 ipopt_converged,
                                 infeas_converged,
                                 Δx,
                                 Δf,
+                                Δfrel,
                                 kkt_residual,
                                 ipopt_residual,
                                 infeas,
@@ -216,7 +233,7 @@ function assess_convergence!(
     return solution
 end
 
-function getresiduals(solution::Solution, model::AbstractModel, ::GenericCriteria)
+function getresiduals(solution::Solution, ::AbstractModel, ::GenericCriteria)
     @unpack prevx, x, prevf, f, g = solution
     Δx = maximum(abs(x[j] - prevx[j]) for j in 1:length(x))
     Δf = abs(f - prevf)
