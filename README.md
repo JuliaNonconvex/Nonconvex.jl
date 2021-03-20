@@ -61,6 +61,16 @@ r.minimum
 r.minimizer
 ```
 
+## NLopt
+
+```julia
+alg = NLoptAlg(:LD_MMA)
+options = Nonconvex.NLoptOptions()
+r = optimize(m, alg, [1.234, 2.345], options = options)
+r.minimum
+r.minimizer
+```
+
 ## Augmented Lagrangian
 
 ```julia
@@ -71,21 +81,23 @@ r.minimum
 r.minimizer
 ```
 
+## Mixed equality and inequality constraints
+
+```julia
+f(x) = sqrt(x[2])
+g(x, a, b) = (a*x[1] + b)^3 - x[2]
+
+m = Model(f)
+addvar!(m, [0.0, 0.0], [10.0, 10.0])
+add_eq_constraint!(m, x -> g(x, 2, 0))
+add_ineq_constraint!(m, x -> g(x, -1, 1))
+```
+
 ## Ipopt
 
 ```julia
 alg = IpoptAlg()
 options = Nonconvex.IpoptOptions()
-r = optimize(m, alg, [1.234, 2.345], options = options)
-r.minimum
-r.minimizer
-```
-
-## NLopt
-
-```julia
-alg = NLoptAlg(:LD_MMA)
-options = Nonconvex.NLoptOptions()
 r = optimize(m, alg, [1.234, 2.345], options = options)
 r.minimum
 r.minimizer

@@ -6,6 +6,7 @@ const show_residuals = Ref(false)
 export  Model,
         addvar!,
         add_ineq_constraint!,
+        add_eq_constraint!,
         getmin,
         getmax,
         setmin!,

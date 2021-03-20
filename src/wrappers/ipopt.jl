@@ -1,7 +1,14 @@
 @params struct IpoptOptions
     nt::NamedTuple
 end
-IpoptOptions(; kwargs...) = IpoptOptions(NamedTuple(kwargs))
+function IpoptOptions(;
+    first_order = true,
+    hessian_approximation = first_order ? "limited-memory" : "exact",
+    kwargs...,
+)
+    h = hessian_approximation
+    return IpoptOptions((;hessian_approximation = h, kwargs...))
+end
 
 @params mutable struct IpoptWorkspace
     model::Model
@@ -13,7 +20,10 @@ function IpoptWorkspace(
     model::Model, x0::AbstractVector = getinit(model);
     options = IpoptOptions(), kwargs...,
 )
-    problem = getipopt_problem(model, x0)
+    problem = getipopt_problem(
+        model, x0,
+        options.nt.hessian_approximation == "limited-memory",
+    )
     return IpoptWorkspace(model, problem, x0, options)
 end
 @params struct IpoptResult
@@ -102,7 +112,7 @@ nvalues(H::SparseMatrixCSC) = length(H.nzval)
 _dot(f, x, y) = dot(f(x), y)
 _dot(::Nothing, ::Any, ::Any) = 0.0
 
-function getipopt_problem(model::Model, x0::AbstractVector)
+function getipopt_problem(model::Model, x0::AbstractVector, first_order::Bool)
     eq = if length(model.eq_constraints.fs) == 0
         nothing
     else
@@ -120,9 +130,10 @@ function getipopt_problem(model::Model, x0::AbstractVector)
         x0,
         getmin(model),
         getmax(model),
+        first_order,
     )
 end
-function getipopt_problem(obj, ineq_constr, eq_constr, x0, xlb, xub)
+function getipopt_problem(obj, ineq_constr, eq_constr, x0, xlb, xub, first_order)
     nvars = 0
     if ineq_constr !== nothing
         ineqJ0 = Zygote.jacobian(ineq_constr, x0)[1]
@@ -146,12 +157,6 @@ function getipopt_problem(obj, ineq_constr, eq_constr, x0, xlb, xub)
             _dot(ineq_constr, x, @view(y[1:ineq_nconstr])) + 
             _dot(eq_constr, x, @view(y[ineq_nconstr+1:end]))
     end
-    HL0 = LowerTriangular(
-        Zygote.hessian(
-            lag(1.0, ones(ineq_nconstr + eq_nconstr)),
-            x0,
-        ),
-    )
     clb = [fill(-Inf, ineq_nconstr); zeros(eq_nconstr)]
     cub = zeros(ineq_nconstr + eq_nconstr)
 
@@ -183,20 +188,33 @@ function getipopt_problem(obj, ineq_constr, eq_constr, x0, xlb, xub)
             end
         end
     end
-    function eval_h(x::Vector{Float64}, mode, rows::Vector{Int32}, cols::Vector{Int32}, obj_factor::Float64, lambda::Vector{Float64}, values::Vector{Float64})
-        if mode == :Structure
-            fill_indices!(rows, cols, HL0)
-        else
-            HL = LowerTriangular(
-                Zygote.hessian(lag(obj_factor, lambda), x),
-            )
-            values .= 0
-            add_values!(values, HL)
+
+    if first_order
+        eval_h = (x...) -> 0.0
+        Hnvalues = 0
+    else
+        HL0 = LowerTriangular(
+            Zygote.hessian(
+                lag(1.0, ones(ineq_nconstr + eq_nconstr)),
+                x0,
+            ),
+        )
+        eval_h = function (x::Vector{Float64}, mode, rows::Vector{Int32}, cols::Vector{Int32}, obj_factor::Float64, lambda::Vector{Float64}, values::Vector{Float64})
+            if mode == :Structure
+                fill_indices!(rows, cols, HL0)
+            else
+                HL = LowerTriangular(
+                    Zygote.hessian(lag(obj_factor, lambda), x),
+                )
+                values .= 0
+                add_values!(values, HL)
+            end
         end
+        Hnvalues = nvalues(HL0)
     end
     prob = Ipopt.createProblem(
         nvars, xlb, xub, ineq_nconstr + eq_nconstr, clb, cub,
-        nvalues(ineqJ0) + nvalues(eqJ0), nvalues(HL0), obj,
+        nvalues(ineqJ0) + nvalues(eqJ0), Hnvalues, obj,
         eval_g, eval_grad_f, eval_jac_g, eval_h,
     )
     prob.x = x0
