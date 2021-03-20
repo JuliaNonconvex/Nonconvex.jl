@@ -9,7 +9,7 @@ end
 
 @params mutable struct PercivalWorkspace
     model::Model
-    problem::Percival.NLPModels.ADNLPModel
+    problem::ADNLPModels.ADNLPModel
     x0::AbstractVector
     options::PercivalOptions
 end
@@ -94,6 +94,6 @@ function getpercival_problem(obj, ineq_constr, eq_constr, x0, xlb, xub)
     end
     lcon = [fill(-Inf, ineq_nconstr); zeros(eq_nconstr)]
     ucon = zeros(ineq_nconstr + eq_nconstr)
-    nlp = Percival.NLPModels.ADNLPModel(obj, x0, xlb, xub, c, lcon, ucon)
+    nlp = ADNLPModels.ADNLPModel(obj, x0, xlb, xub, c, lcon, ucon)
     return nlp
 end
