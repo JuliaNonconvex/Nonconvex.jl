@@ -30,7 +30,7 @@ export  Model,
         Tolerance
 
 using Parameters, Zygote, ChainRulesCore, ForwardDiff
-using Ipopt, NLopt, Percival
+using Ipopt, NLopt, ADNLPModels, Percival
 using LinearAlgebra, Setfield, Requires, SparseArrays, Reexport
 using Optim: Optim, AbstractOptimizer
 @reexport using LinearAlgebra
