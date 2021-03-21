@@ -149,7 +149,7 @@ function set_objective!(m::AbstractModel, f::Function)
     return m
 end
 
-function add_ineq_constraint!(m::AbstractModel, f::Function, s = 0.0; dim = 1)
+function add_ineq_constraint!(m::AbstractModel, f::Function, s = 0.0; dim = length(f(getinit(m))))
     return add_ineq_constraint!(m, FunctionWrapper(f, dim), s)
 end
 function add_ineq_constraint!(m::AbstractModel, f::AbstractFunction, s = 0.0)
@@ -164,7 +164,7 @@ function add_ineq_constraint!(m::Model, fs::Vector{<:IneqConstraint})
     return m
 end
 
-function add_eq_constraint!(m::AbstractModel, f::Function, s = 0.0; dim = 1)
+function add_eq_constraint!(m::AbstractModel, f::Function, s = 0.0; dim = length(f(getinit(m))))
     return add_eq_constraint!(m, FunctionWrapper(f, dim), s)
 end
 function add_eq_constraint!(m::AbstractModel, f::AbstractFunction, s = 0.0)
