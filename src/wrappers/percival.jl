@@ -9,7 +9,7 @@ function PercivalOptions(; first_order = true, memory = 5, kwargs...)
     )
 end
 
-@params mutable struct PercivalWorkspace
+@params mutable struct PercivalWorkspace <: Workspace
     model::Model
     problem::Percival.NLPModels.AbstractNLPModel
     x0::AbstractVector

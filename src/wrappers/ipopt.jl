@@ -10,7 +10,7 @@ function IpoptOptions(;
     return IpoptOptions((;hessian_approximation = h, kwargs...))
 end
 
-@params mutable struct IpoptWorkspace
+@params mutable struct IpoptWorkspace <: Workspace
     model::Model
     problem::Ipopt.IpoptProblem
     x0::AbstractVector

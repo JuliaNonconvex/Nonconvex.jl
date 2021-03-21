@@ -25,7 +25,7 @@ function NLoptOptions(;
     )
 end
 
-@params mutable struct NLoptWorkspace
+@params mutable struct NLoptWorkspace <: Workspace
     model::Model
     problem::NLopt.Opt
     x0::AbstractVector
