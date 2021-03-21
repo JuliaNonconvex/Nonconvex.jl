@@ -15,26 +15,29 @@ end
     problem::Ipopt.IpoptProblem
     x0::AbstractVector
     options::IpoptOptions
+    counter::Base.RefValue{Int}
 end
 function IpoptWorkspace(
     model::Model, x0::AbstractVector = getinit(model);
     options = IpoptOptions(), kwargs...,
 )
-    problem = getipopt_problem(
+    problem, counter = getipopt_problem(
         model, x0,
         options.nt.hessian_approximation == "limited-memory",
     )
-    return IpoptWorkspace(model, problem, x0, options)
+    return IpoptWorkspace(model, problem, x0, options, counter)
 end
 @params struct IpoptResult
     minimizer
     minimum
     problem
     status
+    fcalls::Int
 end
 
 function optimize!(workspace::IpoptWorkspace)
-    @unpack problem, options = workspace
+    @unpack problem, options, counter = workspace
+    counter[] = 0
     foreach(keys(options.nt)) do k
         v = options.nt[k]
         Ipopt.addOption(problem, string(k), v)
@@ -42,7 +45,7 @@ function optimize!(workspace::IpoptWorkspace)
     solvestat = Ipopt.solveProblem(problem)
     return IpoptResult(
         copy(problem.x), problem.obj_val,
-        problem, solvestat,
+        problem, solvestat, counter[]
     )
 end
 
@@ -123,15 +126,16 @@ function getipopt_problem(model::Model, x0::AbstractVector, first_order::Bool)
     else
         model.ineq_constraints
     end
+    obj = CountingFunction(getobjective(model))
     return getipopt_problem(
-        getobjective(model),
+        obj,
         ineq,
         eq,
         x0,
         getmin(model),
         getmax(model),
         first_order,
-    )
+    ), obj.counter
 end
 function getipopt_problem(obj, ineq_constr, eq_constr, x0, xlb, xub, first_order)
     nvars = 0

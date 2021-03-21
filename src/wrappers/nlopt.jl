@@ -31,14 +31,15 @@ end
     x0::AbstractVector
     options::NLoptOptions
     alg::NLoptAlg
+    counter::Base.RefValue{Int}
 end
 function NLoptWorkspace(
     model::Model, optimizer::NLoptAlg,
     x0::AbstractVector = getinit(model);
     options = NLoptOptions(), kwargs...,
 )
-    problem = getnlopt_problem(optimizer.alg, model, x0)
-    return NLoptWorkspace(model, problem, x0, options, optimizer)
+    problem, counter = getnlopt_problem(optimizer.alg, model, x0)
+    return NLoptWorkspace(model, problem, x0, options, optimizer, counter)
 end
 @params struct NLoptResult
     minimizer
@@ -46,17 +47,19 @@ end
     problem
     status
     alg
+    fcalls::Int
 end
 
 function optimize!(workspace::NLoptWorkspace)
-    @unpack problem, options, x0 = workspace
+    @unpack problem, options, x0, counter = workspace
+    counter[] = 0
     foreach(keys(options.nt)) do k
         v = options.nt[k]
         setproperty!(problem, k, v)
     end
     minf, minx, ret = NLopt.optimize(problem, x0)
     return NLoptResult(
-        copy(minx), minf, problem, ret, workspace.alg,
+        copy(minx), minf, problem, ret, workspace.alg, counter[]
     )
 end
 
@@ -75,15 +78,16 @@ function getnlopt_problem(alg, model::Model, x0::AbstractVector)
     else
         model.ineq_constraints
     end
+    obj = CountingFunction(getobjective(model))
     return getnlopt_problem(
         alg,
-        getobjective(model),
+        obj,
         ineq,
         eq,
         x0,
         getmin(model),
         getmax(model),
-    )
+    ), obj.counter
 end
 function getnlopt_problem(alg, obj, ineq_constr, eq_constr, x0, xlb, xub)
     onehot(n, i) = [zeros(i-1); 1.0; zeros(n-i)]

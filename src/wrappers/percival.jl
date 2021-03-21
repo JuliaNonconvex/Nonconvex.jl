@@ -16,23 +16,26 @@ end
     problem::Percival.NLPModels.AbstractNLPModel
     x0::AbstractVector
     options::PercivalOptions
+    counter::Base.RefValue{Int}
 end
 function PercivalWorkspace(
     model::Model, x0::AbstractVector = getinit(model);
     options = PercivalOptions(), kwargs...,
 )
-    problem = getpercival_problem(model, x0)
-    return PercivalWorkspace(model, problem, x0, options)
+    problem, counter = getpercival_problem(model, x0)
+    return PercivalWorkspace(model, problem, x0, options, counter)
 end
 @params struct PercivalResult
     minimizer
     minimum
     problem
     result
+    fcalls
 end
 
 function optimize!(workspace::PercivalWorkspace)
-    @unpack problem, options, x0 = workspace
+    @unpack problem, options, x0, counter = workspace
+    counter[] = 0
     foreach(keys(options.nt)) do k
         if k != :first_order && k != :memory && k != :inity
             v = options.nt[k]
@@ -51,7 +54,7 @@ function optimize!(workspace::PercivalWorkspace)
         result = percival(problem, inity = options.nt.inity(m))
     end
     return PercivalResult(
-        copy(result.solution), result.objective, problem, result,
+        copy(result.solution), result.objective, problem, result, counter[],
     )
 end
 
@@ -70,14 +73,15 @@ function getpercival_problem(model::Model, x0::AbstractVector)
     else
         model.ineq_constraints
     end
+    obj = CountingFunction(getobjective(model))
     return getpercival_problem(
-        getobjective(model),
+        obj,
         ineq,
         eq,
         x0,
         getmin(model),
         getmax(model),
-    )
+    ), obj.counter
 end
 function getpercival_problem(obj, ineq_constr, eq_constr, x0, xlb, xub)
     nvars = length(x0)

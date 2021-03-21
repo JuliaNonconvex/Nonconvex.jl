@@ -43,6 +43,8 @@ include("utilities/params.jl")
 include("functions/functions.jl")
 include("functions/value_jacobian.jl")
 include("functions/function_docs.jl")
+include("functions/counting_function.jl")
+include("functions/aggregations.jl")
 
 # Models
 
@@ -63,7 +65,6 @@ include("algorithms/mma_algorithm.jl")
 
 # MMA-AugLag
 
-include("functions/aggregations.jl")
 include("algorithms/stoch_optimizers.jl")
 include("algorithms/nonstoch_optimizers.jl")
 
