@@ -5,7 +5,9 @@ struct PercivalAlg end
 end
 function PercivalOptions(; first_order = true, memory = 5, kwargs...)
     return PercivalOptions(
-        (;first_order = first_order, memory = memory, kwargs...),
+        (;first_order = first_order,
+        memory = memory, inity = ones,
+        kwargs...),
     )
 end
 
@@ -32,7 +34,7 @@ end
 function optimize!(workspace::PercivalWorkspace)
     @unpack problem, options, x0 = workspace
     foreach(keys(options.nt)) do k
-        if k != :first_order && k != :memory
+        if k != :first_order && k != :memory && k != :inity
             v = options.nt[k]
             setproperty!(problem, k, v)
         end
@@ -42,10 +44,11 @@ function optimize!(workspace::PercivalWorkspace)
             Percival.SlackModel(problem);
             mem = options.nt.memory,
         )
-        result = percival(qnlp)
+        m = getnconstraints(workspace.model)
+        result = percival(qnlp, inity = options.nt.inity(m))
         result.solution = result.solution[1:length(x0)]
     else
-        result = percival(problem)
+        result = percival(problem, inity = options.nt.inity(m))
     end
     return PercivalResult(
         copy(result.solution), result.objective, problem, result,
