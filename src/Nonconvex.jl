@@ -15,6 +15,7 @@ export  Model,
         Workspace,
         MMA87,
         MMA02,
+        MMALag,
         AugLag,
         IpoptAlg,
         NLoptAlg,
@@ -30,9 +31,10 @@ export  Model,
         Tolerance
 
 using Parameters, Zygote, ChainRulesCore, ForwardDiff
-using Ipopt, NLopt, ADNLPModels, Percival
+using Ipopt, NLopt, ADNLPModels, Percival, NLPModelsModifiers
 using LinearAlgebra, Setfield, Requires, SparseArrays, Reexport
 using Optim: Optim, AbstractOptimizer
+
 @reexport using LinearAlgebra
 
 abstract type Workspace end
@@ -55,6 +57,7 @@ include("mma_approximation/xmma_approx.jl")
 include("mma_approximation/mma_approx_docs.jl")
 include("models/mma_model.jl")
 include("models/dual_model.jl")
+include("models/mmalag_model.jl")
 
 # MMA
 
@@ -67,6 +70,7 @@ include("algorithms/mma_algorithm.jl")
 
 include("algorithms/stoch_optimizers.jl")
 include("algorithms/nonstoch_optimizers.jl")
+include("algorithms/ammal.jl")
 
 # Augmented Lagrangian
 
