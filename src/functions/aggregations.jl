@@ -4,17 +4,17 @@ getdim(::AbstractAggregation) = 1
 @params struct NonNegSumOfSquares <: AbstractAggregation
     c::Real
 end
-(f::NonNegSumOfSquares)(x::AbstractVector) = f.c * sum(x -> max(0, x)^2, x)
+(f::NonNegSumOfSquares)(x::AbstractVector) = f.c * sum(max.(0, x).^2)
 
 @params struct NonNegSumOfRoots <: AbstractAggregation
     c::Real
 end
-(f::NonNegSumOfRoots)(x::AbstractVector) = f.c * sum(x -> sqrt(max(0, x)), x)
+(f::NonNegSumOfRoots)(x::AbstractVector) = f.c * sum(sqrt.(max.(0, x)))
 
 @params struct NonNegSum <: AbstractAggregation
     c::Real
 end
-(f::NonNegSum)(x::AbstractVector) = f.c * sum(x -> max(0, x), x)
+(f::NonNegSum)(x::AbstractVector) = f.c * sum(max.(0, x))
 
 @params struct WeightedSum <: AbstractAggregation
     weights::AbstractVector
