@@ -31,9 +31,10 @@ export  Model,
         Tolerance
 
 using Parameters, Zygote, ChainRulesCore, ForwardDiff
-using Ipopt, NLopt, ADNLPModels, Percival
+using Ipopt, NLopt, ADNLPModels, Percival, NLPModelsModifiers
 using LinearAlgebra, Setfield, Requires, SparseArrays, Reexport
 using Optim: Optim, AbstractOptimizer
+
 @reexport using LinearAlgebra
 
 abstract type Workspace end

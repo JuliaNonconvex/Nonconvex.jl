@@ -36,26 +36,44 @@ end
 function optimize!(workspace::PercivalWorkspace)
     @unpack problem, options, x0, counter = workspace
     counter[] = 0
-    foreach(keys(options.nt)) do k
-        if k != :first_order && k != :memory && k != :inity
-            v = options.nt[k]
-            setproperty!(problem, k, v)
-        end
-    end
-    if options.nt.first_order
-        qnlp = Percival.LBFGSModel(
-            Percival.SlackModel(problem);
-            mem = options.nt.memory,
-        )
-        m = getnconstraints(workspace.model)
-        result = percival(qnlp, inity = options.nt.inity(m))
-        result.solution = result.solution[1:length(x0)]
-    else
-        result = percival(problem, inity = options.nt.inity(m))
-    end
+    m = getnconstraints(workspace.model)
+    result = _percival(problem; options.nt..., inity = options.nt.inity(m))
+    result.solution = result.solution[1:length(x0)]
     return PercivalResult(
         copy(result.solution), result.objective, problem, result, counter[],
     )
+end
+
+function _percival(nlp;
+    μ::Real = eltype(nlp.meta.x0)(10.0),
+    max_iter::Int = 1000, max_time::Real = Inf,
+    max_eval::Int = 100000, atol::Real = 1e-6,
+    rtol::Real = 1e-6, ctol::Real = 1e-6, first_order = true, memory = 5,
+    subsolver_logger::Percival.AbstractLogger = Percival.NullLogger(),
+    inity = nothing, max_cgiter = 100, subsolver_max_eval = 200, kwargs...,
+)
+    modifier = m -> NLPModelsModifiers.LBFGSModel(m, mem = memory)
+    _kwargs = (
+        max_iter = max_iter, max_time = max_time,
+        max_eval = max_eval, atol = atol, rtol = rtol,
+        subsolver_logger = subsolver_logger,
+        subproblem_modifier = first_order ? modifier : identity,
+        subsolver_max_eval = subsolver_max_eval,
+        subsolver_kwargs = Dict(:max_cgiter => max_cgiter),
+    )
+    if Percival.unconstrained(nlp) || Percival.bound_constrained(nlp)
+        return Percival.percival(
+            Val(:tron), nlp; _kwargs...,
+        )
+    elseif Percival.equality_constrained(nlp)
+        return Percival.percival(
+            Val(:equ), nlp; inity = inity, _kwargs...,
+        )
+    else # has inequalities
+        return Percival.percival(
+            Val(:ineq), nlp; inity = inity, _kwargs...,
+        )
+    end
 end
 
 function Workspace(model::AbstractModel, optimizer::PercivalAlg, args...; kwargs...,)
