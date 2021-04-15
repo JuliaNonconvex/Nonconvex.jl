@@ -11,7 +11,7 @@ This package implements and wraps a number of nonconvex constrained optimization
 The following packages are wrapped:
 - `IpoptAlg`: a wrapper around Ipopt.jl
 - `NLoptAlg`: a wrapper around NLopt.jl
-- `AugLag`: a wrapper around Percival.jl which implements a first-order augmented Lagrangian algorithm
+- `AugLag`: a wrapper around Percival.jl which implements the augmented Lagrangian algorithm
 
 The method of moving asymptotes algorithms' were generalized to handle infinite variable bounds. In the augmented Lagrangian algorithm, a block constraint can be handled efficiently by defining a custom adjoint rule for the block constraint using `ChainRulesCore.jl`. This custom adjoint will be picked up by `Nonconvex.jl` when calculating the gradient of the augmented Lagrangian.
 
