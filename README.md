@@ -7,14 +7,13 @@
 This package implements and wraps a number of nonconvex constrained optimization algorithms and packages making use of automatic differentiation. The following algorithms are implemented:
 - `MMA87`: the original method of moving asymptotes
 - `MMA02`: the globally convergent method of moving asymptotes
-- `AugLag`: a first-order augmented Lagrangian algorithm
-
-The method of moving asymptotes algorithms' were generalized to handle infinite variable bounds. The augmented Lagrangian implementation may need fine tuning so use with care. In the augmented Lagrangian implementation, a block constraint can be handled efficiently by defining a custom adjoint rule for the block constraint using `ChainRulesCore.jl`. This custom adjoint will be picked up by `Nonconvex.jl` when calculating the gradient of the augmented Lagrangian.
 
 The following packages are wrapped:
 - `IpoptAlg`: a wrapper around Ipopt.jl
 - `NLoptAlg`: a wrapper around NLopt.jl
-- `PercivalAlg`: a wrapper around Percival.jl
+- `AugLag`: a wrapper around Percival.jl which implements a first-order augmented Lagrangian algorithm
+
+The method of moving asymptotes algorithms' were generalized to handle infinite variable bounds. In the augmented Lagrangian algorithm, a block constraint can be handled efficiently by defining a custom adjoint rule for the block constraint using `ChainRulesCore.jl`. This custom adjoint will be picked up by `Nonconvex.jl` when calculating the gradient of the augmented Lagrangian.
 
 # Example
 
@@ -71,11 +70,11 @@ r.minimum
 r.minimizer
 ```
 
-## Augmented Lagrangian
+## Augmented Lagrangian / Percival
 
 ```julia
 alg = AugLag()
-options = Nonconvex.AugLagOptions(alg)
+options = Nonconvex.AugLagOptions()
 r = optimize(m, alg, [1.234, 2.345], options = options)
 r.minimum
 r.minimizer
@@ -98,16 +97,6 @@ add_ineq_constraint!(m, x -> g(x, -1, 1))
 ```julia
 alg = IpoptAlg()
 options = Nonconvex.IpoptOptions()
-r = optimize(m, alg, [1.234, 2.345], options = options)
-r.minimum
-r.minimizer
-```
-
-# Percival
-
-```julia
-alg = PercivalAlg()
-options = Nonconvex.PercivalOptions()
 r = optimize(m, alg, [1.234, 2.345], options = options)
 r.minimum
 r.minimizer

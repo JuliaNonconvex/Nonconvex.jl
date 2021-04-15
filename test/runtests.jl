@@ -5,6 +5,7 @@ using SafeTestsets, Test
     @safetestset "Approximation" begin include("approximation.jl") end
     @safetestset "Algorithm" begin include("mma.jl") end
 end
-@safetestset "AugLag" begin include("auglag.jl") end
+@safetestset "AugLag/Percival" begin include("percival.jl") end
+@safetestset "AugLag2" begin include("auglag.jl") end
 @safetestset "Ipopt" begin include("ipopt.jl") end
 @safetestset "NLopt" begin include("nlopt.jl") end

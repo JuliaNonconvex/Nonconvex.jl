@@ -3,7 +3,7 @@ using Nonconvex, LinearAlgebra, Test
 f(x::AbstractVector) = sqrt(x[2])
 g(x::AbstractVector, a, b) = (a*x[1] + b)^3 - x[2]
 
-alg = PercivalAlg()
+alg = AugLag()
 
 @testset "Simple constraints" begin
     m = Model(f)
@@ -11,7 +11,7 @@ alg = PercivalAlg()
     add_ineq_constraint!(m, x -> g(x, 2, 0))
     add_ineq_constraint!(m, x -> g(x, -1, 1))
     for first_order in (true, false)
-        options = PercivalOptions(first_order = first_order)
+        options = AugLagOptions(first_order = first_order)
         r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
         @test abs(r.minimum - sqrt(8/27)) < 1e-6
         @test norm(r.minimizer - [1/3, 8/27]) < 1e-6
@@ -24,7 +24,7 @@ end
     add_ineq_constraint!(m, FunctionWrapper(x -> [g(x, 2, 0), g(x, -1, 1)], 2))
 
     for first_order in (true, false)
-        options = PercivalOptions(first_order = first_order)
+        options = AugLagOptions(first_order = first_order)
         r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
         @test abs(r.minimum - sqrt(8/27)) < 1e-6
         @test norm(r.minimizer - [1/3, 8/27]) < 1e-6
@@ -39,7 +39,7 @@ end
         add_ineq_constraint!(m, x -> g(x, -1, 1))
 
         for first_order in (true, false)
-            options = PercivalOptions(first_order = first_order)
+            options = AugLagOptions(first_order = first_order)
             r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
             @test abs(r.minimum - sqrt(8/27)) < 1e-6
             @test norm(r.minimizer - [1/3, 8/27]) < 1e-6
@@ -53,7 +53,7 @@ end
         add_ineq_constraint!(m, x -> g(x, -1, 1))
 
         for first_order in (true, false)
-            options = PercivalOptions(first_order = first_order)
+            options = AugLagOptions(first_order = first_order)
             r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
             @test abs(r.minimum - sqrt(8/27)) < 1e-6
             @test norm(r.minimizer - [1/3, 8/27]) < 1e-6
@@ -66,7 +66,7 @@ end
         add_ineq_constraint!(m, x -> g(x, -1, 1))
 
         for first_order in (true, false)
-            options = PercivalOptions(first_order = first_order)
+            options = AugLagOptions(first_order = first_order)
             r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
             @test abs(r.minimum - sqrt(8/27)) < 1e-6
             @test norm(r.minimizer - [1/3, 8/27]) < 1e-6

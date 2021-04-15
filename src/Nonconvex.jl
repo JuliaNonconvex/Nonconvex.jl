@@ -16,18 +16,16 @@ export  Model,
         MMA87,
         MMA02,
         MMALag,
-        AugLag,
         IpoptAlg,
         NLoptAlg,
-        PercivalAlg,
+        AugLag,
         KKTCriteria,
         IpoptCriteria,
         FunctionWrapper,
         MMAOptions,
-        AugLagOptions,
         IpoptOptions,
         NLoptOptions,
-        PercivalOptions,
+        AugLagOptions,
         Tolerance
 
 using Parameters, Zygote, ChainRulesCore, ForwardDiff
@@ -66,7 +64,7 @@ include("utilities/callbacks.jl")
 include("utilities/options.jl")
 include("algorithms/mma_algorithm.jl")
 
-# MMA-AugLag
+# MMA-AugLag2
 
 include("algorithms/stoch_optimizers.jl")
 include("algorithms/nonstoch_optimizers.jl")

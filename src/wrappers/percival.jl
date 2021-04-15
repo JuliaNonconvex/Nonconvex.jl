@@ -1,4 +1,5 @@
 struct PercivalAlg end
+const AugLag = PercivalAlg
 
 @params struct PercivalOptions
     nt::NamedTuple
@@ -10,6 +11,7 @@ function PercivalOptions(; first_order = true, memory = 5, kwargs...)
         kwargs...),
     )
 end
+const AugLagOptions = PercivalOptions
 
 @params mutable struct PercivalWorkspace <: Workspace
     model::Model

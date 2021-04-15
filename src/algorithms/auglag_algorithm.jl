@@ -1,32 +1,32 @@
-@params struct AugLag <: AbstractOptimizer
+@params struct AugLag2 <: AbstractOptimizer
     primaloptimizer::AbstractOptimizer
     dualoptimizer::AbstractOptimizer
 end
-function AugLag(;
+function AugLag2(;
     primaloptimizer = Optim.ConjugateGradient(linesearch=Optim.LineSearches.BackTracking(iterations = 10)),
     dualoptimizer = Optim.GradientDescent(linesearch=Optim.LineSearches.BackTracking(iterations = 10)),
 )
-    return AugLag(primaloptimizer, dualoptimizer)
+    return AugLag2(primaloptimizer, dualoptimizer)
 end
 
-@params struct AugLagOptions
+@params struct AugLag2Options
     primaloptions
     dualoptions
     maxiter
     tol
     quadfactor
 end
-function AugLagOptions(alg::AugLag;
+function AugLag2Options(alg::AugLag2;
     primaloptions = alg.primaloptimizer isa MMA02 || alg.primaloptimizer isa MMA87 ? MMAOptions(maxiter = 100, tol = Tolerance(kkt = 1e-4)) : Optim.Options(outer_iterations = 10, iterations = 10),
     dualoptions = Optim.Options(outer_iterations = 10, iterations = 10),
     maxiter = 10,
     tol = Tolerance(),
     quadfactor = 10,
 )
-    return AugLagOptions(primaloptions, dualoptions, maxiter, tol, quadfactor)
+    return AugLag2Options(primaloptions, dualoptions, maxiter, tol, quadfactor)
 end
 
-function Solution(lagmodel::AugLagModel)
+function Solution(lagmodel::AugLag2Model)
     prevx = copy(getmin(lagmodel))
     x = copy(prevx)
     prevf = Inf
@@ -37,12 +37,12 @@ function Solution(lagmodel::AugLagModel)
     return Solution(prevx, x, getlinweights(lagmodel), prevf, f, nothing, g, nothing, convstate)
 end
 
-@params mutable struct AugLagWorkspace <: Workspace
+@params mutable struct AugLag2Workspace <: Workspace
     model::Model
-    lagmodel::AugLagModel
+    lagmodel::AugLag2Model
     x0::AbstractVector
-    optimizer::AugLag
-    options::AugLagOptions
+    optimizer::AugLag2
+    options::AugLag2Options
 
     solution::Solution
     convcriteria::ConvergenceCriteria
@@ -53,11 +53,11 @@ end
     iter::Int
 	fcalls::Int
 end
-function AugLagWorkspace(
+function AugLag2Workspace(
     model::AbstractModel,
-    optimizer::AugLag,
+    optimizer::AugLag2,
     x0::AbstractVector;
-    options::AugLagOptions = AugLagOptions(optimizer),
+    options::AugLag2Options = AugLag2Options(optimizer),
     convcriteria::ConvergenceCriteria = KKTCriteria(),
     plot_trace::Bool = false,
     show_plot::Bool = plot_trace,
@@ -66,7 +66,7 @@ function AugLagWorkspace(
     kwargs...,
 )
     T = eltype(x0)
-    lagmodel = AugLagModel(model; kwargs...)
+    lagmodel = AugLag2Model(model; kwargs...)
 
     # Convergence
     solution = Solution(lagmodel)
@@ -78,7 +78,7 @@ function AugLagWorkspace(
     # Iteraton counter
     fcalls, outer_iter, iter = 1, 0, 0
 
-    return AugLagWorkspace(
+    return AugLag2Workspace(
         model,
         lagmodel,
         x0,
@@ -96,9 +96,9 @@ function AugLagWorkspace(
     )
 end
 
-Workspace(model::AbstractModel, alg::AugLag, x0::AbstractVector; kwargs...) = AugLagWorkspace(model, alg, x0; kwargs...)
+Workspace(model::AbstractModel, alg::AugLag2, x0::AbstractVector; kwargs...) = AugLag2Workspace(model, alg, x0; kwargs...)
 
-function optimize!(workspace::AugLagWorkspace)
+function optimize!(workspace::AugLag2Workspace)
     @unpack lagmodel, solution, options, convcriteria = workspace
     @unpack callback, optimizer, trace = workspace
     @unpack x0, outer_iter, iter, fcalls = workspace

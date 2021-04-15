@@ -12,9 +12,9 @@ add_ineq_constraint!(
 )
 x0 = [2.0, 2.0]
 
-#alg = AugLag(primaloptimizer = MMA87())
-alg = AugLag()
-options = AugLagOptions(alg)
+#alg = AugLag2(primaloptimizer = MMA87())
+alg = Nonconvex.AugLag2()
+options = Nonconvex.AugLag2Options(alg)
 r = optimize(m, alg, x0, options = options)
 @test abs(r.minimum - sqrt(8/27)) < 1e-4
 @test norm(r.minimizer - [1/3, 8/27]) < 1e-4

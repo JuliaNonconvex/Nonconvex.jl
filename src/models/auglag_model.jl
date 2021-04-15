@@ -1,7 +1,7 @@
 # Objective
 
 """
-    AugLagObj
+    AugLag2Obj
 
 The objective function of the augmented Lagrangian model, `model`. The following are its fields:
  - `model`: the original model optimized
@@ -11,7 +11,7 @@ The objective function of the augmented Lagrangian model, `model`. The following
  - `f`: the current original objective value
  - `g`: the current constraint function value
 """
-@params struct AugLagObj <: AbstractFunction
+@params struct AugLag2Obj <: AbstractFunction
     model::Model
     x::AbstractVector # primal solution
     λ::AbstractVector # dual solution
@@ -21,11 +21,11 @@ The objective function of the augmented Lagrangian model, `model`. The following
 end
 
 """
-    AugLagObj(model::Model)
+    AugLag2Obj(model::Model)
 
 Constructs the objective function from the model, `model`.
 """
-function AugLagObj(
+function AugLag2Obj(
     model::Model;
     linweights = ones(getnineqconstraints(model)),
     quadweight = 1e-6,
@@ -34,17 +34,17 @@ function AugLagObj(
     x = copy(getmin(model))
     f = Ref(Inf)
     g = similar(linweights)
-    return AugLagObj(model, x, linweights, Ref(quadweight), f, g)
+    return AugLag2Obj(model, x, linweights, Ref(quadweight), f, g)
 end
 
-getdim(::AugLagObj) = 1
+getdim(::AugLag2Obj) = 1
 
 """
-    (obj::AugLagObj)(x::AbstractVector, λ::AbstractVector)
+    (obj::AugLag2Obj)(x::AbstractVector, λ::AbstractVector)
 
 Evaluates the augmented Lagrangian at the primal solution `x` and the dual solution `λ`.
 """
-function (obj::AugLagObj)(x::AbstractVector, λ::AbstractVector; penalise = true)
+function (obj::AugLag2Obj)(x::AbstractVector, λ::AbstractVector; penalise = true)
     if debugging[]
         #@show x
     end
@@ -61,14 +61,14 @@ function (obj::AugLagObj)(x::AbstractVector, λ::AbstractVector; penalise = true
 end
 
 """
-    (obj::AugLagObj)(primaloptimizer::Function, λ::AbstractVector)
+    (obj::AugLag2Obj)(primaloptimizer::Function, λ::AbstractVector)
 
 Evaluates the augmented Lagrangian at the dual solution `λ` where `primaloptimizer(λ)` returns a tuple of:
  - The optimal primal solution `x`,
  - The original objective value at the optimal `x` and the current `λ`, and
  - The original constraint values at the optimal `x` and the current `λ`,
 """
-function (obj::AugLagObj)(primaloptimizer::Function, λ::AbstractVector; penalise = true)
+function (obj::AugLag2Obj)(primaloptimizer::Function, λ::AbstractVector; penalise = true)
     parent = getparent(obj)
     x, origobjval, origconstrval = nogradcall(primaloptimizer, λ)
     savexλ!(obj, x, λ)
@@ -83,153 +83,153 @@ end
 nogradcall(f::Function, arg) = f(arg)
 ChainRulesCore.@non_differentiable nogradcall(f::Function, arg)
 
-function savefg!(obj::AugLagObj, f::Real, g::AbstractVector)
+function savefg!(obj::AugLag2Obj, f::Real, g::AbstractVector)
     setorigobjval!(obj, f)
     setorigconstrval!(obj, g)
     return obj
 end
-ChainRulesCore.@non_differentiable savefg!(obj::AugLagObj, f::Real, g::AbstractVector)
+ChainRulesCore.@non_differentiable savefg!(obj::AugLag2Obj, f::Real, g::AbstractVector)
 
-function savexλ!(obj::AugLagObj, x::AbstractVector, λ::AbstractVector)
+function savexλ!(obj::AugLag2Obj, x::AbstractVector, λ::AbstractVector)
     setx!(obj, x)
     setλ!(obj, λ)
     return obj
 end
-ChainRulesCore.@non_differentiable savexλ!(obj::AugLagObj, x::AbstractVector, λ::AbstractVector)
+ChainRulesCore.@non_differentiable savexλ!(obj::AugLag2Obj, x::AbstractVector, λ::AbstractVector)
 
-getparent(f::AugLagObj) = f.model
+getparent(f::AugLag2Obj) = f.model
 
 # To be minimized
-#getprimalobjective(f::AugLagObj) = FunctionWrapper(x -> (out = f(x, f.λ); @show out; out), 1)
-getprimalobjective(f::AugLagObj; kwargs...) = FunctionWrapper(x -> f(x, f.λ; kwargs...), 1)
+#getprimalobjective(f::AugLag2Obj) = FunctionWrapper(x -> (out = f(x, f.λ); @show out; out), 1)
+getprimalobjective(f::AugLag2Obj; kwargs...) = FunctionWrapper(x -> f(x, f.λ; kwargs...), 1)
 
 # To be maximized
-getdualobjective(f::AugLagObj, primaloptimizer::Function) = FunctionWrapper(λ -> begin
+getdualobjective(f::AugLag2Obj, primaloptimizer::Function) = FunctionWrapper(λ -> begin
     if debugging[]
         #@show λ
     end
     f(primaloptimizer, λ)
 end, 1)
 
-getorigobjval(f::AugLagObj) = f.f[]
+getorigobjval(f::AugLag2Obj) = f.f[]
 
-getorigconstrval(f::AugLagObj) = f.g
+getorigconstrval(f::AugLag2Obj) = f.g
 
-getlinweights(f::AugLagObj) = f.λ
+getlinweights(f::AugLag2Obj) = f.λ
 
-getquadweight(f::AugLagObj) = f.quadweight[]
+getquadweight(f::AugLag2Obj) = f.quadweight[]
 
-getx(f::AugLagObj) = f.x
+getx(f::AugLag2Obj) = f.x
 
-getλ(f::AugLagObj) = f.λ
+getλ(f::AugLag2Obj) = f.λ
 
-function setlinweights!(f::AugLagObj, λ::AbstractVector)
+function setlinweights!(f::AugLag2Obj, λ::AbstractVector)
     getlinweights(f) .= λ
     return f
 end
 
-function setquadweight!(f::AugLagObj, quadweight::Number)
+function setquadweight!(f::AugLag2Obj, quadweight::Number)
     f.quadweight[] = quadweight
     return f
 end
 
-function setx!(f::AugLagObj, x::AbstractVector)
+function setx!(f::AugLag2Obj, x::AbstractVector)
     f.x .= x
     return f
 end
 
-function setλ!(f::AugLagObj, λ::AbstractVector)
+function setλ!(f::AugLag2Obj, λ::AbstractVector)
     f.λ .= λ
     return f
 end
 
-function setorigobjval!(f::AugLagObj, val::Real)
+function setorigobjval!(f::AugLag2Obj, val::Real)
     f.f[] = val
     return f
 end
 
-function setorigconstrval!(f::AugLagObj, g::AbstractVector)
+function setorigconstrval!(f::AugLag2Obj, g::AbstractVector)
     f.g .= g
     return f
 end
 
 # Model
 
-@params struct AugLagModel <: AbstractModel
+@params struct AugLag2Model <: AbstractModel
     parent::Model
-    objective::AugLagObj
+    objective::AugLag2Obj
 end
-function AugLagModel(
+function AugLag2Model(
     model::Model;
     kwargs...,
 )
-    return AugLagModel(model, AugLagObj(model; kwargs...,))
+    return AugLag2Model(model, AugLag2Obj(model; kwargs...,))
 end
 
-getparent(model::AugLagModel) = model.parent
+getparent(model::AugLag2Model) = model.parent
 
-getmin(model::AugLagModel) = getmin(getparent(model))
+getmin(model::AugLag2Model) = getmin(getparent(model))
 
-getmax(model::AugLagModel) = getmax(getparent(model))
+getmax(model::AugLag2Model) = getmax(getparent(model))
 
-getobjective(model::AugLagModel) = model.objective
+getobjective(model::AugLag2Model) = model.objective
 
-getineqconstraints(::AugLagModel) = throw("`getineqconstraints` is not defined for `AugLagModel`.")
+getineqconstraints(::AugLag2Model) = throw("`getineqconstraints` is not defined for `AugLag2Model`.")
 
-geteqconstraints(::AugLagModel) = throw("`geteqconstraints` is not defined for `AugLagModel`.")
+geteqconstraints(::AugLag2Model) = throw("`geteqconstraints` is not defined for `AugLag2Model`.")
 
-getobjectiveconstraints(::AugLagModel) = throw("`getobjectiveconstraints` is not defined for `AugLagModel`.")
+getobjectiveconstraints(::AugLag2Model) = throw("`getobjectiveconstraints` is not defined for `AugLag2Model`.")
 
-getlinweights(model::AugLagModel) = getlinweights(getobjective(model))
+getlinweights(model::AugLag2Model) = getlinweights(getobjective(model))
 
-getx(model::AugLagModel) = getx(getobjective(model))
+getx(model::AugLag2Model) = getx(getobjective(model))
 
-getλ(model::AugLagModel) = getλ(getobjective(model))
+getλ(model::AugLag2Model) = getλ(getobjective(model))
 
-getorigobjval(model::AugLagModel) = getorigobjval(getobjective(model))
+getorigobjval(model::AugLag2Model) = getorigobjval(getobjective(model))
 
-getorigconstrval(model::AugLagModel) = getorigconstrval(getobjective(model))
+getorigconstrval(model::AugLag2Model) = getorigconstrval(getobjective(model))
 
-function setlinweights!(model::AugLagModel, λ::AbstractVector)
+function setlinweights!(model::AugLag2Model, λ::AbstractVector)
     setlinweights!(getobjective(model), λ)
     return model
 end
 
-getquadweight(model::AugLagModel) = getquadweight(getobjective(model))
+getquadweight(model::AugLag2Model) = getquadweight(getobjective(model))
 
-function setquadweight!(model::AugLagModel, quadweight::Number)
+function setquadweight!(model::AugLag2Model, quadweight::Number)
     setquadweight!(getobjective(model), quadweight)
     return model
 end
 
-function setx!(model::AugLagModel, x::AbstractVector)
+function setx!(model::AugLag2Model, x::AbstractVector)
     setx!(getobjective(model), x)
     return model
 end
 
-function setλ!(model::AugLagModel, λ::AbstractVector)
+function setλ!(model::AugLag2Model, λ::AbstractVector)
     setλ!(getobjective(model), λ)
     return model
 end
 
-function setorigobjval!(model::AugLagModel, val::Real)
+function setorigobjval!(model::AugLag2Model, val::Real)
     setorigobjval!(getobjective(model), val)
     return model
 end
 
-function setorigconstrval!(model::AugLagModel, g::AbstractVector)
+function setorigconstrval!(model::AugLag2Model, g::AbstractVector)
     setorigconstrval!(getobjective(model), g)
     return model
 end
 
-function getresiduals(solution::Solution, model::AugLagModel, ::GenericCriteria)
+function getresiduals(solution::Solution, model::AugLag2Model, ::GenericCriteria)
     @unpack prevx, x, prevf, f, g = solution
     Δx = maximum(abs(x[j] - prevx[j]) for j in 1:length(x))
     Δf = abs(f - prevf)
     infeas = max(0, maximum(g))
     return Δx, Δf, infeas
 end
-function getresiduals(solution::Solution, model::AugLagModel, ::KKTCriteria)
+function getresiduals(solution::Solution, model::AugLag2Model, ::KKTCriteria)
     @unpack g, λ, x = solution
     xmin, xmax = getmin(model), getmax(model)
     T = eltype(x)
@@ -257,7 +257,7 @@ function getresiduals(solution::Solution, model::AugLagModel, ::KKTCriteria)
     infeas = max(maximum(g), 0)
     return res, infeas
 end
-function getresiduals(solution::Solution, model::AugLagModel, ::IpoptCriteria)
+function getresiduals(solution::Solution, model::AugLag2Model, ::IpoptCriteria)
     @unpack g, λ, x = solution
     if debugging[]
         #@show x
