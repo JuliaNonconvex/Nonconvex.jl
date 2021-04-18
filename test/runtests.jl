@@ -9,3 +9,4 @@ end
 @safetestset "AugLag2" begin include("auglag.jl") end
 @safetestset "Ipopt" begin include("ipopt.jl") end
 @safetestset "NLopt" begin include("nlopt.jl") end
+@safetestset "Juniper" begin include("juniper.jl") end
