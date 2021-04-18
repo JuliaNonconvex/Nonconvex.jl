@@ -20,6 +20,7 @@ export  Model,
         NLoptAlg,
         AugLag,
         PercivalAlg,
+        JuniperIpoptAlg,
         KKTCriteria,
         IpoptCriteria,
         FunctionWrapper,
@@ -28,11 +29,13 @@ export  Model,
         NLoptOptions,
         AugLagOptions,
         PercivalOptions,
+        JuniperIpoptOptions,
         Tolerance
 
-using Parameters, Zygote, ChainRulesCore, ForwardDiff
-using Ipopt, NLopt, ADNLPModels, Percival, NLPModelsModifiers
+using Parameters, Zygote, ChainRulesCore, ForwardDiff, MathOptInterface
+using Ipopt, NLopt, ADNLPModels, Percival, NLPModelsModifiers, JuMP
 using LinearAlgebra, Setfield, Requires, SparseArrays, Reexport
+using Juniper
 using Optim: Optim, AbstractOptimizer
 
 @reexport using LinearAlgebra
@@ -77,10 +80,12 @@ include("algorithms/ammal.jl")
 include("models/auglag_model.jl")
 include("algorithms/auglag_algorithm.jl")
 
-# Ipopt
+# Wrappers
 
 include("wrappers/ipopt.jl")
 include("wrappers/nlopt.jl")
 include("wrappers/percival.jl")
+include("wrappers/moi.jl")
+include("wrappers/juniper.jl")
 
 end
