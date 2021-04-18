@@ -34,32 +34,6 @@ struct Trace
 end
 
 """
-    GenericResult
-
-A summary result struct returned by [`optimize`](@ref) that includes the following fields:
- - `optimizer`: the optimization algorithm used
- - `initial_x`: the initial primal solution
- - `minimizer`: the best solution found
- - `minimum`: the optimal value
- - `iter`: number of inner iterations run
- - `maxiter_reached`: true if the algorithm stopped due to reaching the maximum number of iterations
- - `tol`: an instance of [`Tolerance`](@ref) that specifies the convergence tolerances
- - `convstate`: an instance of [`ConvergenceCriteria`](@ref) that summarizes the convergenc state of the best solution found
- - `fcalls`: the number of times the objective and constraint functions were called during the optimization
-"""
-@params mutable struct GenericResult{T}
-    optimizer
-    initial_x::AbstractVector{T}
-    minimizer::AbstractVector{T}
-    minimum::T
-    iter::Int
-    maxiter_reached::Bool
-    tol::Tolerance
-    convstate::Union{ConvergenceState, Nothing}
-    fcalls::Int
-end
-
-"""
     MMAWorkspace
 
 A struct that stores all the intermediate states and memory allocations needed for the optimization. The following are the fields of the struct:
@@ -156,32 +130,6 @@ function Workspace(model::AbstractModel, optimizer::Union{MMA87, MMA02}, args...
     return MMAWorkspace(model, optimizer, args...; kwargs...)
 end
 
-"""
-```
-optimize(
-    model::AbstractModel,
-    optimizer::AbstractOptimizer = MMA02(),
-    x0::AbstractVector;
-    options,
-    convcriteria::ConvergenceCriteria = KKTCriteria(),
-    plot_trace::Bool = false,
-    callback::Function = plot_trace ? LazyPlottingCallback() : NoCallback(),
-    kwargs...,
-)
-```
-
-Optimizes `model` using the algorithm `optimizer`, e.g. an instance of [`MMA87`](@ref) or [`MMA02`](@ref). `x0` is the initial solution. The keyword arguments are:
- - `options`: used to set the optimization options. It is an instance of [`MMAOptions`](@ref) for [`MMA87`](@ref) and [`MMA02`](@ref).
- - `convcriteria`: an instance of [`ConvergenceCriteria`](@ref) that specifies the convergence criteria of the MMA algorithm.
- - `plot_trace`: a Boolean that if true specifies the callback to be an instance of [`PlottingCallback`](@ref) and plots a live trace of the last 50 solutions.
- - `callback`: a function that is called on `solution` in every iteration of the algorithm. This can be used to store information about the optimization process.
-
- The details of the MMA optimization algorithms can be found in the original [1987 MMA paper](https://onlinelibrary.wiley.com/doi/abs/10.1002/nme.1620240207) and the [2002 paper](https://epubs.siam.org/doi/abs/10.1137/S1052623499362822).
-"""
-function optimize(args...; kwargs...)
-    workspace = Workspace(args...; kwargs...)
-    return optimize!(workspace)
-end
 
 function optimize!(workspace::MMAWorkspace)
     @unpack dualmodel, solution, convcriteria = workspace

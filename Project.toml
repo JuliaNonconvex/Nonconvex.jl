@@ -20,6 +20,10 @@ Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 Setfield = "efcf1570-3423-57d1-acb7-fd33fddbac46"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
+Hyperopt = "93e5fe13-2215-51db-baaf-2e9a34fb2712"
+Sobol = "ed01d8cd-4d21-5b2a-85b4-cc3bdc58bad4"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [compat]
 ADNLPModels = "0.1"

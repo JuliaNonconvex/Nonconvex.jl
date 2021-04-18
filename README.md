@@ -101,3 +101,28 @@ r = optimize(m, alg, [1.234, 2.345], options = options)
 r.minimum
 r.minimizer
 ```
+
+# Hyperopt
+
+You can automatically search a good hyperparameter, using methods in Hyperopt.jl.
+
+Currently support search starting point ```x0```.
+```julia
+# Automatically search a good starting point (using default option) by add an @search_x0 before optimize call. 
+r1 = @search_x0 Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, convcriteria = convcriteria)
+
+# If you prefer customized options
+hyperopt_options = X0OptOptions(x0_lb=[0.5, 0.5], x0_rb=[2.8, 2.8],
+                                searchspace_size=1000, iters=20, 
+                                sampler=Hyperopt.RandomSampler(), 
+                                verbose=true,
+                                keepall=true)
+# Searching hyperparameters using customized options. 
+r2 = @hypersearch hyperopt_options, Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, convcriteria = convcriteria)
+# Equivalent as above. 
+r3 = @search_x0 hyperopt_options, Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, convcriteria = convcriteria)
+
+println(r1.minimum)
+println(r2.minimum)
+println(r3.minimum)
+```
