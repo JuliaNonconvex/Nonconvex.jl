@@ -20,6 +20,7 @@ export  Model,
         NLoptAlg,
         AugLag,
         PercivalAlg,
+        JuniperIpoptAlg,
         KKTCriteria,
         IpoptCriteria,
         FunctionWrapper,
@@ -28,6 +29,7 @@ export  Model,
         NLoptOptions,
         AugLagOptions,
         PercivalOptions,
+        JuniperIpoptOptions,
         Tolerance
 
 using Parameters, Zygote, ChainRulesCore, ForwardDiff, MathOptInterface
