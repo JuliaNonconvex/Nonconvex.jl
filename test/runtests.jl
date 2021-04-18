@@ -8,3 +8,5 @@ end
 @safetestset "AugLag" begin include("auglag.jl") end
 @safetestset "Ipopt" begin include("ipopt.jl") end
 @safetestset "NLopt" begin include("nlopt.jl") end
+@safetestset "Utilities" begin include("utilities.jl") end
+@safetestset "Hyperopt" begin include("hyperopt.jl") end

@@ -41,7 +41,7 @@ function NLoptWorkspace(
     problem, counter = getnlopt_problem(optimizer.alg, model, x0)
     return NLoptWorkspace(model, problem, x0, options, optimizer, counter)
 end
-@params struct NLoptResult
+@params struct NLoptResult<:AbstractResult
     minimizer
     minimum
     problem

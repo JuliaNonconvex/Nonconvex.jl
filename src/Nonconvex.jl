@@ -27,15 +27,17 @@ export  Model,
         IpoptOptions,
         NLoptOptions,
         PercivalOptions,
-        Tolerance
+        X0OptOptions,
+        Tolerance,
+        @hypersearch,
+        @search_x0
 
 using Parameters, Zygote, ChainRulesCore, ForwardDiff
-using Ipopt, NLopt, ADNLPModels, Percival
-using LinearAlgebra, Setfield, Requires, SparseArrays, Reexport
+using Ipopt, NLopt, ADNLPModels, Percival, Hyperopt, Sobol
+using LinearAlgebra, SparseArrays
 using Optim: Optim, AbstractOptimizer
+using Requires, Reexport, Setfield, Logging, Printf
 @reexport using LinearAlgebra
-
-abstract type Workspace end
 
 # General
 
@@ -45,6 +47,7 @@ include("functions/value_jacobian.jl")
 include("functions/function_docs.jl")
 include("functions/counting_function.jl")
 include("functions/aggregations.jl")
+include("algorithms/common.jl")
 
 # Models
 
@@ -61,6 +64,7 @@ include("models/dual_model.jl")
 include("utilities/convergence.jl")
 include("utilities/callbacks.jl")
 include("utilities/options.jl")
+include("utilities/arrays.jl")
 include("algorithms/mma_algorithm.jl")
 
 # MMA-AugLag
@@ -78,5 +82,8 @@ include("algorithms/auglag_algorithm.jl")
 include("wrappers/ipopt.jl")
 include("wrappers/nlopt.jl")
 include("wrappers/percival.jl")
+
+# hyperparameter optimization
+include("algorithms/hyper_optimizers.jl")
 
 end
