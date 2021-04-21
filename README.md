@@ -105,7 +105,6 @@ r.minimizer
 ## Custom gradient / adjoint
 
 A custom gradient rule for a function should be defined using ChainRulesCore's `rrule`.
-
 For example the following can be used for the function `f` defined above.
 
 ```julia
@@ -125,7 +124,6 @@ test_rrule(f, [1.2, 3.6])
 ```
 
 For full details on `rrules` etc see the [ChainRules documentation](https://juliadiff.org/ChainRulesCore.jl/stable/).
-
 
 ## Hack to use other automatic differentiation backends
 
