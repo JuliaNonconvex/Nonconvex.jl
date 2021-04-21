@@ -15,7 +15,7 @@ The following packages are wrapped:
 
 The method of moving asymptotes algorithms' were generalized to handle infinite variable bounds. In the augmented Lagrangian algorithm, a block constraint can be handled efficiently by defining a custom adjoint rule for the block constraint using `ChainRulesCore.jl`. This custom adjoint will be picked up by `Nonconvex.jl` when calculating the gradient of the augmented Lagrangian.
 
-# Example
+# Examples
 
 ## Load the package
 
@@ -100,4 +100,32 @@ options = Nonconvex.IpoptOptions()
 r = optimize(m, alg, [1.234, 2.345], options = options)
 r.minimum
 r.minimizer
+```
+
+## Custom gradient / adjoint
+
+To specify a custom gradient or adjoint rule for the function `f` above, the following can be used:
+
+```julia
+using ChainRulesCore
+
+function ChainRulesCore.rrule(::typeof(f), x::AbstractVector)
+    val = f(x)
+    grad = [0.0, 1 / (2 * sqrt(x[2]))]
+    val, Δ -> (nothing, Δ * grad)
+end
+```
+
+## Hack to use other automatic differentiation backends
+
+For specific functions, if you want to use `ForwardDiff` instead of `Zygote`, one way to do this is to define an `rrule` using `ForwardDiff` to compute the gradient or jacobian, e.g:
+
+```julia
+using ChainRulesCore, ForwardDiff
+
+function ChainRulesCore.rrule(::typeof(f), x::AbstractVector)
+    val = f(x)
+    grad = ForwardDiff.gradient(f, x)
+    val, Δ -> (nothing, Δ * grad)
+end
 ```
