@@ -104,7 +104,9 @@ r.minimizer
 
 ## Custom gradient / adjoint
 
-To specify a custom gradient or adjoint rule for the function `f` above, the following can be used:
+A custom gradient rule for a function should be defined using ChainRulesCore's `rrule`.
+
+For example the following can be used for the function `f` defined above.
 
 ```julia
 using ChainRulesCore
@@ -112,9 +114,18 @@ using ChainRulesCore
 function ChainRulesCore.rrule(::typeof(f), x::AbstractVector)
     val = f(x)
     grad = [0.0, 1 / (2 * sqrt(x[2]))]
-    val, Δ -> (nothing, Δ * grad)
+    val, Δ -> (NO_FIELDS, Δ * grad)
 end
 ```
+
+You can check it is correct in your tests using [ChainRulesTestUtils.jl](https://github.com/JuliaDiff/ChainRulesTestUtils.jl/).
+```julia
+using ChainRulesTestUtils
+test_rrule(f, [1.2, 3.6])
+```
+
+For full details on `rrules` etc see the [ChainRules documentation](https://juliadiff.org/ChainRulesCore.jl/stable/).
+
 
 ## Hack to use other automatic differentiation backends
 
@@ -126,6 +137,6 @@ using ChainRulesCore, ForwardDiff
 function ChainRulesCore.rrule(::typeof(f), x::AbstractVector)
     val = f(x)
     grad = ForwardDiff.gradient(f, x)
-    val, Δ -> (nothing, Δ * grad)
+    val, Δ -> (NO_FIELDS, Δ * grad)
 end
 ```
