@@ -20,6 +20,7 @@ export  Model,
         NLoptAlg,
         AugLag,
         PercivalAlg,
+        MsOAlg,
         KKTCriteria,
         IpoptCriteria,
         FunctionWrapper,
@@ -27,11 +28,14 @@ export  Model,
         IpoptOptions,
         NLoptOptions,
         AugLagOptions,
+        MsOOptions,
         PercivalOptions,
-        Tolerance
+        Tolerance,
+        get_starting_point,
+        MsOResult
 
 using Parameters, Zygote, ChainRulesCore, ForwardDiff
-using Ipopt, NLopt, ADNLPModels, Percival, NLPModelsModifiers
+using Ipopt, NLopt, ADNLPModels, Percival, NLPModelsModifiers, MultistartOptimization
 using LinearAlgebra, Setfield, Requires, SparseArrays, Reexport
 using Optim: Optim, AbstractOptimizer
 
@@ -82,5 +86,6 @@ include("algorithms/auglag_algorithm.jl")
 include("wrappers/ipopt.jl")
 include("wrappers/nlopt.jl")
 include("wrappers/percival.jl")
+include("wrappers/multistartoptimization.jl")
 
 end
