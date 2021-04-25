@@ -101,3 +101,14 @@ r = optimize(m, alg, [1.234, 2.345], options = options)
 r.minimum
 r.minimizer
 ```
+
+## MultistartOptimization
+
+```julia
+alg = MsOAlg(TikTak(100))
+local_method = NLopt.LN_BOBYQA
+options = MsOOptions(use_threads = false)
+r = get_starting_point(m, alg, local_method = local_method, options = options)
+r.minimum
+r.minimizer
+```
