@@ -102,6 +102,17 @@ r.minimum
 r.minimizer
 ```
 
+## Mixed integer optimisation with Juniper and Ipopt
+
+To do mixed integer optimisation using Juniper and Ipopt, you can use:
+```julia
+alg = JuniperIpoptAlg()
+options = Nonconvex.JuniperIpoptOptions()
+r = optimize(m, alg, [1.234, 2.345], options = options, integers = [false, true])
+r.minimum
+r.minimizer # [0.3327, 1]
+```
+
 ## Custom gradient / adjoint
 
 A custom gradient rule for a function should be defined using ChainRulesCore's `rrule`.
