@@ -12,9 +12,16 @@ g(x::AbstractVector, a, b) = (a*x[1] + b)^3 - x[2]
         add_ineq_constraint!(m, x -> g(x, -1, 1))
 
         alg = JuniperIpoptAlg()
-        r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
-        @test abs(r.minimum - sqrt(8/27)) < 1e-6
-        @test norm(r.minimizer - [1/3, 8/27]) < 1e-6
+        r1 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
+        @test abs(r1.minimum - sqrt(8/27)) < 1e-6
+        @test norm(r1.minimizer - [1/3, 8/27]) < 1e-6
+        r2 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, integers = [false, false])
+        @test abs(r2.minimum - sqrt(8/27)) < 1e-6
+        @test norm(r2.minimizer - [1/3, 8/27]) < 1e-6
+        r3 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, integers = [true, false])
+        @test r3.minimizer[1] - round(Int, r3.minimizer[1]) ≈ 0 atol = 1e-7
+        r4 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, integers = [false, true])
+        @test r3.minimizer[2] - round(Int, r3.minimizer[2]) ≈ 0 atol = 1e-7
     end
 
     @testset "Block constraints" begin
@@ -23,9 +30,16 @@ g(x::AbstractVector, a, b) = (a*x[1] + b)^3 - x[2]
         add_ineq_constraint!(m, FunctionWrapper(x -> [g(x, 2, 0), g(x, -1, 1)], 2))
 
         alg = JuniperIpoptAlg()
-        r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
-        @test abs(r.minimum - sqrt(8/27)) < 1e-6
-        @test norm(r.minimizer - [1/3, 8/27]) < 1e-6
+        r1 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
+        @test abs(r1.minimum - sqrt(8/27)) < 1e-6
+        @test norm(r1.minimizer - [1/3, 8/27]) < 1e-6
+        r2 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, integers = [false, false])
+        @test abs(r2.minimum - sqrt(8/27)) < 1e-6
+        @test norm(r2.minimizer - [1/3, 8/27]) < 1e-6
+        r3 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, integers = [true, false])
+        @test r3.minimizer[1] - round(Int, r3.minimizer[1]) ≈ 0 atol = 1e-7
+        r4 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, integers = [false, true])
+        @test r3.minimizer[2] - round(Int, r3.minimizer[2]) ≈ 0 atol = 1e-7
     end
 
     @testset "Infinite bounds" begin
@@ -36,9 +50,16 @@ g(x::AbstractVector, a, b) = (a*x[1] + b)^3 - x[2]
             add_ineq_constraint!(m, x -> g(x, -1, 1))
 
             alg = JuniperIpoptAlg()
-            r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
-            @test abs(r.minimum - sqrt(8/27)) < 1e-6
-            @test norm(r.minimizer - [1/3, 8/27]) < 1e-6
+            r1 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
+            @test abs(r1.minimum - sqrt(8/27)) < 1e-6
+            @test norm(r1.minimizer - [1/3, 8/27]) < 1e-6
+            r2 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, integers = [false, false])
+            @test abs(r2.minimum - sqrt(8/27)) < 1e-6
+            @test norm(r2.minimizer - [1/3, 8/27]) < 1e-6
+            r3 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, integers = [true, false])
+            @test r3.minimizer[1] - round(Int, r3.minimizer[1]) ≈ 0 atol = 1e-7
+            r4 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, integers = [false, true])
+            @test r3.minimizer[2] - round(Int, r3.minimizer[2]) ≈ 0 atol = 1e-7
         end
         @testset "Infinite lower bound" begin
             m = Model(f)
