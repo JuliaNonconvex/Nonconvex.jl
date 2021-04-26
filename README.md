@@ -102,9 +102,9 @@ r.minimum
 r.minimizer
 ```
 
-## Mixed integer optimisation with Juniper and Ipopt
+## Mixed integer optimization with Juniper and Ipopt
 
-To do mixed integer optimisation using Juniper and Ipopt, you can use:
+To do mixed integer optimization using Juniper and Ipopt, you can use:
 ```julia
 alg = JuniperIpoptAlg()
 options = Nonconvex.JuniperIpoptOptions()
