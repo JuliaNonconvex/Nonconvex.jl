@@ -27,7 +27,9 @@ struct JuMPEvaluator{XL, XU, X, CL, CU, O, C, G, J, JS, H, HS} <: MOI.AbstractNL
 end
 
 function get_jump_problem(
-    model::Model, x0 = getinit(model); optimizer, first_order, kwargs...,
+    model::Model, x0 = getinit(model);
+    integers = falses(length(x0)), optimizer,
+    first_order, kwargs...,
 )
     eq = if length(model.eq_constraints.fs) == 0
         nothing
@@ -41,11 +43,14 @@ function get_jump_problem(
     end
     obj = CountingFunction(getobjective(model))
     return get_jump_problem(
-        obj, ineq, eq, x0, getmin(model),
+        obj, ineq, eq, x0, integers, getmin(model),
         getmax(model), first_order, optimizer,
     ), obj.counter
 end
-function get_jump_problem(obj, ineq_constr, eq_constr, x0, xlb, xub, first_order, optimizer)
+function get_jump_problem(
+    obj, ineq_constr, eq_constr, x0, integers,
+    xlb, xub, first_order, optimizer,
+)
     nvars = 0
     if ineq_constr !== nothing
         ineqJ0 = Zygote.jacobian(ineq_constr, x0)[1]
@@ -141,19 +146,31 @@ function get_jump_problem(obj, ineq_constr, eq_constr, x0, xlb, xub, first_order
     jump_model = JuMP.Model(optimizer)
     moi_model = backend(jump_model)
     MOI.empty!(moi_model)
-    vars = MOI.add_variables(moi_model, nvars)
-    for i in 1:nvars
-        MOI.add_constraint(
-            moi_model,
-            MOI.SingleVariable(vars[i]),
-            MOI.LessThan(xub[i]),
-        )
-        MOI.add_constraint(
-            moi_model,
-            MOI.SingleVariable(vars[i]),
-            MOI.GreaterThan(xlb[i]),
-        )
-        MOI.set(moi_model, MOI.VariablePrimalStart(), vars[i], x0[i])
+    vars = map(1:nvars) do i
+        v = MOI.add_variable(moi_model)
+        if integers[i]
+            if xlb[i] > -1 && xub[i] < 2
+                MOI.add_constraint(moi_model, MOI.SingleVariable(v), MOI.ZeroOne())
+            else
+                MOI.add_constraint(moi_model, MOI.SingleVariable(v), MOI.Integer())
+            end
+        end
+        if xub[i] != Inf
+            MOI.add_constraint(
+                moi_model,
+                MOI.SingleVariable(v),
+                MOI.LessThan(xub[i]),
+            )
+        end
+        if xlb[i] != Inf
+            MOI.add_constraint(
+                moi_model,
+                MOI.SingleVariable(v),
+                MOI.GreaterThan(xlb[i]),
+            )
+        end
+        MOI.set(moi_model, MOI.VariablePrimalStart(), v, x0[i])
+        return v
     end
     block_data = MOI.NLPBlockData(MOI.NLPBoundsPair.(clb, cub), evaluator, true)
     MOI.set(moi_model, MOI.NLPBlock(), block_data)
