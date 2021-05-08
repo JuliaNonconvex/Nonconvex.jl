@@ -15,13 +15,16 @@ end
     model::Model
     problem::JuMPProblem
     x0::AbstractVector
+    integers::AbstractVector{<:Bool}
     options::JuniperIpoptOptions
     counter::Base.RefValue{Int}
 end
 function JuniperIpoptWorkspace(
     model::Model, x0::AbstractVector = getinit(model);
-    options = JuniperIpoptOptions(), kwargs...,
+    options = JuniperIpoptOptions(), integers = falses(length(x0)),
+    kwargs...,
 )
+    @assert length(integers) == length(x0)
     nt1 = options.subsolver_options.nt
     subsolver_options = map(keys(nt1)) do k
         string(k) => nt1[k]
@@ -35,9 +38,10 @@ function JuniperIpoptWorkspace(
         Juniper.Optimizer, "nl_solver" => nl_solver, Dict(solver_options)...,
     )
     problem, counter = get_jump_problem(
-        model, x0; first_order = options.first_order, optimizer = optimizer,
+        model, x0; first_order = options.first_order,
+        optimizer = optimizer, integers = integers,
     )
-    return JuniperIpoptWorkspace(model, problem, x0, options, counter)
+    return JuniperIpoptWorkspace(model, problem, x0, integers, options, counter)
 end
 @params struct JuniperIpoptResult
     minimizer
