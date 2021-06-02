@@ -15,7 +15,7 @@ The following packages are wrapped:
 
 The method of moving asymptotes algorithms' were generalized to handle infinite variable bounds. In the augmented Lagrangian algorithm, a block constraint can be handled efficiently by defining a custom adjoint rule for the block constraint using `ChainRulesCore.jl`. This custom adjoint will be picked up by `Nonconvex.jl` when calculating the gradient of the augmented Lagrangian.
 
-# Example
+# Examples
 
 ## Load the package
 
@@ -102,6 +102,17 @@ r.minimum
 r.minimizer
 ```
 
+## Mixed integer optimization with Juniper and Ipopt
+
+To do mixed integer optimization using Juniper and Ipopt, you can use:
+```julia
+alg = JuniperIpoptAlg()
+options = Nonconvex.JuniperIpoptOptions()
+r = optimize(m, alg, [1.234, 2.345], options = options, integers = [false, true])
+r.minimum
+r.minimizer # [0.3327, 1]
+```
+
 # Hyperopt
 
 You can automatically search a good hyperparameter, using methods in Hyperopt.jl.
@@ -125,4 +136,41 @@ r3 = @search_x0 hyperopt_options, Nonconvex.optimize(m, alg, [1.234, 2.345], opt
 println(r1.minimum)
 println(r2.minimum)
 println(r3.minimum)
+```
+
+## Custom gradient / adjoint
+
+A custom gradient rule for a function should be defined using ChainRulesCore's `rrule`.
+For example the following can be used for the function `f` defined above.
+
+```julia
+using ChainRulesCore
+
+function ChainRulesCore.rrule(::typeof(f), x::AbstractVector)
+    val = f(x)
+    grad = [0.0, 1 / (2 * sqrt(x[2]))]
+    val, Δ -> (NO_FIELDS, Δ * grad)
+end
+```
+
+You can check it is correct in your tests using [ChainRulesTestUtils.jl](https://github.com/JuliaDiff/ChainRulesTestUtils.jl/).
+```julia
+using ChainRulesTestUtils
+test_rrule(f, [1.2, 3.6])
+```
+
+For full details on `rrules` etc see the [ChainRules documentation](https://juliadiff.org/ChainRulesCore.jl/stable/).
+
+## Hack to use other automatic differentiation backends
+
+For specific functions, if you want to use `ForwardDiff` instead of `Zygote`, one way to do this is to define an `rrule` using `ForwardDiff` to compute the gradient or jacobian, e.g:
+
+```julia
+using ChainRulesCore, ForwardDiff
+
+function ChainRulesCore.rrule(::typeof(f), x::AbstractVector)
+    val = f(x)
+    grad = ForwardDiff.gradient(f, x)
+    val, Δ -> (NO_FIELDS, Δ * grad)
+end
 ```

@@ -34,6 +34,7 @@ end
     result
     fcalls
 end
+const AugLagWorkspace = PercivalWorkspace
 
 function optimize!(workspace::PercivalWorkspace)
     @unpack problem, options, x0, counter = workspace

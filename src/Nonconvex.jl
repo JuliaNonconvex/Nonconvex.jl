@@ -20,6 +20,7 @@ export  Model,
         NLoptAlg,
         AugLag,
         PercivalAlg,
+        JuniperIpoptAlg,
         KKTCriteria,
         IpoptCriteria,
         FunctionWrapper,
@@ -28,14 +29,17 @@ export  Model,
         NLoptOptions,
         AugLagOptions,
         PercivalOptions,
+        JuniperIpoptOptions,
+        Tolerance,
         X0OptOptions,
         Tolerance,
         @hypersearch,
         @search_x0
 
-using Parameters, Zygote, ChainRulesCore, ForwardDiff
-using Ipopt, NLopt, ADNLPModels, Percival, Hyperopt, Sobol, NLPModelsModifiers
-using LinearAlgebra, SparseArrays
+using Parameters, Zygote, ChainRulesCore, ForwardDiff, MathOptInterface
+using Ipopt, NLopt, ADNLPModels, Percival, NLPModelsModifiers, JuMP
+using LinearAlgebra, Setfield, Requires, SparseArrays, Reexport
+using Juniper, Hyperopt, Sobol
 using Optim: Optim, AbstractOptimizer
 using Requires, Reexport, Setfield, Logging, Printf
 @reexport using LinearAlgebra
@@ -80,11 +84,13 @@ include("algorithms/ammal.jl")
 include("models/auglag_model.jl")
 include("algorithms/auglag_algorithm.jl")
 
-# Ipopt
+# Wrappers
 
 include("wrappers/ipopt.jl")
 include("wrappers/nlopt.jl")
 include("wrappers/percival.jl")
+include("wrappers/moi.jl")
+include("wrappers/juniper.jl")
 
 # hyperparameter optimization
 include("algorithms/hyper_optimizers.jl")
