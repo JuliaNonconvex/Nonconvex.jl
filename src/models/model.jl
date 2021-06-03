@@ -84,11 +84,11 @@ function set_objective_multiple!(model::Model, m::Real)
     return model
 end
 
-getmin(m::Model)= m.box_min
-getmin(m::AbstractModel, i::Integer) = getmin(m)[i]
+getmin(m::AbstractModel)= m.box_min
+getmin(m::AbstractModel, i) = getmin(m)[i]
 
-getmax(m::Model) = m.box_max
-getmax(m::AbstractModel, i::Integer) = getmax(m)[i]
+getmax(m::AbstractModel) = m.box_max
+getmax(m::AbstractModel, i) = getmax(m)[i]
 
 function getinit(m::AbstractModel)
     ma = getmax(m)
@@ -107,7 +107,7 @@ function setmin!(m::AbstractModel, min)
     getmin(m) .= min
     return m
 end
-function setmin!(m::AbstractModel, i::Integer, min)
+function setmin!(m::AbstractModel, i, min)
     getmin(m)[i] = min
     return m
 end
@@ -116,7 +116,7 @@ function setmax!(m::AbstractModel, max)
     getmax(m) .= max
     return m
 end
-function setmax!(m::AbstractModel, i::Integer, max)
+function setmax!(m::AbstractModel, i, max)
     getmax(m)[i] = max
     return m
 end
@@ -127,7 +127,7 @@ function setbox!(m::AbstractModel, minb::T, maxb::T) where {T}
     getmax(m) .= maxb
     return m
 end
-function setbox!(m::AbstractModel, i::Integer, minb, maxb)
+function setbox!(m::AbstractModel, i, minb, maxb)
     getmin(m)[i] = minb
     getmax(m)[i] = maxb
     return m
@@ -155,11 +155,11 @@ end
 function add_ineq_constraint!(m::AbstractModel, f::AbstractFunction, s = 0.0)
     return add_ineq_constraint!(m, IneqConstraint(f, s))
 end
-function add_ineq_constraint!(m::Model, f::IneqConstraint)
+function add_ineq_constraint!(m::AbstractModel, f::IneqConstraint)
     push!(m.ineq_constraints.fs, f)
     return m
 end
-function add_ineq_constraint!(m::Model, fs::Vector{<:IneqConstraint})
+function add_ineq_constraint!(m::AbstractModel, fs::Vector{<:IneqConstraint})
     append!(m.ineq_constraints.fs, fs)
     return m
 end
@@ -170,11 +170,11 @@ end
 function add_eq_constraint!(m::AbstractModel, f::AbstractFunction, s = 0.0)
     return add_eq_constraint!(m, EqConstraint(f, s))
 end
-function add_eq_constraint!(m::Model, f::EqConstraint)
+function add_eq_constraint!(m::AbstractModel, f::EqConstraint)
     push!(m.eq_constraints.fs, f)
     return m
 end
-function add_eq_constraint!(m::Model, fs::Vector{<:EqConstraint})
+function add_eq_constraint!(m::AbstractModel, fs::Vector{<:EqConstraint})
     append!(m.eq_constraints.fs, fs)
     return m
 end

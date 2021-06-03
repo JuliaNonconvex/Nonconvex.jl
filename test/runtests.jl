@@ -1,6 +1,7 @@
 using SafeTestsets, Test
 
 @safetestset "Model" begin include("model.jl") end
+@safetestset "DictModel" begin include("dictmodel.jl") end
 @testset "MMA" begin
     @safetestset "Approximation" begin include("approximation.jl") end
     @safetestset "Algorithm" begin include("mma.jl") end

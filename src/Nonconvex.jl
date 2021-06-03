@@ -4,6 +4,7 @@ const debugging = Ref(false)
 const show_residuals = Ref(false)
 
 export  Model,
+        DictModel,
         addvar!,
         add_ineq_constraint!,
         add_eq_constraint!,
@@ -36,9 +37,10 @@ using Parameters, Zygote, ChainRulesCore, ForwardDiff, MathOptInterface
 using Ipopt, NLopt, ADNLPModels, Percival, NLPModelsModifiers, JuMP
 using LinearAlgebra, Setfield, Requires, SparseArrays, Reexport
 using Juniper
+import ParameterHandling
 using Optim: Optim, AbstractOptimizer
 
-@reexport using LinearAlgebra
+@reexport using LinearAlgebra, OrderedCollections
 
 abstract type Workspace end
 
@@ -54,6 +56,7 @@ include("functions/aggregations.jl")
 # Models
 
 include("models/model.jl")
+include("models/dictmodel.jl")
 include("models/model_docs.jl")
 include("mma_approximation/mma_approx.jl")
 include("mma_approximation/xmma_approx.jl")

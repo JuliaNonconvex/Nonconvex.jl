@@ -49,8 +49,8 @@ A summary result struct returned by [`optimize`](@ref) that includes the followi
 """
 @params mutable struct GenericResult{T}
     optimizer
-    initial_x::AbstractVector{T}
-    minimizer::AbstractVector{T}
+    initial_x
+    minimizer
     minimum::T
     iter::Int
     maxiter_reached::Bool
