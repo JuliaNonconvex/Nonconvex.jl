@@ -49,7 +49,7 @@ MMALag() = MMALag(MMA02())
 
 default_options(model::MMALagModel, alg::MMA87) = MMALagOptions()
 default_options(model::MMALagModel, alg::MMA02) = MMALagOptions()
-default_options(model::Model, alg::MMALag) = MMALagOptions()
+default_options(model::VecModel, alg::MMALag) = MMALagOptions()
 
 @params mutable struct MMALagCallback <: Function
     previter::Int
@@ -92,7 +92,7 @@ function (callback::MMALagCallback)(workspace::MMAWorkspace)
     return callbackrun
 end
 
-mmalagupdate!(model::Model, workspace, prevf, stochopt; first = false) = model
+mmalagupdate!(model::VecModel, workspace, prevf, stochopt; first = false) = model
 function mmalagupdate!(model::MMALagModel, workspace, prevf, stochopt; first = false)
     @unpack dualmodel, solution, optimizer, options, convcriteria = workspace
     @unpack convstate = solution
@@ -231,6 +231,6 @@ function correctsolution!(solution::Solution, model::MMALagModel, options::MMALa
     return solution
 end
 
-function Workspace(model::AbstractModel, alg::MMALag, x0::AbstractVector, args...; kwargs...)
+function Workspace(model::VecModel, alg::MMALag, x0::AbstractVector, args...; kwargs...)
     return MMAWorkspace(MMALagModel(model; kwargs...), alg.parent, x0, args...; kwargs...)
 end

@@ -27,7 +27,7 @@ struct JuMPEvaluator{XL, XU, X, CL, CU, O, C, G, J, JS, H, HS} <: MOI.AbstractNL
 end
 
 function get_jump_problem(
-    model::Model, x0 = getinit(model);
+    model::VecModel, x0 = getinit(model);
     integers = falses(length(x0)), optimizer,
     first_order, kwargs...,
 )

@@ -1,7 +1,7 @@
 """
 ```
 struct MMAApproxModel{TApprox <: AbstractMMAApprox} <: AbstractModel
-    parent::AbstractModel
+    parent::VecModel
     objective_ineq_constraints::AbstractFunction
     approx_objective_ineq_constraints::TApprox
     box_min::AbstractVector
@@ -17,7 +17,7 @@ An approximate restricted model that uses the `MMAApprox` or `XMMAApprox` approx
 - `box_max`: the restricted upper bounds on the decision variables.
 """
 @params struct MMAApproxModel{TApprox <: AbstractMMAApprox} <: AbstractModel
-    parent::AbstractModel
+    parent::VecModel
     objective_ineq_constraints::AbstractFunction
     approx_objective_ineq_constraints::TApprox
     box_min::AbstractVector
@@ -25,12 +25,12 @@ An approximate restricted model that uses the `MMAApprox` or `XMMAApprox` approx
 end
 
 """
-    MMAApproxModel(parent::AbstractModel, x::AbstractVector; extended = false, kwargs...)
+    MMAApproxModel(parent::VecModel, x::AbstractVector; extended = false, kwargs...)
 
 Constructs an MMA approximation of the model `parent` around the point `x`. If `extended` is true, an [`XMMAApprox`](@ref) approximation is used. Otherwise, the default [`MMAApprox`](@ref) approximation is used. `kwargs` can be used to pass additional options to `XMMAApprox`, e.g. setting the coefficients.
 """
 function MMAApproxModel(
-    parent::AbstractModel,
+    parent::VecModel,
     x::AbstractVector;
     extended = false,
     kwargs...,

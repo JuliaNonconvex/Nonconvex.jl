@@ -4,10 +4,11 @@ const FDM = FiniteDifferences
 f(x::AbstractVector) = sqrt(x[2])
 g(x::AbstractVector, a, b) = (a*x[1] + b)^3 - x[2]
 
-m = Model(f)
-addvar!(m, [0.0, 0.0], [10.0, 10.0])
-add_ineq_constraint!(m, x -> g(x, 2, 0))
-add_ineq_constraint!(m, x -> g(x, -1, 1))
+_m = Model(f)
+addvar!(_m, [0.0, 0.0], [10.0, 10.0])
+add_ineq_constraint!(_m, x -> g(x, 2, 0))
+add_ineq_constraint!(_m, x -> g(x, -1, 1))
+m = Nonconvex.tovecmodel(_m)[1]
 
 x = fill(0.5, 2)
 
