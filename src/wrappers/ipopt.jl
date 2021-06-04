@@ -11,14 +11,14 @@ function IpoptOptions(;
 end
 
 @params mutable struct IpoptWorkspace <: Workspace
-    model::Model
+    model::VecModel
     problem::Ipopt.IpoptProblem
     x0::AbstractVector
     options::IpoptOptions
     counter::Base.RefValue{Int}
 end
 function IpoptWorkspace(
-    model::Model, x0::AbstractVector = getinit(model);
+    model::VecModel, x0::AbstractVector = getinit(model);
     options = IpoptOptions(), kwargs...,
 )
     problem, counter = getipopt_problem(
@@ -49,12 +49,12 @@ function optimize!(workspace::IpoptWorkspace)
     )
 end
 
-struct IpoptAlg{O}
+struct IpoptAlg{O} <: AbstractOptimizer
     options::O
 end
 IpoptAlg(; kwargs...) = IpoptAlg(kwargs)
 
-function Workspace(model::AbstractModel, optimizer::IpoptAlg, args...; kwargs...,)
+function Workspace(model::VecModel, optimizer::IpoptAlg, args...; kwargs...,)
     return IpoptWorkspace(model, args...; kwargs...)
 end
 
@@ -115,7 +115,7 @@ nvalues(H::SparseMatrixCSC) = length(H.nzval)
 _dot(f, x, y) = dot(f(x), y)
 _dot(::Nothing, ::Any, ::Any) = 0.0
 
-function getipopt_problem(model::Model, x0::AbstractVector, first_order::Bool)
+function getipopt_problem(model::VecModel, x0::AbstractVector, first_order::Bool)
     eq = if length(model.eq_constraints.fs) == 0
         nothing
     else

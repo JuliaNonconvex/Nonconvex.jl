@@ -12,7 +12,7 @@ The objective function of the augmented Lagrangian model, `model`. The following
  - `g`: the current constraint function value
 """
 @params struct AugLag2Obj <: AbstractFunction
-    model::Model
+    model::VecModel
     x::AbstractVector # primal solution
     λ::AbstractVector # dual solution
     quadweight::Base.RefValue # quadratic penalty factor
@@ -21,12 +21,12 @@ The objective function of the augmented Lagrangian model, `model`. The following
 end
 
 """
-    AugLag2Obj(model::Model)
+    AugLag2Obj(model::VecModel)
 
 Constructs the objective function from the model, `model`.
 """
 function AugLag2Obj(
-    model::Model;
+    model::VecModel;
     linweights = ones(getnineqconstraints(model)),
     quadweight = 1e-6,
     kwarg...,
@@ -156,11 +156,11 @@ end
 # Model
 
 @params struct AugLag2Model <: AbstractModel
-    parent::Model
+    parent::VecModel
     objective::AugLag2Obj
 end
 function AugLag2Model(
-    model::Model;
+    model::VecModel;
     kwargs...,
 )
     return AugLag2Model(model, AugLag2Obj(model; kwargs...,))

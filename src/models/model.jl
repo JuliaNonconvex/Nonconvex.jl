@@ -26,17 +26,11 @@ end
 
 """
     Model()
-
-Constructs an empty model. The decision variables are assumed to be of type `Vector{Float64}`.
-"""
-Model() = Model(Float64, nothing)
-
-"""
     Model(f)
 
-Constructs an empty model with objective function `f`. `f` can be an instance of `Base.Function` but must return a number,  or it can be an intance of [`Objective`](@ref). The decision variables are assumed to be of type `Vector{Float64}`.
+Constructs an empty model or a model with objective function `f`. The decision variables are assumed to be of type `Vector{Any}`.
 """
-Model(f::Function) = Model(Float64, f)
+Model(f::Union{Nothing, Function} = nothing) = Model(Any, f)
 
 """
     Model(::Type{T}, f::Union{Nothing, Function}) where {T}
@@ -77,30 +71,15 @@ Returns a 2-tuple of the number of constraints and the number of variables in th
 """
 getdim(m::AbstractModel) = (getnconstraints(m), getnvars(m))
 
-get_objective_multiple(model::Model) = getobjective(model).multiple[]
-
-function set_objective_multiple!(model::Model, m::Real)
-    getobjective(model).multiple[] = m
-    return model
-end
-
 getmin(m::AbstractModel)= m.box_min
 getmin(m::AbstractModel, i) = getmin(m)[i]
 
 getmax(m::AbstractModel) = m.box_max
 getmax(m::AbstractModel, i) = getmax(m)[i]
 
-function getinit(m::AbstractModel)
-    ma = getmax(m)
-    mi = getmin(m)
-    return map(1:length(mi)) do i
-        _ma = ma[i]
-        _mi = mi[i]
-        _ma == Inf && _mi == -Inf && return 0.0
-        _ma == Inf && return _mi + 1.0
-        _mi == -Inf && return _ma - 1.0
-        return (_ma + _mi) / 2
-    end
+function getinit(model::AbstractModel)
+    _model, _, unflatten = tovecmodel(model)
+    return unflatten(getinit(_model))
 end
 
 function setmin!(m::AbstractModel, min)
@@ -122,7 +101,7 @@ function setmax!(m::AbstractModel, i, max)
 end
 
 # Box constraints
-function setbox!(m::AbstractModel, minb::T, maxb::T) where {T}
+function setbox!(m::AbstractModel, minb, maxb)
     getmin(m) .= minb
     getmax(m) .= maxb
     return m
@@ -134,6 +113,11 @@ function setbox!(m::AbstractModel, i, minb, maxb)
 end
 
 function addvar!(m::Model, lb, ub)
+    push!(getmin(m), lb)
+    push!(getmax(m), ub)
+    return m
+end
+function addvar!(m::Model, lb::Vector, ub::Vector)
     append!(getmin(m), lb)
     append!(getmax(m), ub)
     return m
@@ -149,7 +133,7 @@ function set_objective!(m::AbstractModel, f::Function)
     return m
 end
 
-function add_ineq_constraint!(m::AbstractModel, f::Function, s = 0.0; dim = length(f(getinit(m))))
+function add_ineq_constraint!(m::AbstractModel, f::Function, s = 0.0; dim = length(flatten(f(getinit(m)))[1]))
     return add_ineq_constraint!(m, FunctionWrapper(f, dim), s)
 end
 function add_ineq_constraint!(m::AbstractModel, f::AbstractFunction, s = 0.0)
@@ -164,7 +148,7 @@ function add_ineq_constraint!(m::AbstractModel, fs::Vector{<:IneqConstraint})
     return m
 end
 
-function add_eq_constraint!(m::AbstractModel, f::Function, s = 0.0; dim = length(f(getinit(m))))
+function add_eq_constraint!(m::AbstractModel, f::Function, s = 0.0; dim = length(flatten(f(getinit(m)))[1]))
     return add_eq_constraint!(m, FunctionWrapper(f, dim), s)
 end
 function add_eq_constraint!(m::AbstractModel, f::AbstractFunction, s = 0.0)

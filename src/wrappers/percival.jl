@@ -1,4 +1,4 @@
-struct PercivalAlg end
+struct PercivalAlg <: AbstractOptimizer end
 const AugLag = PercivalAlg
 
 @params struct PercivalOptions
@@ -14,14 +14,14 @@ end
 const AugLagOptions = PercivalOptions
 
 @params mutable struct PercivalWorkspace <: Workspace
-    model::Model
+    model::VecModel
     problem::Percival.NLPModels.AbstractNLPModel
     x0::AbstractVector
     options::PercivalOptions
     counter::Base.RefValue{Int}
 end
 function PercivalWorkspace(
-    model::Model, x0::AbstractVector = getinit(model);
+    model::VecModel, x0::AbstractVector = getinit(model);
     options = PercivalOptions(), kwargs...,
 )
     problem, counter = getpercival_problem(model, x0)
@@ -79,11 +79,11 @@ function _percival(nlp;
     end
 end
 
-function Workspace(model::AbstractModel, optimizer::PercivalAlg, args...; kwargs...,)
+function Workspace(model::VecModel, optimizer::PercivalAlg, args...; kwargs...,)
     return PercivalWorkspace(model, args...; kwargs...)
 end
 
-function getpercival_problem(model::Model, x0::AbstractVector)
+function getpercival_problem(model::VecModel, x0::AbstractVector)
     eq = if length(model.eq_constraints.fs) == 0
         nothing
     else

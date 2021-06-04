@@ -12,7 +12,7 @@ function JuniperIpoptOptions(;
 end
 
 @params mutable struct JuniperIpoptWorkspace <: Workspace
-    model::Model
+    model::VecModel
     problem::JuMPProblem
     x0::AbstractVector
     integers::AbstractVector{<:Bool}
@@ -20,7 +20,7 @@ end
     counter::Base.RefValue{Int}
 end
 function JuniperIpoptWorkspace(
-    model::Model, x0::AbstractVector = getinit(model);
+    model::VecModel, x0::AbstractVector = getinit(model);
     options = JuniperIpoptOptions(), integers = falses(length(x0)),
     kwargs...,
 )
@@ -67,11 +67,11 @@ function optimize!(workspace::JuniperIpoptWorkspace)
     )
 end
 
-struct JuniperIpoptAlg{O}
+struct JuniperIpoptAlg{O} <: AbstractOptimizer
     options::O
 end
 JuniperIpoptAlg(; kwargs...) = JuniperIpoptAlg(kwargs)
 
-function Workspace(model::AbstractModel, optimizer::JuniperIpoptAlg, args...; kwargs...,)
+function Workspace(model::VecModel, optimizer::JuniperIpoptAlg, args...; kwargs...,)
     return JuniperIpoptWorkspace(model, args...; kwargs...)
 end

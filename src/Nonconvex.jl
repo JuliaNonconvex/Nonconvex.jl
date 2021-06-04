@@ -31,13 +31,13 @@ export  Model,
         AugLagOptions,
         PercivalOptions,
         JuniperIpoptOptions,
-        Tolerance
+        Tolerance,
+        @constructor
 
 using Parameters, Zygote, ChainRulesCore, ForwardDiff, MathOptInterface
 using Ipopt, NLopt, ADNLPModels, Percival, NLPModelsModifiers, JuMP
 using LinearAlgebra, Setfield, Requires, SparseArrays, Reexport
-using Juniper
-import ParameterHandling
+using Juniper, NamedTupleTools
 using Optim: Optim, AbstractOptimizer
 
 @reexport using LinearAlgebra, OrderedCollections
@@ -55,8 +55,10 @@ include("functions/aggregations.jl")
 
 # Models
 
+include("models/flatten.jl")
 include("models/model.jl")
-include("models/dictmodel.jl")
+include("models/vec_model.jl")
+include("models/dict_model.jl")
 include("models/model_docs.jl")
 include("mma_approximation/mma_approx.jl")
 include("mma_approximation/xmma_approx.jl")

@@ -81,7 +81,7 @@ A struct that stores all the intermediate states and memory allocations needed f
  - `fcalls`: the current number of objective and constraint function calls.
 """
 @params mutable struct MMAWorkspace <: Workspace
-    model::AbstractModel
+    model::VecModel
     dualmodel::MMADualModel
     x0::AbstractVector
     solution::Solution
@@ -98,7 +98,7 @@ A struct that stores all the intermediate states and memory allocations needed f
 	fcalls::Int
 end
 function MMAWorkspace(
-    model::AbstractModel,
+    model::VecModel,
     optimizer::AbstractOptimizer,
     x0::AbstractVector;
     options = default_options(model, optimizer),
@@ -147,12 +147,12 @@ function MMAWorkspace(
     )
 end
 
-default_options(model::Model, alg::MMA87) = MMAOptions()
-default_options(model::Model, alg::MMA02) = MMAOptions()
+default_options(model::VecModel, alg::MMA87) = MMAOptions()
+default_options(model::VecModel, alg::MMA02) = MMAOptions()
 
-init!(model::Model) = model
+init!(model::VecModel) = model
 
-function Workspace(model::AbstractModel, optimizer::Union{MMA87, MMA02}, args...; kwargs...)
+function Workspace(model::VecModel, optimizer::Union{MMA87, MMA02}, args...; kwargs...)
     return MMAWorkspace(model, optimizer, args...; kwargs...)
 end
 
@@ -178,9 +178,10 @@ Optimizes `model` using the algorithm `optimizer`, e.g. an instance of [`MMA87`]
 
  The details of the MMA optimization algorithms can be found in the original [1987 MMA paper](https://onlinelibrary.wiley.com/doi/abs/10.1002/nme.1620240207) and the [2002 paper](https://epubs.siam.org/doi/abs/10.1137/S1052623499362822).
 """
-function optimize(args...; kwargs...)
-    workspace = Workspace(args...; kwargs...)
-    return optimize!(workspace)
+function optimize(model::AbstractModel, optimizer::AbstractOptimizer, x0, args...; kwargs...)
+    _model, _x0, unflatten = tovecmodel(model, x0)
+    r = optimize(_model, optimizer, _x0, args...; kwargs...)
+    return @set r.minimizer = unflatten(r.minimizer)
 end
 
 function optimize!(workspace::MMAWorkspace)
@@ -338,11 +339,11 @@ function assess_convergence!(w::Workspace)
 end
 
 """
-    scaleobjective!(model::AbstractModel, fg, ∇fg, approxfg, λ)
+    scaleobjective!(model::VecModel, fg, ∇fg, approxfg, λ)
 
 Scales the objective of `model` using the ratio of the ∞ norms of the constraint and objective values and gradients. After scaling, the ∞ norms will be the same.
 """
-function scaleobjective!(model::AbstractModel, fg, ∇fg, approxfg, λ)
+function scaleobjective!(model::VecModel, fg, ∇fg, approxfg, λ)
     @views normratio = norm(∇fg[2:end,:], Inf) / norm(∇fg[1,:], Inf)
     @views normratio = max(normratio, norm(fg[2:end], Inf) / abs(fg[1]))
     normratio = isfinite(normratio) ? normratio : one(normratio)
@@ -355,9 +356,9 @@ function scaleobjective!(model::AbstractModel, fg, ∇fg, approxfg, λ)
     return model
 end
 
-scalequadweight!(model::Model, s::Real) = model
+scalequadweight!(model::VecModel, s::Real) = model
 
-function correctsolution!(solution::Solution, model::Model, options::MMAOptions)
+function correctsolution!(solution::Solution, model::VecModel, options::MMAOptions)
     solution.f = solution.f / get_objective_multiple(model)
     return solution
 end
