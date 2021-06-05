@@ -4,29 +4,40 @@ mutable struct VecModel{Tv <: AbstractVector} <: AbstractModel
     ineq_constraints::VectorOfFunctions
     box_min::Tv
     box_max::Tv
+    init::Tv
+    integer::BitVector
 end
 
-function addvar!(m::VecModel, lb::Real, ub::Real)
+function addvar!(m::VecModel, lb::Real, ub::Real; init::Real = lb, integer = false)
     push!(getmin(m), lb)
     push!(getmax(m), ub)
+    push!(m.init, init)
+    push!(m.integer, integer)
     return m
 end
-function addvar!(m::VecModel, lb::Vector{<:Real}, ub::Vector{<:Real})
+function addvar!(m::VecModel, lb::Vector{<:Real}, ub::Vector{<:Real}; init::Vector{<:Real} = copy(lb), integer = falses(length(lb)))
     append!(getmin(m), lb)
     append!(getmax(m), ub)
+    append!(m.init, init)
+    append!(m.integer, integer)
     return m
 end
 
 function getinit(m::VecModel)
     ma = getmax(m)
     mi = getmin(m)
+    init = m.init
     return map(1:length(mi)) do i
-        _ma = ma[i]
-        _mi = mi[i]
-        _ma == Inf && _mi == -Inf && return 0.0
-        _ma == Inf && return _mi + 1.0
-        _mi == -Inf && return _ma - 1.0
-        return (_ma + _mi) / 2
+        if isfinite(init[i])
+            return init[i]
+        else
+            _ma = ma[i]
+            _mi = mi[i]
+            _ma == Inf && _mi == -Inf && return 0.0
+            _ma == Inf && return _mi + 1.0
+            _mi == -Inf && return _ma - 1.0
+            return (_ma + _mi) / 2
+        end
     end
 end
 
@@ -55,5 +66,7 @@ function tovecmodel(m::AbstractModel, x0 = getmin(m))
         end) : VectorOfFunctions(IneqConstraint[]),
         float.(flatten(m.box_min)[1]),
         float.(flatten(m.box_max)[1]),
+        float.(flatten(m.init)[1]),
+        _getinteger(m),
     ), float.(v), unflatten
 end

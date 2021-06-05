@@ -100,8 +100,8 @@ getmin(m::MMALagModel)= getmin(m.parent)
 
 getmax(m::MMALagModel) = getmax(m.parent)
 
-function addvar!(m::MMALagModel, lb, ub)
-    addvar!(getparent(m), lb, ub)
+function addvar!(m::MMALagModel, lb, ub; kwargs...)
+    addvar!(getparent(m), lb, ub; kwargs...)
     return m
 end
 

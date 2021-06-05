@@ -28,9 +28,9 @@ end
 
 function get_jump_problem(
     model::VecModel, x0 = getinit(model);
-    integers = falses(length(x0)), optimizer,
-    first_order, kwargs...,
+    optimizer, first_order, kwargs...,
 )
+    integers = model.integer
     eq = if length(model.eq_constraints.fs) == 0
         nothing
     else

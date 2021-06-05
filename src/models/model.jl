@@ -8,6 +8,8 @@ struct Model <: AbstractModel
     ineq_constraints::VectorOfFunctions
     box_min::AbstractVector
     box_max::AbstractVector
+    init::AbstractVector
+    integer::AbstractVector
 end
 ```
 
@@ -22,6 +24,8 @@ mutable struct Model{Tv <: AbstractVector} <: AbstractModel
     ineq_constraints::VectorOfFunctions
     box_min::Tv
     box_max::Tv
+    init::Tv
+    integer::BitVector
 end
 
 """
@@ -39,7 +43,7 @@ Constructs an empty model with objective function `f` and decision variable valu
 """
 Model(::Type{T}, f::Function) where {T} = Model(T, Objective(f))
 function Model(::Type{T}, obj::Union{Nothing, Objective}) where {T}
-    return Model(obj, VectorOfFunctions(EqConstraint[]), VectorOfFunctions(IneqConstraint[]), T[], T[])
+    return Model(obj, VectorOfFunctions(EqConstraint[]), VectorOfFunctions(IneqConstraint[]), T[], T[], T[], falses(0))
 end
 
 getobjective(m::AbstractModel) = m.objective
@@ -73,6 +77,7 @@ getdim(m::AbstractModel) = (getnconstraints(m), getnvars(m))
 
 getmin(m::AbstractModel)= m.box_min
 getmin(m::AbstractModel, i) = getmin(m)[i]
+isinteger(m::AbstractModel, i) = m.integer[i]
 
 getmax(m::AbstractModel) = m.box_max
 getmax(m::AbstractModel, i) = getmax(m)[i]
@@ -111,15 +116,23 @@ function setbox!(m::AbstractModel, i, minb, maxb)
     getmax(m)[i] = maxb
     return m
 end
-
-function addvar!(m::Model, lb, ub)
-    push!(getmin(m), lb)
-    push!(getmax(m), ub)
+function setinteger!(m::AbstractModel, i, integer)
+    m.integer[i] = integer
     return m
 end
-function addvar!(m::Model, lb::Vector, ub::Vector)
+
+function addvar!(m::Model, lb, ub; init = deepcopy(lb), integer = false)
+    push!(getmin(m), lb)
+    push!(getmax(m), ub)
+    push!(m.init, init)
+    push!(m.integer, integer)
+    return m
+end
+function addvar!(m::Model, lb::Vector, ub::Vector; init = deepcopy(lb), integer = falses(length(lb)))
     append!(getmin(m), lb)
     append!(getmax(m), ub)
+    append!(m.init, init)
+    append!(m.integer, integer)
     return m
 end
 
@@ -161,4 +174,8 @@ end
 function add_eq_constraint!(m::AbstractModel, fs::Vector{<:EqConstraint})
     append!(m.eq_constraints.fs, fs)
     return m
+end
+
+function _getinteger(m::Model)
+    return convert(BitVector, reduce(vcat, fill.(m.integer, length.(getindex.(flatten.(m.box_min), 1)))))
 end

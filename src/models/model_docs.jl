@@ -3,105 +3,105 @@
 
 Returns the parent model of `model`.
 """
-function getparent end
+getparent
 
 """
     getobjectiveconstraints(model::AbstractModel)
 
 Returns an instance of `AbstractFunction` that when called with input `x` returns the objective and constraint values of `model` at `x` in a single vector.
 """
-function getobjectiveconstraints end
+getobjectiveconstraints
 
 """
     getobjective(model::AbstractModel)
 
-Returns a function that when called with input `x` returns the objective value of `model` at `x`.
+Returns a that when called with input `x` returns the objective value of `model` at `x`.
 """
-function getobjective end
+getobjective
 
 """
     getineqconstraint(model::AbstractModel, i::Integer)
 
-Returns a function that when called with input `x` returns the constraint violation value of the `i`^th inequality constraint of `model` at `x`.
+Returns a that when called with input `x` returns the constraint violation value of the `i`^th inequality constraint of `model` at `x`.
 """
-function getineqconstraint end
+getineqconstraint
 
 """
     geteqconstraint(model::AbstractModel, i::Integer)
 
-Returns a function that when called with input `x` returns the constraint violation value of the `i`^th equality constraint of `model` at `x`.
+Returns a that when called with input `x` returns the constraint violation value of the `i`^th equality constraint of `model` at `x`.
 """
-function geteqconstraint end
+geteqconstraint
 
 """
     getineqconstraints(model::AbstractModel)
 
-Returns a function that when called with input `x` returns the constraint violation values of all the inequality constraints of `model` at `x`.
+Returns a that when called with input `x` returns the constraint violation values of all the inequality constraints of `model` at `x`.
 """
-function getineqconstraints end
+getineqconstraints
 
 """
     geteqconstraints(model::AbstractModel)
 
-Returns a function that when called with input `x` returns the constraint violation values of all the equality constraints of `model` at `x`.
+Returns a that when called with input `x` returns the constraint violation values of all the equality constraints of `model` at `x`.
 """
-function geteqconstraints end
+geteqconstraints
 
 """
     get_objective_multiple(model::AbstractModel)
 
 Returns the factor by which the objective of `model` was scaled. This is 1 by default.
 """
-function get_objective_multiple end
+get_objective_multiple
 
 """
     set_objective_multiple!(model::AbstractModel, multiple::Number)
 
 Set the objective's scaling factor of `model` to `multiple`.
 """
-function set_objective_multiple! end
+set_objective_multiple!
 
 """
     getnconstraints(model::AbstractModel)
 
 Returns the total number of constraints in `model`.
 """
-function getnconstraints end
+getnconstraints
 
 """
     getnineqconstraints(model::AbstractModel)
 
 Returns the number of inequality constraints in `model`.
 """
-function getnineqconstraints end
+getnineqconstraints
 
 """
     getneqconstraints(model::AbstractModel)
 
 Returns the number of equality constraints in `model`.
 """
-function getneqconstraints end
+getneqconstraints
 
 """
     getnvars(model::AbstractModel)
 
 Returns the number of variables in `model`.
 """
-function getnvars end
+getnvars
 
 """
     getmin(model::AbstractModel)
 
 Returns the variables' lower bounds of `model`.
 """
-function getmin end
+getmin
 
 """
     getmax(model::AbstractModel)
 
 Returns the variables' upper bounds of `model`.
 """
-function getmax end
+getmax
 
 """
     setmin!(model::AbstractModel, min::Union{Number, AbstractVector})
@@ -109,7 +109,7 @@ function getmax end
 
 Sets the variables' lower bounds in `model` to `min`. Or if `i` is given, it sets the lower bound of the `i`^th variable in `model` to `min`.
 """
-function setmin! end
+setmin!
 
 """
     setmax!(model::AbstractModel, max::Union{Number, AbstractVector})
@@ -117,7 +117,7 @@ function setmin! end
 
 Sets the variables' upper bound in `model` to `max`. Or if `i` is given, it sets the upper bound of the `i`^th variable in `model` to `max`.
 """
-function setmax! end
+setmax!
 
 """
     setbox!(model::AbstractModel, min::Union{Number, AbstractVector}, max::Union{Number, AbstractVector})
@@ -125,14 +125,14 @@ function setmax! end
 
 Sets the variables' lower and upper bounds in `model` to `min` and `max` respectively. Or if `i` is given, it sets the lower and upper bounds of the `i`^th variable in `model` to `min` and `max` respectively.
 """
-function setbox! end
+setbox!
 
 """
-    addvar!(model::AbstractModel, lb::Number, ub::Number)
+    addvar!(model::AbstractModel, lb::Number, ub::Number; init = lb, integer = false)
 
-Adds a new variable to `model` with lower and upper bounds `lb` and `ub`.
+Adds a new variable to `model` with lower and upper bounds `lb` and `ub`, initial value `init` and `integer = true` if the variable is integer.
 """
-function addvar! end
+addvar!
 
 """
     add_ineq_constraint!(model::AbstractModel, f::IneqConstraint)
@@ -140,11 +140,11 @@ function addvar! end
 
 Adds a new constraint `f` or multiple new constraints `fs` to `model`.
 """
-function add_ineq_constraint! end
+add_ineq_constraint!
 
 """
     init!(model::AbstractModel)
 
 Initializes the model.
 """
-function init! end
+init!
