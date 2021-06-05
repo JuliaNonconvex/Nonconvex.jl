@@ -40,7 +40,7 @@ add_ineq_constraint!(m, x -> g(x, -1, 1))
 ```julia
 m = Model(f)
 addvar!(m, [0.0, 0.0], [10.0, 10.0])
-block_constr = FunctionWrapper(x -> [g(x, 2, 0), g(x, -1, 1)], 2)
+block_constr = x -> [g(x, 2, 0), g(x, -1, 1)]
 add_ineq_constraint!(m, block_constr)
 ```
 
