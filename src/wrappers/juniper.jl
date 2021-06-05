@@ -21,9 +21,9 @@ end
 end
 function JuniperIpoptWorkspace(
     model::VecModel, x0::AbstractVector = getinit(model);
-    options = JuniperIpoptOptions(), integers = falses(length(x0)),
-    kwargs...,
+    options = JuniperIpoptOptions(), kwargs...,
 )
+    integers = model.integer
     @assert length(integers) == length(x0)
     nt1 = options.subsolver_options.nt
     subsolver_options = map(keys(nt1)) do k

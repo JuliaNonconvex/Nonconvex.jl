@@ -15,12 +15,14 @@ g(x::AbstractVector, a, b) = (a*x[1] + b)^3 - x[2]
         r1 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
         @test abs(r1.minimum - sqrt(8/27)) < 1e-6
         @test norm(r1.minimizer - [1/3, 8/27]) < 1e-6
-        r2 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, integers = [false, false])
-        @test abs(r2.minimum - sqrt(8/27)) < 1e-6
-        @test norm(r2.minimizer - [1/3, 8/27]) < 1e-6
-        r3 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, integers = [true, false])
-        @test r3.minimizer[1] - round(Int, r3.minimizer[1]) ≈ 0 atol = 1e-7
-        r4 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, integers = [false, true])
+
+        setinteger!(m, 1, true)
+        r2 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
+        @test r2.minimizer[1] - round(Int, r2.minimizer[1]) ≈ 0 atol = 1e-7
+
+        setinteger!(m, 1, false)
+        setinteger!(m, 2, true)
+        r3 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
         @test r3.minimizer[2] - round(Int, r3.minimizer[2]) ≈ 0 atol = 1e-7
     end
 
@@ -33,12 +35,14 @@ g(x::AbstractVector, a, b) = (a*x[1] + b)^3 - x[2]
         r1 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
         @test abs(r1.minimum - sqrt(8/27)) < 1e-6
         @test norm(r1.minimizer - [1/3, 8/27]) < 1e-6
-        r2 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, integers = [false, false])
-        @test abs(r2.minimum - sqrt(8/27)) < 1e-6
-        @test norm(r2.minimizer - [1/3, 8/27]) < 1e-6
-        r3 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, integers = [true, false])
-        @test r3.minimizer[1] - round(Int, r3.minimizer[1]) ≈ 0 atol = 1e-7
-        r4 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, integers = [false, true])
+
+        setinteger!(m, 1, true)
+        r2 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
+        @test r2.minimizer[1] - round(Int, r2.minimizer[1]) ≈ 0 atol = 1e-7
+
+        setinteger!(m, 1, false)
+        setinteger!(m, 2, true)
+        r3 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
         @test r3.minimizer[2] - round(Int, r3.minimizer[2]) ≈ 0 atol = 1e-7
     end
 
@@ -53,12 +57,14 @@ g(x::AbstractVector, a, b) = (a*x[1] + b)^3 - x[2]
             r1 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
             @test abs(r1.minimum - sqrt(8/27)) < 1e-6
             @test norm(r1.minimizer - [1/3, 8/27]) < 1e-6
-            r2 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, integers = [false, false])
-            @test abs(r2.minimum - sqrt(8/27)) < 1e-6
-            @test norm(r2.minimizer - [1/3, 8/27]) < 1e-6
-            r3 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, integers = [true, false])
-            @test r3.minimizer[1] - round(Int, r3.minimizer[1]) ≈ 0 atol = 1e-7
-            r4 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, integers = [false, true])
+    
+            setinteger!(m, 1, true)
+            r2 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
+            @test r2.minimizer[1] - round(Int, r2.minimizer[1]) ≈ 0 atol = 1e-7
+    
+            setinteger!(m, 1, false)
+            setinteger!(m, 2, true)
+            r3 = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
             @test r3.minimizer[2] - round(Int, r3.minimizer[2]) ≈ 0 atol = 1e-7
         end
         @testset "Infinite lower bound" begin
