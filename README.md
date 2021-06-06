@@ -12,6 +12,8 @@ The following packages are wrapped:
 - `IpoptAlg`: a wrapper around Ipopt.jl
 - `NLoptAlg`: a wrapper around NLopt.jl
 - `AugLag`: a wrapper around Percival.jl which implements the augmented Lagrangian algorithm
+- `JuniperIpoptAlg`: a wrapper around Juniper.jl using Ipopt.jl as a sub-solver
+- `PavitoIpoptCbcAlg`: a wrapper around Pavito.jl using Ipopt.jl and Cbc.jl as sub-solvers
 
 The method of moving asymptotes algorithms' were generalized to handle infinite variable bounds. In the augmented Lagrangian algorithm, a block constraint can be handled efficiently by defining a custom adjoint rule for the block constraint using `ChainRulesCore.jl`. This custom adjoint will be picked up by `Nonconvex.jl` when calculating the gradient of the augmented Lagrangian.
 
@@ -106,6 +108,8 @@ r.minimizer
 
 ## Mixed integer optimization with Juniper and Ipopt
 
+### Juniper
+
 To do mixed integer optimization using Juniper and Ipopt, you can use:
 ```julia
 import Juniper
@@ -124,6 +128,29 @@ options = Nonconvex.JuniperIpoptOptions()
 r = optimize(m, alg, [1.234, 2.345], options = options)
 r.minimum
 r.minimizer # [0.3327, 1]
+```
+
+### Pavito
+
+Or use Pavito with Ipopt and Cbc as sub-solvers using:
+
+```julia
+import Pavito
+using Nonconvex
+
+f(x) = sqrt(x[2])
+g(x, a, b) = (a*x[1] + b)^3 - x[2]
+
+m = Model(f)
+addvar!(m, [0.0, 0.0], [10.0, 10.0], integer = [false, true])
+add_ineq_constraint!(m, x -> g(x, 2, 0))
+add_ineq_constraint!(m, x -> g(x, -1, 1))
+
+alg = PavitoIpoptCbcAlg()
+options = Nonconvex.PavitoIpoptCbcOptions()
+r = optimize(m, alg, [1.234, 2.345], options = options)
+r.minimum
+r.minimizer # [0.4934, 1.0]
 ```
 
 ## Custom gradient / adjoint
