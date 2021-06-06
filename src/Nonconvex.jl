@@ -24,6 +24,7 @@ export  Model,
         AugLag,
         PercivalAlg,
         JuniperIpoptAlg,
+        PavitoIpoptCbcAlg,
         KKTCriteria,
         IpoptCriteria,
         FunctionWrapper,
@@ -33,12 +34,13 @@ export  Model,
         AugLagOptions,
         PercivalOptions,
         JuniperIpoptOptions,
+        PavitoIpoptCbcOptions,
         Tolerance,
         @constructor
 
 using Parameters, Zygote, ChainRulesCore, ForwardDiff
 using ADNLPModels, NLPModelsModifiers, Ipopt
-import MathOptInterface, JuMP
+import MathOptInterface, JuMP, Cbc
 const MOI = MathOptInterface
 using LinearAlgebra, Setfield, Requires, SparseArrays, Reexport
 using NamedTupleTools, Requires
@@ -108,6 +110,9 @@ include("wrappers/ipopt.jl")
     end
     @require Juniper="2ddba703-00a4-53a7-87a5-e8b9971dde84" begin
         include("wrappers/juniper.jl")
+    end
+    @require Pavito="cd433a01-47d1-575d-afb7-6db927ee8d8f" begin
+        include("wrappers/pavito.jl")
     end
 end
 
