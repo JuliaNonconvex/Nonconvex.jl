@@ -68,6 +68,12 @@ function flatten(x::AbstractArray)
     return x_vec, Array_from_vec
 end
 
+function flatten(x::JuMP.Containers.DenseAxisArray)
+    x_vec, from_vec = flatten(vec(x.data))
+    Array_from_vec(x_vec) = JuMP.Containers.DenseAxisArray(reshape(from_vec(x_vec), size(x)), axes(x)...)
+    return x_vec, Array_from_vec
+end
+
 function flatten(x::SparseMatrixCSC)
     x_vec, from_vec = flatten(x.nzval)
     Array_from_vec(x_vec) = SparseMatrixCSC(x.m, x.n, x.colptr, x.rowval, from_vec(x_vec))
@@ -121,9 +127,14 @@ struct Unflatten{F} <: Function
 end
 (f::Unflatten)(x) = f.unflatten(x)
 
+_zero(x) = zero(x)
+_zero(x::AbstractArray) = _zero.(x)
+_zero(x::AbstractDict) = Dict(keys(x) .=> map(_zero, values(x)))
+_zero(x::NamedTuple) = map(_zero, x)
+_zero(x::Tuple) = map(_zero, x)
+
 function _merge(d1, d2::AbstractDict)
-    @assert eltype(values(d1)) <: Real
-    _d = OrderedDict(k => zero(v) for (k, v) in d1)
+    _d = OrderedDict(k => _zero(v) for (k, v) in d1)
     return sort!(merge(_d, OrderedDict(d2)))
 end
 _merge(::Any, d2) = d2

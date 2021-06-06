@@ -17,15 +17,15 @@ import JuMP
     eq = Nonconvex.geteqconstraints(dict_model)
     x = Nonconvex.getinit(dict_model)
 
-    @test getmin(dict_model) == OrderedDict("x" => 0.0, "y" => 0.0)
-    @test getmax(dict_model) == OrderedDict("x" => Inf, "y" => 3.0)
-    @test obj(x) == 20 * x["y"]
+    @test getmin(dict_model) == OrderedDict(:x => 0.0, :y => 0.0)
+    @test getmax(dict_model) == OrderedDict(:x => Inf, :y => 3.0)
+    @test obj(x) == 20 * x[:y]
     @test ineq(x) == [
-        100 - 6 * x["x"] - 8 * x["y"],
-        120 - 7 * x["x"] - 12 * x["y"],
-        x["x"] + x["y"] - 50,
+        100 - 6 * x[:x] - 8 * x[:y],
+        120 - 7 * x[:x] - 12 * x[:y],
+        x[:x] + x[:y] - 50,
     ]
-    @test eq(x) == [x["x"] + x["y"] - 25]
+    @test eq(x) == [x[:x] + x[:y] - 25]
 
     vec_model, _, _ = Nonconvex.tovecmodel(dict_model)
     vec_x = Nonconvex.getinit(vec_model)
@@ -63,15 +63,15 @@ end
     eq = Nonconvex.geteqconstraints(dict_model)
     x = Nonconvex.getinit(dict_model)
 
-    @test getmin(dict_model) == OrderedDict("x[1]" => 0.0, "x[2]" => 0.0)
-    @test getmax(dict_model) == OrderedDict("x[1]" => Inf, "x[2]" => 3.0)
-    @test obj(x) == 12 * x["x[1]"]
+    @test getmin(dict_model) == OrderedDict(:x => [0.0, 0.0])
+    @test getmax(dict_model) == OrderedDict(:x => [Inf, 3.0])
+    @test obj(x) == 12 * x[:x][1]
     @test ineq(x) == [
-        100 - 6 * x["x[1]"] - 8 * x["x[2]"],
-        120 - 7 * x["x[1]"] - 12 * x["x[2]"],
-        x["x[1]"] + x["x[2]"] - 50,
+        100 - 6 * x[:x][1] - 8 * x[:x][2],
+        120 - 7 * x[:x][1] - 12 * x[:x][2],
+        x[:x][1] + x[:x][2] - 50,
     ]
-    @test eq(x) == [x["x[1]"] + x["x[2]"] - 25]
+    @test eq(x) == [x[:x][1] + x[:x][2] - 25]
 
     vec_model, _, _ = Nonconvex.tovecmodel(dict_model)
     vec_x = Nonconvex.getinit(vec_model)
@@ -110,15 +110,15 @@ end
     eq = Nonconvex.geteqconstraints(dict_model)
     x = Nonconvex.getinit(dict_model)
 
-    @test getmin(dict_model) == OrderedDict("x[(1, 1)]" => 0.0, "x[(2, 1)]" => 0.0)
-    @test getmax(dict_model) == OrderedDict("x[(1, 1)]" => Inf, "x[(2, 1)]" => 3.0)
-    @test obj(x) == 12 * x["x[(1, 1)]"] + 20 * x["x[(2, 1)]"]
+    @test getmin(dict_model) == OrderedDict(:x => JuMP.Containers.DenseAxisArray(lbs, [(1, 1), (2, 1)]))
+    @test getmax(dict_model) == OrderedDict(:x => JuMP.Containers.DenseAxisArray(ubs, [(1, 1), (2, 1)]))
+    @test obj(x) == 12 * x[:x][(1, 1)] + 20 * x[:x][(2, 1)]
     @test ineq(x) == [
-        100 - 6 * x["x[(1, 1)]"] - 8 * x["x[(2, 1)]"],
-        120 - 7 * x["x[(1, 1)]"] - 12 * x["x[(2, 1)]"],
-        x["x[(1, 1)]"] + x["x[(2, 1)]"] - 50,
+        100 - 6 * x[:x][(1, 1)] - 8 * x[:x][(2, 1)],
+        120 - 7 * x[:x][(1, 1)] - 12 * x[:x][(2, 1)],
+        x[:x][(1, 1)] + x[:x][(2, 1)] - 50,
     ]
-    @test eq(x) == [x["x[(1, 1)]"] + x["x[(2, 1)]"] - 25]
+    @test eq(x) == [x[:x][(1, 1)] + x[:x][(2, 1)] - 25]
 
     vec_model, _, _ = Nonconvex.tovecmodel(dict_model)
     vec_x = Nonconvex.getinit(vec_model)

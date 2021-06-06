@@ -1,45 +1,67 @@
 function get_variable_info(model::JuMP.Model)
-    inv_vars = OrderedDict{Int, String}()
-    inv_integer = OrderedDict{Int, Bool}()
-    inv_lb = OrderedDict{Int, Float64}()
-    inv_ub = OrderedDict{Int, Float64}()
-    inv_inits = OrderedDict{Int, Float64}()
-    for (_, v) in model.obj_dict
-        if v isa VariableRef
-            vs = [v]
-        elseif v isa AbstractArray{<:VariableRef}
-            vs = v
+    varinds = OrderedDict()
+    integer = OrderedDict()
+    lb = OrderedDict()
+    ub = OrderedDict()
+    inits = OrderedDict()
+    for (k, vs) in model.obj_dict
+        if vs isa VariableRef
+            v = vs
+            ind = v.index.value
+            varinds[k] = ind
+            integer[k] = is_binary(v) || is_integer(v)
+            lb[k] = has_lower_bound(v) ? lower_bound(v) : -Inf
+            ub[k] = has_upper_bound(v) ? upper_bound(v) : Inf
+            inits[k] = if start_value(v) !== nothing
+                start_value(v)
+            elseif ub[k] == Inf && lb[k] == -Inf
+                0.0
+            elseif ub[k] == Inf
+                lb[k] + 1.0
+            elseif lb[k] == -Inf
+                lb[k] - 1.0
+            else
+                (ub[k] + lb[k]) / 2
+            end
+        elseif vs isa AbstractArray{<:VariableRef}
+            inds = map(v -> v.index.value, vs)
+            varinds[k] = collect(keys(inds))
+            integer[k] = map(vs) do v
+                is_binary(v) || is_integer(v)
+            end
+            lb[k] = map(vs) do v
+                has_lower_bound(v) ? lower_bound(v) : -Inf
+            end
+            ub[k] = map(vs) do v
+                has_upper_bound(v) ? upper_bound(v) : Inf
+            end
+            inits[k] = map(vs) do v
+                ind = varinds[k][v.index.value]
+                if start_value(v) !== nothing
+                    start_value(v)
+                elseif ub[k][ind] == Inf && lb[k][ind] == -Inf
+                    0.0
+                elseif ub[k][ind] == Inf
+                    lb[k][ind] + 1.0
+                elseif lb[k][ind] == -Inf
+                    lb[k][ind] - 1.0
+                else
+                    (ub[k][ind] + lb[k][ind]) / 2
+                end
+            end
         else
             continue
         end
-        for v in vs
-            ind = v.index.value
-            inv_vars[ind] = JuMP.name(v)
-            inv_integer[ind] = is_binary(v) || is_integer(v)
-            inv_lb[ind] = has_lower_bound(v) ? lower_bound(v) : -Inf
-            inv_ub[ind] = has_upper_bound(v) ? upper_bound(v) : Inf
-            inv_inits[ind] = if start_value(v) !== nothing
-                start_value(v)
-            elseif inv_ub[ind] == Inf && inv_lb[ind] == -Inf
-                0.0
-            elseif inv_ub[ind] == Inf
-                inv_lb[ind] + 1.0
-            elseif inv_lb[ind] == -Inf
-                inv_lb[ind] - 1.0
-            else
-                (inv_ub[ind] + inv_lb[ind]) / 2
-            end
-        end
     end
-    sort!(inv_integer)
-    sort!(inv_lb)
-    sort!(inv_ub)
-    sort!(inv_inits)
-    lb = OrderedDict(inv_vars[k] => v for (k, v) in inv_lb)
-    ub = OrderedDict(inv_vars[k] => v for (k, v) in inv_ub)
-    inits = OrderedDict(inv_vars[k] => v for (k, v) in inv_inits)
-    integer = OrderedDict(inv_vars[k] => v for (k, v) in inv_integer)
-    return lb, ub, inits, integer
+    sort!(integer)
+    sort!(lb)
+    sort!(ub)
+    sort!(inits)
+    _lb = OrderedDict(k => v for (k, v) in lb)
+    _ub = OrderedDict(k => v for (k, v) in ub)
+    _inits = OrderedDict(k => v for (k, v) in inits)
+    _integer = OrderedDict(k => v for (k, v) in integer)
+    return _lb, _ub, _inits, _integer
 end
 
 function get_constraint_info(model::JuMP.Model, nvars)
@@ -58,15 +80,15 @@ function get_constraint_info(model::JuMP.Model, nvars)
     inv_geq_constraints = OrderedDict()
     inv_leq_constraints = OrderedDict()
     inv_eq_constraints = OrderedDict()
-    for (_, v) in model.obj_dict
-        if v isa ConstraintRef
-            set = constraint_object(v).set
+    for (_, c) in model.obj_dict
+        if c isa ConstraintRef
+            set = constraint_object(c).set
             if set isa MOI.GreaterThan
-                inv_geq_constraints[JuMP.index(v).value] = v
+                inv_geq_constraints[JuMP.index(c).value] = c
             elseif set isa MOI.LessThan
-                inv_leq_constraints[JuMP.index(v).value] = v
+                inv_leq_constraints[JuMP.index(c).value] = c
             elseif set isa MOI.EqualTo
-                inv_eq_constraints[JuMP.index(v).value] = v
+                inv_eq_constraints[JuMP.index(c).value] = c
             else
                 throw("Set type not supported.")
             end
@@ -79,10 +101,10 @@ function get_constraint_info(model::JuMP.Model, nvars)
     leq_constraints = values(inv_leq_constraints)
     eq_constraints = values(inv_eq_constraints)
 
-    for v in geq_constraints
-        func = constraint_object(v).func
+    for c in geq_constraints
+        func = constraint_object(c).func
         @assert func isa AffExpr
-        set = constraint_object(v).set
+        set = constraint_object(c).set
         ineqcounter += 1
         push!(bineq, -set.lower)
         for (var, val) in func.terms
@@ -91,10 +113,10 @@ function get_constraint_info(model::JuMP.Model, nvars)
             push!(Vineq, -val)
         end
     end
-    for v in leq_constraints
-        func = constraint_object(v).func
+    for c in leq_constraints
+        func = constraint_object(c).func
         @assert func isa AffExpr
-        set = constraint_object(v).set
+        set = constraint_object(c).set
         ineqcounter += 1
         push!(bineq, set.upper)
         for (var, val) in func.terms
@@ -103,10 +125,10 @@ function get_constraint_info(model::JuMP.Model, nvars)
             push!(Vineq, val)
         end
     end
-    for v in eq_constraints
-        func = constraint_object(v).func
+    for c in eq_constraints
+        func = constraint_object(c).func
         @assert func isa AffExpr
-        set = constraint_object(v).set
+        set = constraint_object(c).set
         eqcounter += 1
         push!(beq, set.value)
         for (var, val) in func.terms
@@ -141,8 +163,9 @@ end
 
 function DictModel(model::JuMP.Model)
     lb, ub, inits, integer = get_variable_info(model)
-    Aineq, bineq, Aeq, beq = get_constraint_info(model, length(lb))
-    c = get_objective_info(model, length(lb))
+    nvars = length(flatten(lb)[1])
+    Aineq, bineq, Aeq, beq = get_constraint_info(model, nvars)
+    c = get_objective_info(model, nvars)
     ks = collect(keys(inits))
     dict_model = DictModel()
     for k in ks
