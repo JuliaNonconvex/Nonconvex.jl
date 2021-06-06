@@ -1,3 +1,5 @@
+import .NLopt
+
 struct NLoptAlg <: AbstractOptimizer
     alg::Symbol
 end

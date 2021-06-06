@@ -1,3 +1,4 @@
+import NLopt
 using Nonconvex, LinearAlgebra, Test
 
 f(x::AbstractVector) = sqrt(x[2])
