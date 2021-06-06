@@ -127,11 +127,12 @@ struct Unflatten{F} <: Function
 end
 (f::Unflatten)(x) = f.unflatten(x)
 
-_zero(x) = zero(x)
+_zero(x::Real) = zero(x)
 _zero(x::AbstractArray) = _zero.(x)
 _zero(x::AbstractDict) = Dict(keys(x) .=> map(_zero, values(x)))
 _zero(x::NamedTuple) = map(_zero, x)
 _zero(x::Tuple) = map(_zero, x)
+_zero(x) = structfromnt(typeof(x), _zero(ntfromstruct(x)))
 
 function _merge(d1, d2::AbstractDict)
     _d = OrderedDict(k => _zero(v) for (k, v) in d1)
@@ -158,7 +159,7 @@ function flatten(::Tuple{})
 end
 function flatten(x)
     v, un = flatten(ntfromstruct(x))
-    return identity.(v), Unflatten(y -> structfromnt(typeof(x), un(y)))
+    return v, Unflatten(y -> structfromnt(typeof(x), un(y)))
 end
 
 macro constructor(T)
@@ -170,8 +171,9 @@ end
 flatten_expr(T, C) = quote
     function flatten(x::$(esc(T)))
         v, un = flatten(ntfromstruct(x))
-        return identity.(v), Unflatten(y -> structfromnt($(esc(C)), un(y)))
+        return v, Unflatten(y -> structfromnt($(esc(C)), un(y)))
     end
+    _zero(x::$(esc(T))) = structfromnt($(esc(C)), _zero(ntfromstruct(x)))
 end
 
 _cumsum(x) = cumsum(x)
