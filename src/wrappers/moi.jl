@@ -1,6 +1,3 @@
-using MathOptInterface
-const MOI = MathOptInterface
-
 struct JuMPProblem{E, M, V}
     evaluator::E
     model::M
@@ -144,7 +141,7 @@ function get_jump_problem(
         jac_structure, eval_h, lag_hess_structure,
     )
     jump_model = JuMP.Model(optimizer)
-    moi_model = backend(jump_model)
+    moi_model = JuMP.backend(jump_model)
     MOI.empty!(moi_model)
     vars = map(1:nvars) do i
         v = MOI.add_variable(moi_model)

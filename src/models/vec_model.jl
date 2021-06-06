@@ -67,6 +67,6 @@ function tovecmodel(m::AbstractModel, x0 = getmin(m))
         float.(flatten(m.box_min)[1]),
         float.(flatten(m.box_max)[1]),
         float.(flatten(m.init)[1]),
-        _getinteger(m),
+        convert(BitVector, flatten(m.integer)[1]),
     ), float.(v), unflatten
 end

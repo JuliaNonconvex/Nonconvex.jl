@@ -45,7 +45,7 @@ maybeflatten(x) = flatten(x)
 
 function flatten(x::Real)
     v = [x]
-    unflatten_to_Real(v::Vector) = only(v)
+    unflatten_to_Real(v) = only(v)
     return v, unflatten_to_Real
 end
 
@@ -68,6 +68,12 @@ function flatten(x::AbstractArray)
     return x_vec, Array_from_vec
 end
 
+function flatten(x::JuMP.Containers.DenseAxisArray)
+    x_vec, from_vec = flatten(vec(x.data))
+    Array_from_vec(x_vec) = JuMP.Containers.DenseAxisArray(reshape(from_vec(x_vec), size(x)), axes(x)...)
+    return x_vec, Array_from_vec
+end
+
 function flatten(x::SparseMatrixCSC)
     x_vec, from_vec = flatten(x.nzval)
     Array_from_vec(x_vec) = SparseMatrixCSC(x.m, x.n, x.colptr, x.rowval, from_vec(x_vec))
@@ -82,7 +88,7 @@ function flatten(x::Tuple)
     x_vecs, x_backs = first.(x_vecs_and_backs), last.(x_vecs_and_backs)
     lengths = map(_length, x_vecs)
     sz = _cumsum(lengths)
-    function unflatten_to_Tuple(v::Vector)
+    function unflatten_to_Tuple(v)
         map(x_backs, lengths, sz) do x_back, l, s
             return x_back(v[s - l + 1:s])
         end
@@ -92,20 +98,28 @@ end
 
 function flatten(x::NamedTuple)
     x_vec, unflatten = flatten(values(x))
-    function unflatten_to_NamedTuple(v::Vector)
+    function unflatten_to_NamedTuple(v)
         v_vec_vec = unflatten(v)
         return typeof(x)(v_vec_vec)
     end
     return x_vec, unflatten_to_NamedTuple
 end
 
-function flatten(d::Dict)
-    d_vec, unflatten = flatten(collect(values(d)))
-    function unflatten_to_Dict(v::Vector)
+function flatten(d::AbstractDict, ks = collect(keys(d)))
+    _d = OrderedDict(k => d[k] for k in ks)
+    d_vec, unflatten = flatten(collect(values(_d)))
+    function unflatten_to_Dict(v)
         v_vec_vec = unflatten(v)
-        return Dict(key => v_vec_vec[n] for (n, key) in enumerate(keys(d)))
+        return OrderedDict(key => v_vec_vec[n] for (n, key) in enumerate(keys(_d)))
     end
     return d_vec, unflatten_to_Dict
+end
+function ChainRulesCore.rrule(::typeof(flatten), d::AbstractDict, ks)
+    _d = OrderedDict(k => d[k] for k in ks)
+    d_vec, un = flatten(_d, ks)
+    return (d_vec, un), Δ -> begin
+        (NO_FIELDS, un(Δ[1]), nothing)
+    end
 end
 
 struct Unflatten{F} <: Function
@@ -113,15 +127,15 @@ struct Unflatten{F} <: Function
 end
 (f::Unflatten)(x) = f.unflatten(x)
 
-function _merge(d1, d2::OrderedDict)
-    @assert eltype(values(d1)) <: Real
-    _d = OrderedDict(k => zero(v) for (k, v) in d1)
-    return merge(_d, d2)
-end
-function _merge(d1, d2::Dict)
-    @assert eltype(values(d1)) <: Real
-    _d = Dict(k => zero(v) for (k, v) in d1)
-    return merge(_d, d2)
+_zero(x) = zero(x)
+_zero(x::AbstractArray) = _zero.(x)
+_zero(x::AbstractDict) = Dict(keys(x) .=> map(_zero, values(x)))
+_zero(x::NamedTuple) = map(_zero, x)
+_zero(x::Tuple) = map(_zero, x)
+
+function _merge(d1, d2::AbstractDict)
+    _d = OrderedDict(k => _zero(v) for (k, v) in d1)
+    return sort!(merge(_d, OrderedDict(d2)))
 end
 _merge(::Any, d2) = d2
 
@@ -141,10 +155,6 @@ function flatten(::ZeroTangent)
 end
 function flatten(::Tuple{})
     return Float64[], _ -> ()
-end
-function flatten(d::OrderedDict)
-    v, un = flatten(collect(values(d)))
-    return identity.(v), Unflatten(x -> OrderedDict(collect(keys(d)) .=> un(x)))
 end
 function flatten(x)
     v, un = flatten(ntfromstruct(x))

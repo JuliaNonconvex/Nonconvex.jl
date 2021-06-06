@@ -175,7 +175,3 @@ function add_eq_constraint!(m::AbstractModel, fs::Vector{<:EqConstraint})
     append!(m.eq_constraints.fs, fs)
     return m
 end
-
-function _getinteger(m::Model)
-    return convert(BitVector, reduce(vcat, fill.(m.integer, length.(getindex.(flatten.(m.box_min), 1)))))
-end
