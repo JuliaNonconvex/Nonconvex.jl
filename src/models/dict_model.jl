@@ -24,7 +24,3 @@ function addvar!(m::DictModel, k::Union{Symbol, String}, lb, ub; init = deepcopy
     m.integer[k] = integer
     return m
 end
-
-function _getinteger(m::DictModel)
-    return convert(BitVector, reduce(vcat, fill.(values(m.integer), length.(getindex.(flatten.(values(m.box_min)), 1)))))
-end
