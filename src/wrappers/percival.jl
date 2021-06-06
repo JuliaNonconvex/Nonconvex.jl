@@ -1,3 +1,5 @@
+import .Percival
+
 struct PercivalAlg <: AbstractOptimizer end
 const AugLag = PercivalAlg
 

@@ -1,3 +1,4 @@
+import Ipopt, NLopt, Percival
 using Nonconvex, LinearAlgebra, Test, Zygote, FiniteDifferences
 const FDM = FiniteDifferences
 

@@ -65,19 +65,19 @@ end
 function flatten(x::AbstractArray)
     x_vec, from_vec = flatten(vec(x))
     Array_from_vec(x_vec) = oftype(x, reshape(from_vec(x_vec), size(x)))
-    return x_vec, Array_from_vec
+    return identity.(x_vec), Array_from_vec
 end
 
 function flatten(x::JuMP.Containers.DenseAxisArray)
     x_vec, from_vec = flatten(vec(x.data))
     Array_from_vec(x_vec) = JuMP.Containers.DenseAxisArray(reshape(from_vec(x_vec), size(x)), axes(x)...)
-    return x_vec, Array_from_vec
+    return identity.(x_vec), Array_from_vec
 end
 
 function flatten(x::SparseMatrixCSC)
     x_vec, from_vec = flatten(x.nzval)
     Array_from_vec(x_vec) = SparseMatrixCSC(x.m, x.n, x.colptr, x.rowval, from_vec(x_vec))
-    return x_vec, Array_from_vec
+    return identity.(x_vec), Array_from_vec
 end
 
 _length(x) = length(x)
@@ -102,7 +102,7 @@ function flatten(x::NamedTuple)
         v_vec_vec = unflatten(v)
         return typeof(x)(v_vec_vec)
     end
-    return x_vec, unflatten_to_NamedTuple
+    return identity.(x_vec), unflatten_to_NamedTuple
 end
 
 function flatten(d::AbstractDict, ks = collect(keys(d)))
@@ -112,7 +112,7 @@ function flatten(d::AbstractDict, ks = collect(keys(d)))
         v_vec_vec = unflatten(v)
         return OrderedDict(key => v_vec_vec[n] for (n, key) in enumerate(keys(_d)))
     end
-    return d_vec, unflatten_to_Dict
+    return identity.(d_vec), unflatten_to_Dict
 end
 function ChainRulesCore.rrule(::typeof(flatten), d::AbstractDict, ks)
     _d = OrderedDict(k => d[k] for k in ks)

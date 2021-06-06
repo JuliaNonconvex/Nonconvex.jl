@@ -1,3 +1,5 @@
+import .Juniper
+
 @params struct JuniperIpoptOptions
     nt::NamedTuple
     subsolver_options

@@ -63,6 +63,8 @@ r.minimizer
 ## NLopt
 
 ```julia
+import NLopt
+
 alg = NLoptAlg(:LD_MMA)
 options = Nonconvex.NLoptOptions()
 r = optimize(m, alg, [1.234, 2.345], options = options)
@@ -73,6 +75,8 @@ r.minimizer
 ## Augmented Lagrangian / Percival
 
 ```julia
+import Percival
+
 alg = AugLag()
 options = Nonconvex.AugLagOptions()
 r = optimize(m, alg, [1.234, 2.345], options = options)
@@ -80,21 +84,19 @@ r.minimum
 r.minimizer
 ```
 
-## Mixed equality and inequality constraints
+## Equality constraints
 
+You can add equality constraints to the model using:
 ```julia
-f(x) = sqrt(x[2])
-g(x, a, b) = (a*x[1] + b)^3 - x[2]
-
-m = Model(f)
-addvar!(m, [0.0, 0.0], [10.0, 10.0])
-add_eq_constraint!(m, x -> g(x, 2, 0))
-add_ineq_constraint!(m, x -> g(x, -1, 1))
+add_eq_constraint!(m, f)
 ```
+where `f` is the constraint function to be equal 0.
 
 ## Ipopt
 
 ```julia
+import Ipopt
+
 alg = IpoptAlg()
 options = Nonconvex.IpoptOptions()
 r = optimize(m, alg, [1.234, 2.345], options = options)
@@ -106,9 +108,20 @@ r.minimizer
 
 To do mixed integer optimization using Juniper and Ipopt, you can use:
 ```julia
+import Juniper
+using Nonconvex
+
+f(x) = sqrt(x[2])
+g(x, a, b) = (a*x[1] + b)^3 - x[2]
+
+m = Model(f)
+addvar!(m, [0.0, 0.0], [10.0, 10.0], integer = [false, true])
+add_ineq_constraint!(m, x -> g(x, 2, 0))
+add_ineq_constraint!(m, x -> g(x, -1, 1))
+
 alg = JuniperIpoptAlg()
 options = Nonconvex.JuniperIpoptOptions()
-r = optimize(m, alg, [1.234, 2.345], options = options, integers = [false, true])
+r = optimize(m, alg, [1.234, 2.345], options = options)
 r.minimum
 r.minimizer # [0.3327, 1]
 ```

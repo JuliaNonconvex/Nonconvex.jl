@@ -37,11 +37,11 @@ export  Model,
         @constructor
 
 using Parameters, Zygote, ChainRulesCore, ForwardDiff
-using Ipopt, NLopt, ADNLPModels, Percival, NLPModelsModifiers
+using ADNLPModels, NLPModelsModifiers, Ipopt
 import MathOptInterface, JuMP
 const MOI = MathOptInterface
 using LinearAlgebra, Setfield, Requires, SparseArrays, Reexport
-using Juniper, NamedTupleTools
+using NamedTupleTools, Requires
 using Optim: Optim, AbstractOptimizer
 using SparseArrays, OrderedCollections
 using JuMP: VariableRef, is_binary, is_integer, has_lower_bound,
@@ -97,10 +97,18 @@ include("algorithms/auglag_algorithm.jl")
 
 # Wrappers
 
-include("wrappers/ipopt.jl")
-include("wrappers/nlopt.jl")
-include("wrappers/percival.jl")
 include("wrappers/moi.jl")
-include("wrappers/juniper.jl")
+include("wrappers/ipopt.jl")
+@init begin
+    @require NLopt="76087f3c-5699-56af-9a33-bf431cd00edd" begin
+        include("wrappers/nlopt.jl")
+    end
+    @require Percival="01435c0c-c90d-11e9-3788-63660f8fbccc" begin
+        include("wrappers/percival.jl")
+    end
+    @require Juniper="2ddba703-00a4-53a7-87a5-e8b9971dde84" begin
+        include("wrappers/juniper.jl")
+    end
+end
 
 end
