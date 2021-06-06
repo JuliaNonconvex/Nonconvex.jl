@@ -118,7 +118,7 @@ function get_constraint_info(model::JuMP.Model, nvars)
     Aineq = sparse(Iineq, Jineq, Vineq, ineqcounter, nvars)
     Aeq = sparse(Ieq, Jeq, Veq, eqcounter, nvars)
 
-    return Array(Aineq), bineq, Array(Aeq), beq
+    return Aineq, bineq, Aeq, beq
 end
 
 function get_objective_info(model::JuMP.Model, nvars)
