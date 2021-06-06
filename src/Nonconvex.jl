@@ -36,12 +36,19 @@ export  Model,
         Tolerance,
         @constructor
 
-using Parameters, Zygote, ChainRulesCore, ForwardDiff, MathOptInterface
-using Ipopt, NLopt, ADNLPModels, Percival, NLPModelsModifiers, JuMP
+using Parameters, Zygote, ChainRulesCore, ForwardDiff
+using Ipopt, NLopt, ADNLPModels, Percival, NLPModelsModifiers
+import MathOptInterface, JuMP
+const MOI = MathOptInterface
 using LinearAlgebra, Setfield, Requires, SparseArrays, Reexport
 using Juniper, NamedTupleTools
 using Optim: Optim, AbstractOptimizer
-
+using SparseArrays, OrderedCollections
+using JuMP: VariableRef, is_binary, is_integer, has_lower_bound,
+            has_upper_bound, lower_bound, upper_bound,
+            start_value, ConstraintRef, constraint_object,
+            AffExpr, objective_function, objective_sense
+            
 @reexport using LinearAlgebra, OrderedCollections
 
 abstract type Workspace end
@@ -68,6 +75,7 @@ include("mma_approximation/mma_approx_docs.jl")
 include("models/mma_model.jl")
 include("models/dual_model.jl")
 include("models/mmalag_model.jl")
+include("models/jump.jl")
 
 # MMA
 
