@@ -23,6 +23,7 @@ export  Model,
         GCMMA,
         MMALag,
         IpoptAlg,
+        DeflatedIpoptAlg,
         NLoptAlg,
         AugLag,
         PercivalAlg,
@@ -35,6 +36,7 @@ export  Model,
         FunctionWrapper,
         MMAOptions,
         IpoptOptions,
+        DeflatedIpoptOptions,
         NLoptOptions,
         AugLagOptions,
         PercivalOptions,
@@ -115,6 +117,7 @@ include("algorithms/bayesian.jl")
 
 include("wrappers/moi.jl")
 include("wrappers/ipopt.jl")
+include("wrappers/deflated_ipopt.jl")
 @init begin
     @require NLopt="76087f3c-5699-56af-9a33-bf431cd00edd" begin
         include("wrappers/nlopt.jl")
