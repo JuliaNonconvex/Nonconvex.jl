@@ -49,27 +49,27 @@ function flatten(x::Real)
     return v, unflatten_to_Real
 end
 
-flatten(x::Vector{<:Real}) = (x, identity)
+flatten(x::Vector{<:Real}) = (identity.(x), identity)
 
 function flatten(x::AbstractVector)
-    x_vecs_and_backs = map(val -> flatten(val), x)
+    x_vecs_and_backs = map(val -> flatten(val), identity.(x))
     x_vecs, backs = first.(x_vecs_and_backs), last.(x_vecs_and_backs)
     function Vector_from_vec(x_vec)
         sz = _cumsum(map(_length, x_vecs))
         x_Vec = [backs[n](x_vec[sz[n] - _length(x_vecs[n]) + 1:sz[n]]) for n in eachindex(x)]
-        return oftype(x, x_Vec)
+        return x_Vec
     end
     return reduce(vcat, x_vecs), Vector_from_vec
 end
 
 function flatten(x::AbstractArray)
-    x_vec, from_vec = flatten(vec(x))
-    Array_from_vec(x_vec) = oftype(x, reshape(from_vec(x_vec), size(x)))
+    x_vec, from_vec = flatten(vec(identity.(x)))
+    Array_from_vec(x_vec) = reshape(from_vec(x_vec), size(x))
     return identity.(x_vec), Array_from_vec
 end
 
 function flatten(x::JuMP.Containers.DenseAxisArray)
-    x_vec, from_vec = flatten(vec(x.data))
+    x_vec, from_vec = flatten(vec(identity.(x.data)))
     Array_from_vec(x_vec) = JuMP.Containers.DenseAxisArray(reshape(from_vec(x_vec), size(x)), axes(x)...)
     return identity.(x_vec), Array_from_vec
 end
@@ -107,7 +107,7 @@ end
 
 function flatten(d::AbstractDict, ks = collect(keys(d)))
     _d = OrderedDict(k => d[k] for k in ks)
-    d_vec, unflatten = flatten(collect(values(_d)))
+    d_vec, unflatten = flatten(identity.(collect(values(_d))))
     function unflatten_to_Dict(v)
         v_vec_vec = unflatten(v)
         return OrderedDict(key => v_vec_vec[n] for (n, key) in enumerate(keys(_d)))
@@ -159,7 +159,7 @@ function flatten(::Tuple{})
 end
 function flatten(x)
     v, un = flatten(ntfromstruct(x))
-    return v, Unflatten(y -> structfromnt(typeof(x), un(y)))
+    return identity.(v), Unflatten(y -> structfromnt(typeof(x), un(y)))
 end
 
 macro constructor(T)
@@ -171,7 +171,7 @@ end
 flatten_expr(T, C) = quote
     function flatten(x::$(esc(T)))
         v, un = flatten(ntfromstruct(x))
-        return v, Unflatten(y -> structfromnt($(esc(C)), un(y)))
+        return identity.(v), Unflatten(y -> structfromnt($(esc(C)), un(y)))
     end
     _zero(x::$(esc(T))) = structfromnt($(esc(C)), _zero(ntfromstruct(x)))
 end
