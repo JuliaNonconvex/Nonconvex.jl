@@ -54,6 +54,12 @@ using JuMP: VariableRef, is_binary, is_integer, has_lower_bound,
 @reexport using LinearAlgebra, OrderedCollections
 
 abstract type Workspace end
+function reset!(w::Workspace, x0 = nothing)
+    if x0 !== nothing
+        w.x0 .= x0
+    end
+    return w
+end
 
 # General
 

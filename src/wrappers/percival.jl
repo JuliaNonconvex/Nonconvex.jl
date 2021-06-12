@@ -85,6 +85,14 @@ function Workspace(model::VecModel, optimizer::PercivalAlg, args...; kwargs...,)
     return PercivalWorkspace(model, args...; kwargs...)
 end
 
+function reset!(w::AugLagWorkspace, x0 = nothing)
+    w.counter[] = 0
+    if x0 !== nothing
+        w.x0 .= x0
+    end
+    return w
+end
+
 function getpercival_problem(model::VecModel, x0::AbstractVector)
     eq = if length(model.eq_constraints.fs) == 0
         nothing

@@ -147,6 +147,21 @@ function MMAWorkspace(
     )
 end
 
+function reset!(w::MMAWorkspace, x0 = nothing)
+    @unpack solution = w
+    outer_iter, iter, fcalls = 0, 0, 0, 0
+    @pack! w = fcalls, iter, outer_iter
+    if x0 !== nothing
+        w.x0 .= x0
+        w.tempx .= solution.prevx
+        solution.prevx .= solution.x
+        solution.x .= x0
+        updateapprox!(w.dualmodel, x0)
+    end
+    assess_convergence!(w)
+    return w
+end
+
 default_options(model::VecModel, alg::MMA87) = MMAOptions()
 default_options(model::VecModel, alg::MMA02) = MMAOptions()
 
