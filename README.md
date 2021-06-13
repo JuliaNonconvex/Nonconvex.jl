@@ -47,7 +47,7 @@ block_constr = x -> [g(x, 2, 0), g(x, -1, 1)]
 add_ineq_constraint!(m, block_constr)
 ```
 
-## MMA
+## Method of moving asymptotes
 
 ```julia
 alg = MMA87() # or MMA02()
@@ -63,7 +63,7 @@ r.minimum
 r.minimizer
 ```
 
-## NLopt
+## [NLopt.jl](https://github.com/JuliaOpt/NLopt.jl)
 
 ```julia
 import NLopt
@@ -75,7 +75,7 @@ r.minimum
 r.minimizer
 ```
 
-## Augmented Lagrangian / Percival
+## Augmented Lagrangian / [Percival.jl](https://github.com/JuliaSmoothOptimizers/Percival.jl)
 
 ```julia
 import Percival
@@ -95,7 +95,7 @@ add_eq_constraint!(m, f)
 ```
 where `f` is the constraint function to be equal 0.
 
-## Ipopt
+## [Ipopt.jl](https://github.com/jump-dev/Ipopt.jl)
 
 ```julia
 import Ipopt
@@ -109,7 +109,7 @@ r.minimizer
 
 ## Mixed integer optimization with Juniper and Ipopt
 
-### Juniper
+### [Juniper.jl](https://github.com/lanl-ansi/Juniper.jl)
 
 To do mixed integer optimization using Juniper and Ipopt, you can use:
 ```julia
@@ -131,7 +131,7 @@ r.minimum
 r.minimizer # [0.3327, 1]
 ```
 
-### Pavito
+### [Pavito.jl](https://github.com/jump-dev/Pavito.jl)
 
 Or use Pavito with Ipopt and Cbc as sub-solvers using:
 
@@ -154,7 +154,7 @@ r.minimum
 r.minimizer # [0.4934, 1.0]
 ```
 
-## Starting point optimization
+## Starting point optimization using [`Hyperopt.jl`](https://github.com/baggepinnen/Hyperopt.jl)
 
 ### `RandomSampler`, `LHSampler`, `CLHSampler` or `GPSampler`
 
