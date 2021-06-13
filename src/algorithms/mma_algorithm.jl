@@ -12,6 +12,8 @@ function MMA87(; dualoptimizer = Optim.GradientDescent())
     return MMA87(dualoptimizer)
 end
 
+const MMA = MMA87
+
 """
     MMA02
 
@@ -23,6 +25,8 @@ end
 function MMA02(; dualoptimizer = Optim.GradientDescent())
     return MMA02(dualoptimizer)
 end
+
+const GCMMA = MMA02
 
 """
     Trace
