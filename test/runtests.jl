@@ -1,5 +1,6 @@
 using SafeTestsets, Test
 
+#=
 @safetestset "Model" begin include("model.jl") end
 @safetestset "DictModel" begin include("dict_model.jl") end
 @safetestset "JuMP" begin include("jump.jl") end
@@ -13,4 +14,5 @@ end
 @safetestset "NLopt" begin include("nlopt.jl") end
 @safetestset "Juniper" begin include("juniper.jl") end
 @safetestset "Pavito" begin include("pavito.jl") end
+=#
 @safetestset "Hyperopt" begin include("hyperopt.jl") end
