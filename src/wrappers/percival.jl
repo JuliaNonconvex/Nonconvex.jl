@@ -29,7 +29,7 @@ function PercivalWorkspace(
     problem, counter = getpercival_problem(model, x0)
     return PercivalWorkspace(model, problem, x0, options, counter)
 end
-@params struct PercivalResult<:AbstractResult
+@params struct PercivalResult <: AbstractResult
     minimizer
     minimum
     problem

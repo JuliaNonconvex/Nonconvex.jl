@@ -45,7 +45,7 @@ function JuniperIpoptWorkspace(
     )
     return JuniperIpoptWorkspace(model, problem, x0, integers, options, counter)
 end
-@params struct JuniperIpoptResult
+@params struct JuniperIpoptResult <: AbstractResult
     minimizer
     minimum
     problem

@@ -27,7 +27,7 @@ function IpoptWorkspace(
     )
     return IpoptWorkspace(model, problem, x0, options, counter)
 end
-@params struct IpoptResult<:AbstractResult
+@params struct IpoptResult <: AbstractResult
     minimizer
     minimum
     problem

@@ -47,7 +47,7 @@ function PavitoIpoptCbcWorkspace(
     )
     return PavitoIpoptCbcWorkspace(model, problem, x0, integers, options, counter)
 end
-@params struct PavitoIpoptCbcResult
+@params struct PavitoIpoptCbcResult <: AbstractResult
     minimizer
     minimum
     problem
