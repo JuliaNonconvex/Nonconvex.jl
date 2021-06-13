@@ -68,6 +68,11 @@ function flatten(x::AbstractArray)
     return identity.(x_vec), Array_from_vec
 end
 
+# Zygote can return a sparse vector co-tangent
+# even if the input is a vector. This is causing
+# issues in the rrule definition of Unflatten
+flatten(x::SparseVector) = flatten(Array(x))
+
 function flatten(x::JuMP.Containers.DenseAxisArray)
     x_vec, from_vec = flatten(vec(identity.(x.data)))
     Array_from_vec(x_vec) = JuMP.Containers.DenseAxisArray(reshape(from_vec(x_vec), size(x)), axes(x)...)

@@ -25,6 +25,7 @@ export  Model,
         PercivalAlg,
         JuniperIpoptAlg,
         PavitoIpoptCbcAlg,
+        HyperoptAlg,
         KKTCriteria,
         IpoptCriteria,
         FunctionWrapper,
@@ -35,31 +36,28 @@ export  Model,
         PercivalOptions,
         JuniperIpoptOptions,
         PavitoIpoptCbcOptions,
+        HyperoptOptions,
         Tolerance,
-        @constructor
+        @constructor,
+        RandomSampler,
+        Hyperband,
+        LHSampler,
+        CLHSampler,
+        GPSampler
 
 using Parameters, Zygote, ChainRulesCore, ForwardDiff
-using ADNLPModels, NLPModelsModifiers, Ipopt
-import MathOptInterface, JuMP, Cbc
-const MOI = MathOptInterface
-using LinearAlgebra, Setfield, Requires, SparseArrays, Reexport
-using NamedTupleTools, Requires
+using Ipopt, ADNLPModels, NLPModelsModifiers
+using Requires, SparseArrays, Reexport
+using Cbc, Sobol, NamedTupleTools
+@reexport using LinearAlgebra, OrderedCollections
 using Optim: Optim, AbstractOptimizer
-using SparseArrays, OrderedCollections
+using Requires, Reexport, Setfield
+import JuMP, MathOptInterface
+const MOI = MathOptInterface
 using JuMP: VariableRef, is_binary, is_integer, has_lower_bound,
             has_upper_bound, lower_bound, upper_bound,
             start_value, ConstraintRef, constraint_object,
             AffExpr, objective_function, objective_sense
-            
-@reexport using LinearAlgebra, OrderedCollections
-
-abstract type Workspace end
-function reset!(w::Workspace, x0 = nothing)
-    if x0 !== nothing
-        w.x0 .= x0
-    end
-    return w
-end
 
 # General
 
@@ -69,6 +67,7 @@ include("functions/value_jacobian.jl")
 include("functions/function_docs.jl")
 include("functions/counting_function.jl")
 include("functions/aggregations.jl")
+include("algorithms/common.jl")
 
 # Models
 
@@ -119,6 +118,9 @@ include("wrappers/ipopt.jl")
     end
     @require Pavito="cd433a01-47d1-575d-afb7-6db927ee8d8f" begin
         include("wrappers/pavito.jl")
+    end
+    @require Hyperopt="93e5fe13-2215-51db-baaf-2e9a34fb2712" begin
+        include("wrappers/hyperopt.jl")
     end
 end
 

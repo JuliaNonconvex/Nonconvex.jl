@@ -153,6 +153,38 @@ r.minimum
 r.minimizer # [0.4934, 1.0]
 ```
 
+## Starting point optimization
+
+### `RandomSampler`, `LHSampler`, `CLHSampler` or `GPSampler`
+
+You can optimize the initial point `x0` using [`Hyperopt.jl`](https://github.com/baggepinnen/Hyperopt.jl):
+
+```julia
+import Hyperopt
+
+sampler = RandomSampler()
+options = HyperoptOptions(
+    sub_options = IpoptOptions(first_order = true),
+    sampler = sampler,
+)
+r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
+```
+
+When optimizing the starting point, the upper and lower bounds on the initial solution must be finite. To see all the options that can be set in `HyperoptOptions`, see `?HyperoptOptions`. The sampler can be replaced by `LHSampler()`, `CLHSampler()` or `GPSampler()`. See the documentation of [`Hyperopt.jl`](https://github.com/baggepinnen/Hyperopt.jl) for more details on the options available for each sampler. For `GPSampler`, `Hyperopt.Min` is always used by default in `Nonconvex.jl` so you should not pass this argument.
+
+### `Hyperband`
+
+Alternatively, the hyperband algorithm from `Hyperopt.jl` can be used where the inner sampler can be of type: `RandomSampler`, `LHSampler` or `CLHSampler`:
+```julia
+sampler = Hyperband(R=100, η=3, inner=RandomSampler())
+options = HyperoptOptions(
+    sub_options = max_iter -> IpoptOptions(first_order = true, max_iter = max_iter),
+    sampler = spl,
+)
+r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
+```
+The `sub_options` keyword argument must be a function here that specifies the resources option for the sub-solver used.
+
 ## Custom gradient / adjoint
 
 A custom gradient rule for a function should be defined using ChainRulesCore's `rrule`.

@@ -1,5 +1,3 @@
-abstract type AbstractModel end
-
 """
 ```
 struct Model <: AbstractModel

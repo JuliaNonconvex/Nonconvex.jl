@@ -29,7 +29,7 @@ function PercivalWorkspace(
     problem, counter = getpercival_problem(model, x0)
     return PercivalWorkspace(model, problem, x0, options, counter)
 end
-@params struct PercivalResult
+@params struct PercivalResult <: AbstractResult
     minimizer
     minimum
     problem
@@ -42,6 +42,7 @@ function optimize!(workspace::PercivalWorkspace)
     @unpack problem, options, x0, counter = workspace
     counter[] = 0
     m = getnconstraints(workspace.model)
+    problem.meta.x0 .= x0
     result = _percival(problem; options.nt..., inity = options.nt.inity(m))
     result.solution = result.solution[1:length(x0)]
     return PercivalResult(
@@ -145,6 +146,5 @@ function getpercival_problem(obj, ineq_constr, eq_constr, x0, xlb, xub)
     end
     lcon = [fill(-Inf, ineq_nconstr); zeros(eq_nconstr)]
     ucon = zeros(ineq_nconstr + eq_nconstr)
-    nlp = ADNLPModels.ADNLPModel(obj, x0, xlb, xub, c, lcon, ucon, adbackend = ADNLPModels.ZygoteAD())
-    return nlp
+    return ADNLPModels.ADNLPModel(obj, x0, xlb, xub, c, lcon, ucon, adbackend = ADNLPModels.ZygoteAD())
 end

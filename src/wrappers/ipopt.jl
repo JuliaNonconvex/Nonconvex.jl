@@ -27,7 +27,7 @@ function IpoptWorkspace(
     )
     return IpoptWorkspace(model, problem, x0, options, counter)
 end
-@params struct IpoptResult
+@params struct IpoptResult <: AbstractResult
     minimizer
     minimum
     problem
@@ -36,7 +36,8 @@ end
 end
 
 function optimize!(workspace::IpoptWorkspace)
-    @unpack problem, options, counter = workspace
+    @unpack problem, options, counter, x0 = workspace
+    problem.x .= x0
     counter[] = 0
     foreach(keys(options.nt)) do k
         v = options.nt[k]

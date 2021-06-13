@@ -45,7 +45,7 @@ function JuniperIpoptWorkspace(
     )
     return JuniperIpoptWorkspace(model, problem, x0, integers, options, counter)
 end
-@params struct JuniperIpoptResult
+@params struct JuniperIpoptResult <: AbstractResult
     minimizer
     minimum
     problem
@@ -54,11 +54,12 @@ end
 end
 
 function optimize!(workspace::JuniperIpoptWorkspace)
-    @unpack problem, options, counter = workspace
+    @unpack problem, options, x0, counter = workspace
     counter[] = 0
     jump_problem = workspace.problem
     jump_model = jump_problem.model
     moi_model = jump_model.moi_backend
+    MOI.set.(Ref(moi_model), Ref(MOI.VariablePrimalStart()), workspace.problem.vars, x0)
     MOI.optimize!(moi_model)
     minimizer = MOI.get(moi_model, MOI.VariablePrimal(), jump_problem.vars)
     objval = MOI.get(moi_model, MOI.ObjectiveValue())

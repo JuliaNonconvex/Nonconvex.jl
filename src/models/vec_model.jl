@@ -8,6 +8,12 @@ mutable struct VecModel{Tv <: AbstractVector} <: AbstractModel
     integer::BitVector
 end
 
+function isfeasible(model::VecModel, x::AbstractVector; ctol = 1e-4)
+    return all(getmin(model) .<= x .<= getmax(model)) &&
+        all(getineqconstraints(model)(x) .<= ctol) &&
+        all(-ctol .<= geteqconstraints(model)(x) .<= ctol)
+end
+
 function addvar!(m::VecModel, lb::Real, ub::Real; init::Real = lb, integer = false)
     push!(getmin(m), lb)
     push!(getmax(m), ub)

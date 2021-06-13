@@ -21,6 +21,7 @@ PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 Setfield = "efcf1570-3423-57d1-acb7-fd33fddbac46"
+Sobol = "ed01d8cd-4d21-5b2a-85b4-cc3bdc58bad4"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 
@@ -42,11 +43,12 @@ PyPlot = "2.9"
 Reexport = "1"
 Requires = "1"
 Setfield = "0.7"
-Zygote = "0.6.4"
+Zygote = "0.6"
 julia = "1"
 
 [extras]
 FiniteDifferences = "26cc04aa-876d-5657-8c51-4c34ba976000"
+Hyperopt = "93e5fe13-2215-51db-baaf-2e9a34fb2712"
 Juniper = "2ddba703-00a4-53a7-87a5-e8b9971dde84"
 NLopt = "76087f3c-5699-56af-9a33-bf431cd00edd"
 Pavito = "cd433a01-47d1-575d-afb7-6db927ee8d8f"
@@ -55,4 +57,4 @@ SafeTestsets = "1bc83da4-3b8d-516f-aca4-4fe02f6d838f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["FiniteDifferences", "Juniper", "NLopt", "Pavito", "Percival", "SafeTestsets", "Test"]
+test = ["FiniteDifferences", "Hyperopt", "Juniper", "NLopt", "Pavito", "Percival", "SafeTestsets", "Test"]
