@@ -9,13 +9,14 @@ This package implements and wraps a number of nonconvex constrained optimization
 - `MMA02`: the globally convergent method of moving asymptotes
 
 The following packages are wrapped:
-- `IpoptAlg`: a wrapper around Ipopt.jl
-- `NLoptAlg`: a wrapper around NLopt.jl
-- `AugLag`: a wrapper around Percival.jl which implements the augmented Lagrangian algorithm
-- `JuniperIpoptAlg`: a wrapper around Juniper.jl using Ipopt.jl as a sub-solver
-- `PavitoIpoptCbcAlg`: a wrapper around Pavito.jl using Ipopt.jl and Cbc.jl as sub-solvers
+- `IpoptAlg`: a wrapper around [`Ipopt.jl`](https://github.com/jump-dev/Ipopt.jl)
+- `NLoptAlg`: a wrapper around [`NLopt.jl`](https://github.com/JuliaOpt/NLopt.jl)
+- `AugLag`: a wrapper around [`Percival.jl`](https://github.com/JuliaSmoothOptimizers/Percival.jl) which implements the augmented Lagrangian algorithm
+- `JuniperIpoptAlg`: a wrapper around [`Juniper.jl`](https://github.com/lanl-ansi/Juniper.jl) using [`Ipopt.jl`](https://github.com/jump-dev/Ipopt.jl) as a sub-solver
+- `PavitoIpoptCbcAlg`: a wrapper around [`Pavito.jl`](https://github.com/jump-dev/Pavito.jl) using [`Ipopt.jl`](https://github.com/jump-dev/Ipopt.jl) and [`Cbc.jl`](https://github.com/jump-dev/Cbc.jl) as sub-solvers
+- `HyperoptAlg`: a wrapper around [`Hyperopt.jl`](https://github.com/baggepinnen/Hyperopt.jl) with your choice of sub-solver from any of the other solvers in this package.
 
-The method of moving asymptotes algorithms' were generalized to handle infinite variable bounds. In the augmented Lagrangian algorithm, a block constraint can be handled efficiently by defining a custom adjoint rule for the block constraint using `ChainRulesCore.jl`. This custom adjoint will be picked up by `Nonconvex.jl` when calculating the gradient of the augmented Lagrangian.
+The method of moving asymptotes algorithms' were generalized to handle infinite variable bounds. In the augmented Lagrangian algorithm, a block constraint can be handled efficiently by defining a custom adjoint rule for the block constraint using [`ChainRulesCore.jl`](https://github.com/JuliaDiff/ChainRulesCore.jl). This custom adjoint will be picked up by `Nonconvex.jl` when calculating the gradient of the augmented Lagrangian.
 
 # Examples
 
@@ -187,7 +188,7 @@ The `sub_options` keyword argument must be a function here that specifies the re
 
 ## Custom gradient / adjoint
 
-A custom gradient rule for a function should be defined using ChainRulesCore's `rrule`.
+A custom gradient rule for a function should be defined using [`ChainRulesCore`](https://github.com/JuliaDiff/ChainRulesCore.jl)'s `rrule`.
 For example the following can be used for the function `f` defined above.
 
 ```julia
@@ -210,7 +211,7 @@ For full details on `rrules` etc see the [ChainRules documentation](https://juli
 
 ## Hack to use other automatic differentiation backends
 
-For specific functions, if you want to use `ForwardDiff` instead of `Zygote`, one way to do this is to define an `rrule` using `ForwardDiff` to compute the gradient or jacobian, e.g:
+For specific functions, if you want to use [`ForwardDiff.jl`](https://github.com/JuliaDiff/ForwardDiff.jl) instead of [`Zygote.jl`](https://github.com/FluxML/Zygote.jl), one way to do this is to define an `rrule` using [`ForwardDiff.jl`](https://github.com/JuliaDiff/ForwardDiff.jl) to compute the gradient or jacobian, e.g:
 
 ```julia
 using ChainRulesCore, ForwardDiff
