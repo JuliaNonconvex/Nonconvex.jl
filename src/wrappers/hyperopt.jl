@@ -3,15 +3,17 @@
 end
 
 """
-    HyperoptOptions: Options performing starting point optimization
+    HyperoptOptions: options performing starting point optimization using Hyperopt.jl
 
 - `sub_options`: options for the sub-optimizer.
-- `x0_lb`: Lower bound of starting point, if don't specify it, the default value will be `nothing`, 
+- `lb`: Lower bound of starting point, if don't specify it, the default value will be `nothing`, 
             then will end up be replaced by the lower bound of optimization problem.
-- `x0_rb`: Hier bound of starting point, same as above. 
+- `rb`: Hier bound of starting point, same as above. 
 - `searchspace_size::Integer`: How many potential starting points we generate.
 - `iters::Integer`: Among all generated potential starting points, how many of them will be evaluated. 
 - `sampler::Hyperopt.Sampler`: An instance of ['Hyperopt.Sampler'](@ref), which decides search algorithm. 
+- `ctol`: infeasibility tolerance for accepting a solution as feasible
+- `keep_all`: if true, all the solutions of the sub-problems will be saved
 """
 @params struct HyperoptOptions
     sub_options

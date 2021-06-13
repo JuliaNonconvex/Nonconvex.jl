@@ -155,35 +155,35 @@ r.minimizer # [0.4934, 1.0]
 
 ## Starting point optimization
 
-You can automatically search a good hyperparameter, using methods in Hyperopt.jl. For example, to optimize the starting point of the optimization, use:
+### `RandomSampler`, `LHSampler`, `CLHSampler` or `GPSampler`
+
+You can optimize the initial point `x0` using [`Hyperopt.jl`](https://github.com/baggepinnen/Hyperopt.jl):
+
 ```julia
-r1 = @search_x0 Nonconvex.optimize(
-    m, alg, [1.234, 2.345],
-    options = options, convcriteria = convcriteria,
-)
+import Hyperopt
 
-# If you prefer customized options
-hyperopt_options = X0OptOptions(
-    x0_lb = [0.5, 0.5], x0_rb = [2.8, 2.8],
-    iters=20, searchspace_size=iters,
-    sampler=Hyperopt.RandomSampler(), 
-    verbose=true, keepall=true,
+sampler = RandomSampler()
+options = HyperoptOptions(
+    sub_options = IpoptOptions(first_order = true),
+    sampler = sampler,
 )
-# Searching hyperparameters using customized options. 
-r2 = @hypersearch hyperopt_options, Nonconvex.optimize(
-    m, alg, [1.234, 2.345],
-    options = options, convcriteria = convcriteria,
-)
-# Equivalent as above. 
-r3 = @search_x0 hyperopt_options, Nonconvex.optimize(
-    m, alg, [1.234, 2.345],
-    options = options, convcriteria = convcriteria,
-)
-
-println(r1.minimum)
-println(r2.minimum)
-println(r3.minimum)
+r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
 ```
+
+When optimizing the starting point, the upper and lower bounds on the initial solution must be finite. To see all the options that can be set in `HyperoptOptions`, see `?HyperoptOptions`. The sampler can be replaced by `LHSampler()`, `CLHSampler()` or `GPSampler()`. See the documentation of [`Hyperopt.jl`](https://github.com/baggepinnen/Hyperopt.jl) for more details on the options available for each sampler. For `GPSampler`, `Hyperopt.Min` is always used by default in `Nonconvex.jl` so you should not pass this argument.
+
+### `Hyperband`
+
+Alternatively, the hyperband algorithm from `Hyperopt.jl` can be used where the inner sampler can be of type: `RandomSampler`, `LHSampler` or `CLHSampler`:
+```julia
+sampler = Hyperband(R=100, η=3, inner=RandomSampler())
+options = HyperoptOptions(
+    sub_options = max_iter -> IpoptOptions(first_order = true, max_iter = max_iter),
+    sampler = spl,
+)
+r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
+```
+The `sub_options` keyword argument must be a function here that specifies the resources option for the sub-solver used.
 
 ## Custom gradient / adjoint
 
