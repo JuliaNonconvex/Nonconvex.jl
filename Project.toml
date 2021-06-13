@@ -43,6 +43,7 @@ PyPlot = "2.9"
 Reexport = "1"
 Requires = "1"
 Setfield = "0.7"
+Sobol = "1"
 Zygote = "0.6"
 julia = "1"
 
