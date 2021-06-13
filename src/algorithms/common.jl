@@ -1,20 +1,6 @@
-
-"""
-******************************************************************
-*  Common objects and methods used for all algorithms
-******************************************************************
-"""
-
-
-"""
-**********************************************
-*  Common objects
-**********************************************
-"""
-
-"""
-    Workspaces
-"""
+######################################################
+# Common objects and methods used for all algorithms
+######################################################
 
 """
     Workspace
@@ -23,11 +9,12 @@ Abstract Workspace, which is a struct that stores states and information needed 
 Implementation depends on specific algorithm.
 """
 abstract type Workspace end
-
-
-"""
-    Convergence related objects
-"""
+function reset!(w::Workspace, x0 = nothing)
+    if x0 !== nothing
+        w.x0 .= x0
+    end
+    return w
+end
 
 """
     ConvergenceState
@@ -136,13 +123,6 @@ struct ScaledKKTCriteria <: ConvergenceCriteria end
 
 
 """
-**********************************************
-*  Solution related objects
-**********************************************
-"""
-
-
-"""
     Solution
 
 A struct that stores all the information about a solution. The following are the fields of `Solution`:
@@ -188,15 +168,9 @@ function Solution(dualmodel, λ)
     return Solution(prevx, x, λ, prevf, f, ∇f, g, ∇g, convstate)
 end
 
-
-"""
-**********************************************
-*  Optimization result related objects
-**********************************************
-"""
-
 """  
     AbstractResult
+
 An abstract type that stores optimization result.
 """
 abstract type AbstractResult end
@@ -215,11 +189,11 @@ A summary result struct returned by [`optimize`](@ref), including following fiel
  - `convstate`: an instance of [`ConvergenceCriteria`](@ref) that summarizes the convergenc state of the best solution found
  - `fcalls`: the number of times the objective and constraint functions were called during the optimization
 """
-@params mutable struct GenericResult{T}<:AbstractResult
+@params mutable struct GenericResult <: AbstractResult
     optimizer
-    initial_x::AbstractVector{T}
-    minimizer::AbstractVector{T}
-    minimum::T
+    initial_x
+    minimizer
+    minimum::Real
     iter::Int
     maxiter_reached::Bool
     tol::Tolerance
@@ -227,12 +201,7 @@ A summary result struct returned by [`optimize`](@ref), including following fiel
     fcalls::Int
 end
 
-
-"""
-**********************************************
-*  Common methods
-**********************************************
-"""
+abstract type AbstractModel end
 
 """
 ```
@@ -247,14 +216,17 @@ optimize(
     kwargs...,
 )
 ```
+
 Optimizes `model` using the algorithm `optimizer`, e.g. an instance of [`MMA87`](@ref) or [`MMA02`](@ref). `x0` is the initial solution. The keyword arguments are:
  - `options`: used to set the optimization options. It is an instance of [`MMAOptions`](@ref) for [`MMA87`](@ref) and [`MMA02`](@ref).
  - `convcriteria`: an instance of [`ConvergenceCriteria`](@ref) that specifies the convergence criteria of the MMA algorithm.
  - `plot_trace`: a Boolean that if true specifies the callback to be an instance of [`PlottingCallback`](@ref) and plots a live trace of the last 50 solutions.
  - `callback`: a function that is called on `solution` in every iteration of the algorithm. This can be used to store information about the optimization process.
+
  The details of the MMA optimization algorithms can be found in the original [1987 MMA paper](https://onlinelibrary.wiley.com/doi/abs/10.1002/nme.1620240207) and the [2002 paper](https://epubs.siam.org/doi/abs/10.1137/S1052623499362822).
 """
-function optimize(args...; kwargs...)
-    workspace = Workspace(args...; kwargs...)
-    return optimize!(workspace)
+function optimize(model::AbstractModel, optimizer::AbstractOptimizer, x0, args...; kwargs...)
+    _model, _x0, unflatten = tovecmodel(model, x0)
+    r = optimize(_model, optimizer, _x0, args...; kwargs...)
+    return @set r.minimizer = unflatten(r.minimizer)
 end

@@ -1,29 +1,29 @@
-import .Juniper
+import .Pavito
 
-@params struct JuniperIpoptOptions
+@params struct PavitoIpoptCbcOptions
     nt::NamedTuple
     subsolver_options
     first_order::Bool
 end
-function JuniperIpoptOptions(;
+function PavitoIpoptCbcOptions(;
     first_order = true, subsolver_options = IpoptOptions(first_order = first_order), kwargs...,
 )
     first_order = !hasproperty(subsolver_options.nt, :hessian_approximation) ||
         subsolver_options.nt.hessian_approximation == "limited-memory"
-    return JuniperIpoptOptions((; kwargs...), subsolver_options, first_order)
+    return PavitoIpoptCbcOptions((; kwargs...), subsolver_options, first_order)
 end
 
-@params mutable struct JuniperIpoptWorkspace <: Workspace
+@params mutable struct PavitoIpoptCbcWorkspace <: Workspace
     model::VecModel
     problem::JuMPProblem
     x0::AbstractVector
     integers::AbstractVector{<:Bool}
-    options::JuniperIpoptOptions
+    options::PavitoIpoptCbcOptions
     counter::Base.RefValue{Int}
 end
-function JuniperIpoptWorkspace(
+function PavitoIpoptCbcWorkspace(
     model::VecModel, x0::AbstractVector = getinit(model);
-    options = JuniperIpoptOptions(), kwargs...,
+    options = PavitoIpoptCbcOptions(), kwargs...,
 )
     integers = model.integer
     @assert length(integers) == length(x0)
@@ -37,15 +37,17 @@ function JuniperIpoptWorkspace(
         string(k) => nt2[k]
     end
     optimizer = JuMP.optimizer_with_attributes(
-        Juniper.Optimizer, "nl_solver" => nl_solver, Dict(solver_options)...,
+        Pavito.Optimizer,
+        "cont_solver" => nl_solver, Dict(solver_options)...,
+        "mip_solver" => JuMP.optimizer_with_attributes(Cbc.Optimizer),
     )
     problem, counter = get_jump_problem(
         model, x0; first_order = options.first_order,
         optimizer = optimizer, integers = integers,
     )
-    return JuniperIpoptWorkspace(model, problem, x0, integers, options, counter)
+    return PavitoIpoptCbcWorkspace(model, problem, x0, integers, options, counter)
 end
-@params struct JuniperIpoptResult
+@params struct PavitoIpoptCbcResult
     minimizer
     minimum
     problem
@@ -53,7 +55,7 @@ end
     fcalls::Int
 end
 
-function optimize!(workspace::JuniperIpoptWorkspace)
+function optimize!(workspace::PavitoIpoptCbcWorkspace)
     @unpack problem, options, x0, counter = workspace
     counter[] = 0
     jump_problem = workspace.problem
@@ -65,16 +67,16 @@ function optimize!(workspace::JuniperIpoptWorkspace)
     objval = MOI.get(moi_model, MOI.ObjectiveValue())
     term_status = MOI.get(moi_model, MOI.TerminationStatus())
     primal_status = MOI.get(moi_model, MOI.PrimalStatus())
-    return JuniperIpoptResult(
+    return PavitoIpoptCbcResult(
         minimizer, objval, problem, (term_status, primal_status), counter[],
     )
 end
 
-struct JuniperIpoptAlg{O} <: AbstractOptimizer
+struct PavitoIpoptCbcAlg{O} <: AbstractOptimizer
     options::O
 end
-JuniperIpoptAlg(; kwargs...) = JuniperIpoptAlg(kwargs)
+PavitoIpoptCbcAlg(; kwargs...) = PavitoIpoptCbcAlg(kwargs)
 
-function Workspace(model::VecModel, optimizer::JuniperIpoptAlg, args...; kwargs...,)
-    return JuniperIpoptWorkspace(model, args...; kwargs...)
+function Workspace(model::VecModel, optimizer::PavitoIpoptCbcAlg, args...; kwargs...,)
+    return PavitoIpoptCbcWorkspace(model, args...; kwargs...)
 end

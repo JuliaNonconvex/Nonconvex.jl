@@ -65,7 +65,7 @@ end
 
 Constructs an instance of `VectorOfFunctions` made of functions `fs`. `fs` can be a vector or tuple of instances of `AbstractFunction`. If a function in `fs` is a `VectorOfFunctions`, it will be unwrapped.
 """
-function VectorOfFunctions(fs) end
+VectorOfFunctions(fs)
 
 function VectorOfFunctions(
     fs::Union{
@@ -91,7 +91,8 @@ Calls the wrapped functions in `f` with arguments `args` and keyword arguments `
 """
 function (f::VectorOfFunctions)(args...; kwargs...)
     ys = map(f.fs) do f
-        f(args...; kwargs...)
+        out = f(args...; kwargs...)
+        length(out) == 0 ? Union{}[] : out
     end
     return vcat(ys...)
 end

@@ -38,7 +38,7 @@ function Solution(lagmodel::AugLag2Model)
 end
 
 @params mutable struct AugLag2Workspace <: Workspace
-    model::Model
+    model::VecModel
     lagmodel::AugLag2Model
     x0::AbstractVector
     optimizer::AugLag2
@@ -54,7 +54,7 @@ end
 	fcalls::Int
 end
 function AugLag2Workspace(
-    model::AbstractModel,
+    model::VecModel,
     optimizer::AugLag2,
     x0::AbstractVector;
     options::AugLag2Options = AugLag2Options(optimizer),
@@ -96,7 +96,7 @@ function AugLag2Workspace(
     )
 end
 
-Workspace(model::AbstractModel, alg::AugLag2, x0::AbstractVector; kwargs...) = AugLag2Workspace(model, alg, x0; kwargs...)
+Workspace(model::VecModel, alg::AugLag2, x0::AbstractVector; kwargs...) = AugLag2Workspace(model, alg, x0; kwargs...)
 
 function optimize!(workspace::AugLag2Workspace)
     @unpack lagmodel, solution, options, convcriteria = workspace

@@ -1,5 +1,3 @@
-abstract type AbstractModel end
-
 """
 ```
 struct Model <: AbstractModel
@@ -8,6 +6,8 @@ struct Model <: AbstractModel
     ineq_constraints::VectorOfFunctions
     box_min::AbstractVector
     box_max::AbstractVector
+    init::AbstractVector
+    integer::AbstractVector
 end
 ```
 
@@ -22,21 +22,17 @@ mutable struct Model{Tv <: AbstractVector} <: AbstractModel
     ineq_constraints::VectorOfFunctions
     box_min::Tv
     box_max::Tv
+    init::Tv
+    integer::BitVector
 end
 
 """
     Model()
-
-Constructs an empty model. The decision variables are assumed to be of type `Vector{Float64}`.
-"""
-Model() = Model(Float64, nothing)
-
-"""
     Model(f)
 
-Constructs an empty model with objective function `f`. `f` can be an instance of `Base.Function` but must return a number,  or it can be an intance of [`Objective`](@ref). The decision variables are assumed to be of type `Vector{Float64}`.
+Constructs an empty model or a model with objective function `f`. The decision variables are assumed to be of type `Vector{Any}`.
 """
-Model(f::Function) = Model(Float64, f)
+Model(f::Union{Nothing, Function} = nothing) = Model(Any, f)
 
 """
     Model(::Type{T}, f::Union{Nothing, Function}) where {T}
@@ -45,7 +41,7 @@ Constructs an empty model with objective function `f` and decision variable valu
 """
 Model(::Type{T}, f::Function) where {T} = Model(T, Objective(f))
 function Model(::Type{T}, obj::Union{Nothing, Objective}) where {T}
-    return Model(obj, VectorOfFunctions(EqConstraint[]), VectorOfFunctions(IneqConstraint[]), T[], T[])
+    return Model(obj, VectorOfFunctions(EqConstraint[]), VectorOfFunctions(IneqConstraint[]), T[], T[], T[], falses(0))
 end
 
 getobjective(m::AbstractModel) = m.objective
@@ -77,37 +73,23 @@ Returns a 2-tuple of the number of constraints and the number of variables in th
 """
 getdim(m::AbstractModel) = (getnconstraints(m), getnvars(m))
 
-get_objective_multiple(model::Model) = getobjective(model).multiple[]
+getmin(m::AbstractModel)= m.box_min
+getmin(m::AbstractModel, i) = getmin(m)[i]
+isinteger(m::AbstractModel, i) = m.integer[i]
 
-function set_objective_multiple!(model::Model, m::Real)
-    getobjective(model).multiple[] = m
-    return model
-end
+getmax(m::AbstractModel) = m.box_max
+getmax(m::AbstractModel, i) = getmax(m)[i]
 
-getmin(m::Model)= m.box_min
-getmin(m::AbstractModel, i::Integer) = getmin(m)[i]
-
-getmax(m::Model) = m.box_max
-getmax(m::AbstractModel, i::Integer) = getmax(m)[i]
-
-function getinit(m::AbstractModel)
-    ma = getmax(m)
-    mi = getmin(m)
-    return map(1:length(mi)) do i
-        _ma = ma[i]
-        _mi = mi[i]
-        _ma == Inf && _mi == -Inf && return 0.0
-        _ma == Inf && return _mi + 1.0
-        _mi == -Inf && return _ma - 1.0
-        return (_ma + _mi) / 2
-    end
+function getinit(model::AbstractModel)
+    _model, _, unflatten = tovecmodel(model)
+    return unflatten(getinit(_model))
 end
 
 function setmin!(m::AbstractModel, min)
     getmin(m) .= min
     return m
 end
-function setmin!(m::AbstractModel, i::Integer, min)
+function setmin!(m::AbstractModel, i, min)
     getmin(m)[i] = min
     return m
 end
@@ -116,26 +98,39 @@ function setmax!(m::AbstractModel, max)
     getmax(m) .= max
     return m
 end
-function setmax!(m::AbstractModel, i::Integer, max)
+function setmax!(m::AbstractModel, i, max)
     getmax(m)[i] = max
     return m
 end
 
 # Box constraints
-function setbox!(m::AbstractModel, minb::T, maxb::T) where {T}
+function setbox!(m::AbstractModel, minb, maxb)
     getmin(m) .= minb
     getmax(m) .= maxb
     return m
 end
-function setbox!(m::AbstractModel, i::Integer, minb, maxb)
+function setbox!(m::AbstractModel, i, minb, maxb)
     getmin(m)[i] = minb
     getmax(m)[i] = maxb
     return m
 end
+function setinteger!(m::AbstractModel, i, integer)
+    m.integer[i] = integer
+    return m
+end
 
-function addvar!(m::Model, lb, ub)
+function addvar!(m::Model, lb, ub; init = deepcopy(lb), integer = false)
+    push!(getmin(m), lb)
+    push!(getmax(m), ub)
+    push!(m.init, init)
+    push!(m.integer, integer)
+    return m
+end
+function addvar!(m::Model, lb::Vector, ub::Vector; init = deepcopy(lb), integer = falses(length(lb)))
     append!(getmin(m), lb)
     append!(getmax(m), ub)
+    append!(m.init, init)
+    append!(m.integer, integer)
     return m
 end
 
@@ -149,32 +144,32 @@ function set_objective!(m::AbstractModel, f::Function)
     return m
 end
 
-function add_ineq_constraint!(m::AbstractModel, f::Function, s = 0.0; dim = length(f(getinit(m))))
+function add_ineq_constraint!(m::AbstractModel, f::Function, s = 0.0; dim = length(flatten(f(getinit(m)))[1]))
     return add_ineq_constraint!(m, FunctionWrapper(f, dim), s)
 end
 function add_ineq_constraint!(m::AbstractModel, f::AbstractFunction, s = 0.0)
     return add_ineq_constraint!(m, IneqConstraint(f, s))
 end
-function add_ineq_constraint!(m::Model, f::IneqConstraint)
+function add_ineq_constraint!(m::AbstractModel, f::IneqConstraint)
     push!(m.ineq_constraints.fs, f)
     return m
 end
-function add_ineq_constraint!(m::Model, fs::Vector{<:IneqConstraint})
+function add_ineq_constraint!(m::AbstractModel, fs::Vector{<:IneqConstraint})
     append!(m.ineq_constraints.fs, fs)
     return m
 end
 
-function add_eq_constraint!(m::AbstractModel, f::Function, s = 0.0; dim = length(f(getinit(m))))
+function add_eq_constraint!(m::AbstractModel, f::Function, s = 0.0; dim = length(flatten(f(getinit(m)))[1]))
     return add_eq_constraint!(m, FunctionWrapper(f, dim), s)
 end
 function add_eq_constraint!(m::AbstractModel, f::AbstractFunction, s = 0.0)
     return add_eq_constraint!(m, EqConstraint(f, s))
 end
-function add_eq_constraint!(m::Model, f::EqConstraint)
+function add_eq_constraint!(m::AbstractModel, f::EqConstraint)
     push!(m.eq_constraints.fs, f)
     return m
 end
-function add_eq_constraint!(m::Model, fs::Vector{<:EqConstraint})
+function add_eq_constraint!(m::AbstractModel, fs::Vector{<:EqConstraint})
     append!(m.eq_constraints.fs, fs)
     return m
 end

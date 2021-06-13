@@ -12,6 +12,8 @@ The following packages are wrapped:
 - `IpoptAlg`: a wrapper around Ipopt.jl
 - `NLoptAlg`: a wrapper around NLopt.jl
 - `AugLag`: a wrapper around Percival.jl which implements the augmented Lagrangian algorithm
+- `JuniperIpoptAlg`: a wrapper around Juniper.jl using Ipopt.jl as a sub-solver
+- `PavitoIpoptCbcAlg`: a wrapper around Pavito.jl using Ipopt.jl and Cbc.jl as sub-solvers
 
 The method of moving asymptotes algorithms' were generalized to handle infinite variable bounds. In the augmented Lagrangian algorithm, a block constraint can be handled efficiently by defining a custom adjoint rule for the block constraint using `ChainRulesCore.jl`. This custom adjoint will be picked up by `Nonconvex.jl` when calculating the gradient of the augmented Lagrangian.
 
@@ -40,7 +42,7 @@ add_ineq_constraint!(m, x -> g(x, -1, 1))
 ```julia
 m = Model(f)
 addvar!(m, [0.0, 0.0], [10.0, 10.0])
-block_constr = FunctionWrapper(x -> [g(x, 2, 0), g(x, -1, 1)], 2)
+block_constr = x -> [g(x, 2, 0), g(x, -1, 1)]
 add_ineq_constraint!(m, block_constr)
 ```
 
@@ -63,6 +65,8 @@ r.minimizer
 ## NLopt
 
 ```julia
+import NLopt
+
 alg = NLoptAlg(:LD_MMA)
 options = Nonconvex.NLoptOptions()
 r = optimize(m, alg, [1.234, 2.345], options = options)
@@ -73,6 +77,8 @@ r.minimizer
 ## Augmented Lagrangian / Percival
 
 ```julia
+import Percival
+
 alg = AugLag()
 options = Nonconvex.AugLagOptions()
 r = optimize(m, alg, [1.234, 2.345], options = options)
@@ -80,21 +86,19 @@ r.minimum
 r.minimizer
 ```
 
-## Mixed equality and inequality constraints
+## Equality constraints
 
+You can add equality constraints to the model using:
 ```julia
-f(x) = sqrt(x[2])
-g(x, a, b) = (a*x[1] + b)^3 - x[2]
-
-m = Model(f)
-addvar!(m, [0.0, 0.0], [10.0, 10.0])
-add_eq_constraint!(m, x -> g(x, 2, 0))
-add_ineq_constraint!(m, x -> g(x, -1, 1))
+add_eq_constraint!(m, f)
 ```
+where `f` is the constraint function to be equal 0.
 
 ## Ipopt
 
 ```julia
+import Ipopt
+
 alg = IpoptAlg()
 options = Nonconvex.IpoptOptions()
 r = optimize(m, alg, [1.234, 2.345], options = options)
@@ -104,34 +108,77 @@ r.minimizer
 
 ## Mixed integer optimization with Juniper and Ipopt
 
+### Juniper
+
 To do mixed integer optimization using Juniper and Ipopt, you can use:
 ```julia
+import Juniper
+using Nonconvex
+
+f(x) = sqrt(x[2])
+g(x, a, b) = (a*x[1] + b)^3 - x[2]
+
+m = Model(f)
+addvar!(m, [0.0, 0.0], [10.0, 10.0], integer = [false, true])
+add_ineq_constraint!(m, x -> g(x, 2, 0))
+add_ineq_constraint!(m, x -> g(x, -1, 1))
+
 alg = JuniperIpoptAlg()
 options = Nonconvex.JuniperIpoptOptions()
-r = optimize(m, alg, [1.234, 2.345], options = options, integers = [false, true])
+r = optimize(m, alg, [1.234, 2.345], options = options)
 r.minimum
 r.minimizer # [0.3327, 1]
 ```
 
-# Hyperopt
+### Pavito
 
-You can automatically search a good hyperparameter, using methods in Hyperopt.jl.
+Or use Pavito with Ipopt and Cbc as sub-solvers using:
 
-Currently support search starting point ```x0```.
 ```julia
-# Automatically search a good starting point (using default option) by add an @search_x0 before optimize call. 
-r1 = @search_x0 Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, convcriteria = convcriteria)
+import Pavito
+using Nonconvex
+
+f(x) = sqrt(x[2])
+g(x, a, b) = (a*x[1] + b)^3 - x[2]
+
+m = Model(f)
+addvar!(m, [0.0, 0.0], [10.0, 10.0], integer = [false, true])
+add_ineq_constraint!(m, x -> g(x, 2, 0))
+add_ineq_constraint!(m, x -> g(x, -1, 1))
+
+alg = PavitoIpoptCbcAlg()
+options = Nonconvex.PavitoIpoptCbcOptions()
+r = optimize(m, alg, [1.234, 2.345], options = options)
+r.minimum
+r.minimizer # [0.4934, 1.0]
+```
+
+## Starting point optimization
+
+You can automatically search a good hyperparameter, using methods in Hyperopt.jl. For example, to optimize the starting point of the optimization, use:
+```julia
+r1 = @search_x0 Nonconvex.optimize(
+    m, alg, [1.234, 2.345],
+    options = options, convcriteria = convcriteria,
+)
 
 # If you prefer customized options
-hyperopt_options = X0OptOptions(x0_lb=[0.5, 0.5], x0_rb=[2.8, 2.8],
-                                searchspace_size=1000, iters=20, 
-                                sampler=Hyperopt.RandomSampler(), 
-                                verbose=true,
-                                keepall=true)
+hyperopt_options = X0OptOptions(
+    x0_lb = [0.5, 0.5], x0_rb = [2.8, 2.8],
+    iters=20, searchspace_size=iters,
+    sampler=Hyperopt.RandomSampler(), 
+    verbose=true, keepall=true,
+)
 # Searching hyperparameters using customized options. 
-r2 = @hypersearch hyperopt_options, Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, convcriteria = convcriteria)
+r2 = @hypersearch hyperopt_options, Nonconvex.optimize(
+    m, alg, [1.234, 2.345],
+    options = options, convcriteria = convcriteria,
+)
 # Equivalent as above. 
-r3 = @search_x0 hyperopt_options, Nonconvex.optimize(m, alg, [1.234, 2.345], options = options, convcriteria = convcriteria)
+r3 = @search_x0 hyperopt_options, Nonconvex.optimize(
+    m, alg, [1.234, 2.345],
+    options = options, convcriteria = convcriteria,
+)
 
 println(r1.minimum)
 println(r2.minimum)

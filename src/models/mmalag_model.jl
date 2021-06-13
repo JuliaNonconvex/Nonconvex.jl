@@ -1,7 +1,7 @@
 """
 ```
 struct MMALagModel <: AbstractModel
-    parent::Model
+    parent::VecModel
     quadweight::Base.RefValue{<:Real}
     linweights::AbstractVector
     origobjval::Base.RefValue{<:Real}
@@ -12,14 +12,14 @@ end
 A model with aggregated block constraints. Any block constraint in `parent` is aggregated using the corresponding weights in `linweights`. Non-block constraints are treated as block constraints of dimension 1. Let `violations` be the sum of constraint violations at a point `x`. The objective value of an instance of `MMALagModel` is the original objective value of its `parent` plus `quadweight[] * sum(max.(violations, 0)^2)`. The Lagrangian function of the new problem is the augmented Lagrangian function of the original problem. `origobjval` and `origconstrval` store the original objective and constraint values respectively when evaluating the aggregated objective and constraints.
 """
 @params struct MMALagModel <: AbstractModel
-    parent::Model
+    parent::VecModel
     quadweight::Base.RefValue{<:Real}
     linweights::AbstractVector
     origobjval::Base.RefValue{<:Real}
     origconstrval::AbstractVector
 end
 function MMALagModel(
-    model::Model;
+    model::VecModel;
     quadweight = 1e-5,
     linweights = ones(2*getdim(getineqconstraints(model))),
     kwargs...,
@@ -100,8 +100,8 @@ getmin(m::MMALagModel)= getmin(m.parent)
 
 getmax(m::MMALagModel) = getmax(m.parent)
 
-function addvar!(m::MMALagModel, lb, ub)
-    addvar!(getparent(m), lb, ub)
+function addvar!(m::MMALagModel, lb, ub; kwargs...)
+    addvar!(getparent(m), lb, ub; kwargs...)
     return m
 end
 

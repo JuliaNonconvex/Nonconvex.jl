@@ -1,4 +1,6 @@
-struct NLoptAlg
+import .NLopt
+
+struct NLoptAlg <: AbstractOptimizer
     alg::Symbol
 end
 
@@ -26,7 +28,7 @@ function NLoptOptions(;
 end
 
 @params mutable struct NLoptWorkspace <: Workspace
-    model::Model
+    model::VecModel
     problem::NLopt.Opt
     x0::AbstractVector
     options::NLoptOptions
@@ -34,7 +36,7 @@ end
     counter::Base.RefValue{Int}
 end
 function NLoptWorkspace(
-    model::Model, optimizer::NLoptAlg,
+    model::VecModel, optimizer::NLoptAlg,
     x0::AbstractVector = getinit(model);
     options = NLoptOptions(), kwargs...,
 )
@@ -63,11 +65,11 @@ function optimize!(workspace::NLoptWorkspace)
     )
 end
 
-function Workspace(model::AbstractModel, optimizer::NLoptAlg, args...; kwargs...,)
+function Workspace(model::VecModel, optimizer::NLoptAlg, args...; kwargs...,)
     return NLoptWorkspace(model, optimizer, args...; kwargs...)
 end
 
-function getnlopt_problem(alg, model::Model, x0::AbstractVector)
+function getnlopt_problem(alg, model::VecModel, x0::AbstractVector)
     eq = if length(model.eq_constraints.fs) == 0
         nothing
     else

@@ -1,4 +1,6 @@
-struct PercivalAlg end
+import .Percival
+
+struct PercivalAlg <: AbstractOptimizer end
 const AugLag = PercivalAlg
 
 @params struct PercivalOptions
@@ -14,14 +16,14 @@ end
 const AugLagOptions = PercivalOptions
 
 @params mutable struct PercivalWorkspace <: Workspace
-    model::Model
+    model::VecModel
     problem::Percival.NLPModels.AbstractNLPModel
     x0::AbstractVector
     options::PercivalOptions
     counter::Base.RefValue{Int}
 end
 function PercivalWorkspace(
-    model::Model, x0::AbstractVector = getinit(model);
+    model::VecModel, x0::AbstractVector = getinit(model);
     options = PercivalOptions(), kwargs...,
 )
     problem, counter = getpercival_problem(model, x0)
@@ -40,6 +42,7 @@ function optimize!(workspace::PercivalWorkspace)
     @unpack problem, options, x0, counter = workspace
     counter[] = 0
     m = getnconstraints(workspace.model)
+    problem.meta.x0 .= x0
     result = _percival(problem; options.nt..., inity = options.nt.inity(m))
     result.solution = result.solution[1:length(x0)]
     return PercivalResult(
@@ -79,11 +82,19 @@ function _percival(nlp;
     end
 end
 
-function Workspace(model::AbstractModel, optimizer::PercivalAlg, args...; kwargs...,)
+function Workspace(model::VecModel, optimizer::PercivalAlg, args...; kwargs...,)
     return PercivalWorkspace(model, args...; kwargs...)
 end
 
-function getpercival_problem(model::Model, x0::AbstractVector)
+function reset!(w::AugLagWorkspace, x0 = nothing)
+    w.counter[] = 0
+    if x0 !== nothing
+        w.x0 .= x0
+    end
+    return w
+end
+
+function getpercival_problem(model::VecModel, x0::AbstractVector)
     eq = if length(model.eq_constraints.fs) == 0
         nothing
     else
@@ -135,6 +146,5 @@ function getpercival_problem(obj, ineq_constr, eq_constr, x0, xlb, xub)
     end
     lcon = [fill(-Inf, ineq_nconstr); zeros(eq_nconstr)]
     ucon = zeros(ineq_nconstr + eq_nconstr)
-    nlp = ADNLPModels.ADNLPModel(obj, x0, xlb, xub, c, lcon, ucon, adbackend = ADNLPModels.ZygoteAD())
-    return nlp
+    return ADNLPModels.ADNLPModel(obj, x0, xlb, xub, c, lcon, ucon, adbackend = ADNLPModels.ZygoteAD())
 end
