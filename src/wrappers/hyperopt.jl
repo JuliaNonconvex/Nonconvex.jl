@@ -1,3 +1,5 @@
+import .Hyperopt
+
 @params struct HyperoptAlg <: AbstractOptimizer
     sub_alg::AbstractOptimizer
 end
