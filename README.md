@@ -197,7 +197,7 @@ using ChainRulesCore
 function ChainRulesCore.rrule(::typeof(f), x::AbstractVector)
     val = f(x)
     grad = [0.0, 1 / (2 * sqrt(x[2]))]
-    val, Δ -> (NO_FIELDS, Δ * grad)
+    val, Δ -> (NoTangent(), Δ * grad)
 end
 ```
 
@@ -219,6 +219,6 @@ using ChainRulesCore, ForwardDiff
 function ChainRulesCore.rrule(::typeof(f), x::AbstractVector)
     val = f(x)
     grad = ForwardDiff.gradient(f, x)
-    val, Δ -> (NO_FIELDS, Δ * grad)
+    val, Δ -> (NoTangent(), Δ * grad)
 end
 ```

@@ -123,7 +123,7 @@ function ChainRulesCore.rrule(::typeof(flatten), d::AbstractDict, ks)
     _d = OrderedDict(k => d[k] for k in ks)
     d_vec, un = flatten(_d, ks)
     return (d_vec, un), Δ -> begin
-        (NO_FIELDS, un(Δ[1]), nothing)
+        (NoTangent(), un(Δ[1]), NoTangent())
     end
 end
 
@@ -149,7 +149,7 @@ function ChainRulesCore.rrule(un::Unflatten, v)
     x = un(v)
     return x, Δ -> begin
         _Δ = _merge(x, Δ)
-        return (NO_FIELDS, flatten(_Δ)[1])
+        return (NoTangent(), flatten(_Δ)[1])
     end
 end
 
