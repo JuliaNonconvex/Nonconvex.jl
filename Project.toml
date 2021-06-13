@@ -30,6 +30,7 @@ ADNLPModels = "0.1"
 Cbc = "0.8"
 ChainRulesCore = "0.9, 0.10"
 ForwardDiff = "0.10"
+Hyperopt = "0.4"
 Ipopt = "0.6"
 JuMP = "0.21"
 MathOptInterface = "0.9"
@@ -48,7 +49,6 @@ julia = "1"
 
 [extras]
 FiniteDifferences = "26cc04aa-876d-5657-8c51-4c34ba976000"
-Hyperopt = "93e5fe13-2215-51db-baaf-2e9a34fb2712"
 Juniper = "2ddba703-00a4-53a7-87a5-e8b9971dde84"
 NLopt = "76087f3c-5699-56af-9a33-bf431cd00edd"
 Pavito = "cd433a01-47d1-575d-afb7-6db927ee8d8f"
@@ -57,4 +57,4 @@ SafeTestsets = "1bc83da4-3b8d-516f-aca4-4fe02f6d838f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["FiniteDifferences", "Hyperopt", "Juniper", "NLopt", "Pavito", "Percival", "SafeTestsets", "Test"]
+test = ["FiniteDifferences", "Juniper", "NLopt", "Pavito", "Percival", "SafeTestsets", "Test"]
