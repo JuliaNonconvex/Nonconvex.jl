@@ -61,7 +61,7 @@ end
 
 function tovecmodel(m::AbstractModel, x0 = getmin(m))
     v, _unflatten = flatten(x0)
-    unflatten = Unflatten(_unflatten)
+    unflatten = Unflatten(x0, _unflatten)
     return VecModel(
         Objective(x -> m.objective(unflatten(x))),
         length(m.eq_constraints.fs) != 0 ? VectorOfFunctions(map(m.eq_constraints.fs) do c
