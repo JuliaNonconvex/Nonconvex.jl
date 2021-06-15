@@ -33,7 +33,7 @@ function JuniperIpoptWorkspace(
     end
     nl_solver = JuMP.optimizer_with_attributes(Ipopt.Optimizer, Dict(subsolver_options)...)
     nt2 = options.nt
-    solver_options = map(nt2) do k
+    solver_options = map(keys(nt2)) do k
         string(k) => nt2[k]
     end
     optimizer = JuMP.optimizer_with_attributes(
