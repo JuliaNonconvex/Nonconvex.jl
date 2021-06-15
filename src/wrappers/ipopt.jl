@@ -175,7 +175,12 @@ function getipopt_problem(obj, ineq_constr, eq_constr, x0, xlb, xub, first_order
         return g
     end
     function eval_grad_f(x::Vector{Float64}, grad_f::Vector{Float64})
-        grad_f .= Zygote.gradient(obj, x)[1]
+        grad = Zygote.gradient(obj, x)[1]
+        if grad === nothing
+            grad_f .= 0
+        else
+            grad_f .= grad
+        end
     end
     function eval_jac_g(x::Vector{Float64}, mode, rows::Vector{Int32}, cols::Vector{Int32}, values::Vector{Float64})
         if mode == :Structure
