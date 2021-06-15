@@ -10,8 +10,20 @@ function get_variable_info(model::JuMP.Model)
             ind = v.index.value
             varinds[k] = ind
             integer[k] = is_binary(v) || is_integer(v)
-            lb[k] = has_lower_bound(v) ? lower_bound(v) : -Inf
-            ub[k] = has_upper_bound(v) ? upper_bound(v) : Inf
+            lb[k] = if has_lower_bound(v)
+                lower_bound(v)
+            elseif is_binary(v)
+                0.0
+            else
+                -Inf
+            end
+            ub[k] = if has_upper_bound(v)
+                upper_bound(v)
+            elseif is_binary(v)
+                1.0
+            else
+                Inf
+            end
             inits[k] = if start_value(v) !== nothing
                 start_value(v)
             elseif ub[k] == Inf && lb[k] == -Inf
@@ -25,15 +37,31 @@ function get_variable_info(model::JuMP.Model)
             end
         elseif vs isa AbstractArray{<:VariableRef}
             inds = map(v -> v.index.value, vs)
-            varinds[k] = collect(keys(inds))
+            if inds isa JuMP.Containers.DenseAxisArray
+                varinds[k] = OrderedDict(inds.data .=> keys(inds))
+            else
+                varinds[k] = OrderedDict(vec(inds) .=> 1:length(inds))
+            end
             integer[k] = map(vs) do v
                 is_binary(v) || is_integer(v)
             end
             lb[k] = map(vs) do v
-                has_lower_bound(v) ? lower_bound(v) : -Inf
+                if has_lower_bound(v)
+                    lower_bound(v)
+                elseif is_binary(v)
+                    0.0
+                else
+                    -Inf
+                end
             end
             ub[k] = map(vs) do v
-                has_upper_bound(v) ? upper_bound(v) : Inf
+                if has_upper_bound(v)
+                    upper_bound(v)
+                elseif is_binary(v)
+                    1.0
+                else
+                    Inf
+                end
             end
             inits[k] = map(vs) do v
                 ind = varinds[k][v.index.value]
@@ -82,6 +110,14 @@ function get_constraint_info(model::JuMP.Model, nvars)
     inv_eq_constraints = OrderedDict()
     for (_, c) in model.obj_dict
         if c isa ConstraintRef
+            cs = [c]
+        elseif c isa AbstractArray{<:ConstraintRef}
+            cs = c
+        else
+            cs = nothing
+            continue
+        end
+        foreach(cs) do c
             set = constraint_object(c).set
             if set isa MOI.GreaterThan
                 inv_geq_constraints[JuMP.index(c).value] = c
