@@ -152,6 +152,12 @@ end
 # issues in the rrule definition of Unflatten
 zygote_flatten(x1::SparseVector, x2::SparseVector) = zygote_flatten(Array(x1), Array(x2))
 
+function zygote_flatten(x1::JuMP.Containers.DenseAxisArray, x2::NamedTuple)
+    x_vec, from_vec = zygote_flatten(vec(identity.(x1.data)), vec(identity.(x2.data)))
+    Array_from_vec(x_vec) = JuMP.Containers.DenseAxisArray(reshape(from_vec(x_vec), size(x2)), axes(x2)...)
+    return identity.(x_vec), Array_from_vec
+end
+
 function zygote_flatten(x1::JuMP.Containers.DenseAxisArray, x2::JuMP.Containers.DenseAxisArray)
     x_vec, from_vec = zygote_flatten(vec(identity.(x1.data)), vec(identity.(x2.data)))
     Array_from_vec(x_vec) = JuMP.Containers.DenseAxisArray(reshape(from_vec(x_vec), size(x2)), axes(x2)...)
@@ -199,7 +205,7 @@ function zygote_flatten(d1::AbstractDict, d2::AbstractDict, ks = collect(keys(d2
     d_vec, unflatten = zygote_flatten(identity.(collect(values(_d1))), identity.(collect(values(_d2))))
     function unflatten_to_Dict(v)
         v_vec_vec = unflatten(v)
-        return OrderedDict(key => v_vec_vec[n] for (n, key) in enumerate(keys(_d2)))
+        return OrderedDict(key => v_vec_vec[n] for (n, key) in enumerate(ks))
     end
     return identity.(d_vec), unflatten_to_Dict
 end
