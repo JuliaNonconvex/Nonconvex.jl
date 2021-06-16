@@ -18,7 +18,7 @@ g(x::AbstractVector, a, b) = (a*x[1] + b)^3 - x[2]
         @test norm(r.minimizer - [1/3, 8/27]) < 1e-6
     end
 
-    @testset "Simple constraints" begin
+    @testset "Equality constraints" begin
         m = Model(f)
         addvar!(m, [0.0, 0.0], [10.0, 10.0])
         add_ineq_constraint!(m, x -> g(x, 2, 0))
