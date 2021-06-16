@@ -91,7 +91,7 @@ function get_jump_problem(
         rows = fill(0, njacvals)
         cols = fill(0, njacvals)
         ineqJ0 === nothing || fill_indices!(rows, cols, ineqJ0)
-        eqJ0 === nothing || fill_indices!(rows, cols, eqJ0, offset = Joffset)
+        eqJ0 === nothing || fill_indices!(rows, cols, eqJ0, offset = Joffset, row_offset = ineq_nconstr)
         return tuple.(rows, cols)
     end
     function eval_jac_g(x::AbstractVector{Float64}, values::AbstractVector{Float64})
