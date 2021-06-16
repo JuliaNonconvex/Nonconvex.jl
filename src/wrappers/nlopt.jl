@@ -124,7 +124,7 @@ function getnlopt_problem(alg, obj, ineq_constr, eq_constr, x0, xlb, xub)
             end
         end
         if eq_constr !== nothing
-            if length(grad) > 0
+            if updategrad
                 eqconstrval, eqconstrpb = Zygote.pullback(
                     eq_constr, lastx,
                 )
