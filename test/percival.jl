@@ -19,6 +19,20 @@ alg = AugLag()
     end
 end
 
+@testset "Equality constraints" begin
+    m = Model(f)
+    addvar!(m, [0.0, 0.0], [10.0, 10.0])
+    add_ineq_constraint!(m, x -> g(x, 2, 0))
+    add_ineq_constraint!(m, x -> g(x, -1, 1))
+    add_eq_constraint!(m, x -> sum(x) - 1/3 - 8/27)
+    for first_order in (true, false)
+        options = AugLagOptions(first_order = first_order)
+        r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
+        @test abs(r.minimum - sqrt(8/27)) < 1e-6
+        @test norm(r.minimizer - [1/3, 8/27]) < 1e-6
+    end
+end
+
 @testset "Block constraints" begin
     m = Model(f)
     addvar!(m, [0.0, 0.0], [10.0, 10.0])
