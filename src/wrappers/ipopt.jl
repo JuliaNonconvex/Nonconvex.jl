@@ -3,11 +3,16 @@
 end
 function IpoptOptions(;
     first_order = true,
+    linear_constraints = false,
     hessian_approximation = first_order ? "limited-memory" : "exact",
     kwargs...,
 )
-    h = hessian_approximation
-    return IpoptOptions((;hessian_approximation = h, kwargs...))
+    kwargs = if linear_constraints
+        (;kwargs..., hessian_approximation = hessian_approximation, jac_c_constant = "yes", jac_d_constant = "yes")
+    else
+        (;kwargs..., hessian_approximation = hessian_approximation, jac_c_constant = "no", jac_d_constant = "no")
+    end
+    return IpoptOptions(kwargs)
 end
 
 @params mutable struct IpoptWorkspace <: Workspace
@@ -21,9 +26,10 @@ function IpoptWorkspace(
     model::VecModel, x0::AbstractVector = getinit(model);
     options = IpoptOptions(), kwargs...,
 )
-    problem, counter = getipopt_problem(
+    problem, counter = get_ipopt_problem(
         model, x0,
         options.nt.hessian_approximation == "limited-memory",
+        options.nt.jac_c_constant == "yes" && options.nt.jac_d_constant == "yes",
     )
     return IpoptWorkspace(model, problem, x0, options, counter)
 end
@@ -128,7 +134,7 @@ function getipopt_problem(model::VecModel, x0::AbstractVector, first_order::Bool
         model.ineq_constraints
     end
     obj = CountingFunction(getobjective(model))
-    return getipopt_problem(
+    return get_ipopt_problem(
         obj,
         ineq,
         eq,
@@ -136,12 +142,14 @@ function getipopt_problem(model::VecModel, x0::AbstractVector, first_order::Bool
         getmin(model),
         getmax(model),
         first_order,
+        linear,
     ), obj.counter
 end
-function getipopt_problem(obj, ineq_constr, eq_constr, x0, xlb, xub, first_order)
+function get_ipopt_problem(obj, ineq_constr, eq_constr, x0, xlb, xub, first_order, linear)
     nvars = 0
     if ineq_constr !== nothing
         ineqJ0 = Zygote.jacobian(ineq_constr, x0)[1]
+        ineqJ0 = linear ? sparse(ineqJ0) : ineqJ0
         ineq_nconstr, nvars = size(ineqJ0)
         Joffset = nvalues(ineqJ0)
     else
@@ -151,6 +159,7 @@ function getipopt_problem(obj, ineq_constr, eq_constr, x0, xlb, xub, first_order
     end
     if eq_constr !== nothing
         eqJ0 = Zygote.jacobian(eq_constr, x0)[1]
+        eqJ0 = linear ? sparse(eqJ0) : eqJ0
         eq_nconstr, nvars = size(eqJ0)
     else
         eqJ0 = nothing
@@ -158,9 +167,14 @@ function getipopt_problem(obj, ineq_constr, eq_constr, x0, xlb, xub, first_order
     end
     @assert nvars > 0
     lag(factor, y) = x -> begin
-        factor * obj(x) + 
+        out = typeof(factor)(Inf)
+        try
+            return factor * obj(x) + 
             _dot(ineq_constr, x, @view(y[1:ineq_nconstr])) + 
             _dot(eq_constr, x, @view(y[ineq_nconstr+1:end]))
+        catch
+            return out
+        end
     end
     clb = [fill(-Inf, ineq_nconstr); zeros(eq_nconstr)]
     cub = zeros(ineq_nconstr + eq_nconstr)
@@ -189,11 +203,11 @@ function getipopt_problem(obj, ineq_constr, eq_constr, x0, xlb, xub, first_order
         else
             values .= 0
             if ineq_constr !== nothing
-                ineqJ = Zygote.jacobian(ineq_constr, x)[1]
+                ineqJ = linear ? ineqJ0 : Zygote.jacobian(ineq_constr, x)[1]
                 add_values!(values, ineqJ)
             end
             if eq_constr !== nothing
-                eqJ = Zygote.jacobian(eq_constr, x)[1]
+                eqJ = linear ? eqJ0 : Zygote.jacobian(eq_constr, x)[1]
                 add_values!(values, eqJ, offset = Joffset)
             end
         end
