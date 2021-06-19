@@ -167,14 +167,9 @@ function get_ipopt_problem(obj, ineq_constr, eq_constr, x0, xlb, xub, first_orde
     end
     @assert nvars > 0
     lag(factor, y) = x -> begin
-        out = typeof(factor)(Inf)
-        try
-            return factor * obj(x) + 
-                _dot(ineq_constr, x, @view(y[1:ineq_nconstr])) + 
-                _dot(eq_constr, x, @view(y[ineq_nconstr+1:end]))
-        catch
-            return out
-        end
+        return factor * obj(x) + 
+            _dot(ineq_constr, x, @view(y[1:ineq_nconstr])) + 
+            _dot(eq_constr, x, @view(y[ineq_nconstr+1:end]))
     end
     clb = [fill(-Inf, ineq_nconstr); zeros(eq_nconstr)]
     cub = zeros(ineq_nconstr + eq_nconstr)
@@ -236,9 +231,16 @@ function get_ipopt_problem(obj, ineq_constr, eq_constr, x0, xlb, xub, first_orde
         end
         Hnvalues = nvalues(HL0)
     end
+    _obj = function (x)
+        try
+            return obj(x)
+        catch
+            return Inf
+        end
+    end
     prob = Ipopt.createProblem(
         nvars, xlb, xub, ineq_nconstr + eq_nconstr, clb, cub,
-        nvalues(ineqJ0) + nvalues(eqJ0), Hnvalues, obj,
+        nvalues(ineqJ0) + nvalues(eqJ0), Hnvalues, _obj,
         eval_g, eval_grad_f, eval_jac_g, eval_h,
     )
     prob.x = x0
