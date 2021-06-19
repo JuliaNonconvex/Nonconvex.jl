@@ -31,7 +31,7 @@ function HyperoptOptions(;
     sub_options, lb = nothing, ub = nothing,
     iters = 40, searchspace_size = iters,
     sampler = RandomSampler(), ctol = 1e-5,
-    keep_all = false,
+    keep_all = true,
 )
     return HyperoptOptions(
         sub_options, lb, ub, searchspace_size,
@@ -83,7 +83,7 @@ function optimize!(workspace::HyperoptWorkspace)
     ub = ub === nothing ? getmax(model) : ub
     @assert all(isfinite, lb) && all(isfinite, ub) throw("Please use finite bounds for the starting point search.")
 
-    @info "Searching starting point... "
+    @info "Searching starting point."
     @assert searchspace_size >= 1 "searchspace_size must be a positive integer. "
 
     # Generate a search space
