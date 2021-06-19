@@ -6,7 +6,13 @@ import .Juniper
     first_order::Bool
 end
 function JuniperIpoptOptions(;
-    first_order = true, subsolver_options = IpoptOptions(first_order = first_order), kwargs...,
+    first_order = true,
+    linear_constraints = false,
+    subsolver_options = IpoptOptions(
+        first_order = first_order,
+        linear_constraints = linear_constraints,
+    ),
+    kwargs...,
 )
     first_order = !hasproperty(subsolver_options.nt, :hessian_approximation) ||
         subsolver_options.nt.hessian_approximation == "limited-memory"
