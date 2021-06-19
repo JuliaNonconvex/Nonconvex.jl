@@ -42,7 +42,7 @@ end
 end
 
 function optimize!(workspace::IpoptWorkspace)
-    @unpack problem, options, counter, x0 = workspace
+    @unpack model, problem, options, counter, x0 = workspace
     problem.x .= x0
     counter[] = 0
     foreach(keys(options.nt)) do k
@@ -51,7 +51,7 @@ function optimize!(workspace::IpoptWorkspace)
     end
     solvestat = Ipopt.solveProblem(problem)
     return IpoptResult(
-        copy(problem.x), problem.obj_val,
+        copy(problem.x), getobjective(model)(problem.x),
         problem, solvestat, counter[]
     )
 end
@@ -122,7 +122,7 @@ nvalues(H::SparseMatrixCSC) = length(H.nzval)
 _dot(f, x, y) = dot(f(x), y)
 _dot(::Nothing, ::Any, ::Any) = 0.0
 
-function getipopt_problem(model::VecModel, x0::AbstractVector, first_order::Bool)
+function get_ipopt_problem(model::VecModel, x0::AbstractVector, first_order::Bool, linear::Bool)
     eq = if length(model.eq_constraints.fs) == 0
         nothing
     else
@@ -170,8 +170,8 @@ function get_ipopt_problem(obj, ineq_constr, eq_constr, x0, xlb, xub, first_orde
         out = typeof(factor)(Inf)
         try
             return factor * obj(x) + 
-            _dot(ineq_constr, x, @view(y[1:ineq_nconstr])) + 
-            _dot(eq_constr, x, @view(y[ineq_nconstr+1:end]))
+                _dot(ineq_constr, x, @view(y[1:ineq_nconstr])) + 
+                _dot(eq_constr, x, @view(y[ineq_nconstr+1:end]))
         catch
             return out
         end
