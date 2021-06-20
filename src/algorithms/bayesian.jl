@@ -213,9 +213,11 @@ function optimize!(workspace::BayesOptWorkspace)
     smodel = sub_workspace.model
     minval = Inf
     minimizer = copy(x0)
-    if initialize
-        initializer = ScaledSobolIterator(getmin(smodel), getmax(smodel),
-        ninit)
+    lb, ub = getmin(smodel), getmax(smodel)
+    if initialize && !(all(isfinite, lb) && all(isfinite, ub))
+        @warn "Skipping initialization because the variable bounds are not all finite."
+    elseif initialize
+        initializer = ScaledSobolIterator(lb, ub, ninit)
         x2 = x0
         for x1 in initializer
             sub_workspace.x0 .= x1

@@ -57,6 +57,24 @@ end
     @test norm(r.minimizer - [1/3, 8/27]) < 1e-5
 end
 
+@testset "Expensive objective - no preinitialize" begin
+    m = Model()
+    set_objective!(m, f, flags = [:expensive])
+    addvar!(m, [1e-4, 1e-4], [10.0, 10.0])
+    add_ineq_constraint!(m, x -> g(x, 2, 0))
+    add_ineq_constraint!(m, x -> g(x, -1, 1))
+    add_eq_constraint!(m, x -> sum(x) - 1/3 - 8/27)
+
+    alg = BayesOptAlg(IpoptAlg())
+    options = BayesOptOptions(
+        sub_options = IpoptOptions(print_level = 0), maxiter = 10, ftol = 1e-4,
+        initialize = false, postoptimize = true,
+    )
+    r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
+    @test abs(r.minimum - sqrt(8/27)) < 1e-5
+    @test norm(r.minimizer - [1/3, 8/27]) < 1e-5
+end
+
 @testset "Expensive inequality constraint" begin
     m = Model()
     set_objective!(m, f)
