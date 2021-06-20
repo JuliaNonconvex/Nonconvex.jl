@@ -1,5 +1,5 @@
 mutable struct DictModel <: AbstractModel
-    objective::Union{Nothing, Function}
+    objective::Union{Nothing, Objective}
     eq_constraints::VectorOfFunctions
     ineq_constraints::VectorOfFunctions
     box_min::OrderedDict
@@ -10,7 +10,7 @@ end
 
 function DictModel(f = nothing)
     return DictModel(
-        f, VectorOfFunctions(EqConstraint[]),
+        Objective(f), VectorOfFunctions(EqConstraint[]),
         VectorOfFunctions(IneqConstraint[]),
         OrderedDict(), OrderedDict(),
         OrderedDict(), OrderedDict()

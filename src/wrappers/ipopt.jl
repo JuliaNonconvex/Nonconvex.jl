@@ -56,10 +56,7 @@ function optimize!(workspace::IpoptWorkspace)
     )
 end
 
-struct IpoptAlg{O} <: AbstractOptimizer
-    options::O
-end
-IpoptAlg(; kwargs...) = IpoptAlg(kwargs)
+struct IpoptAlg <: AbstractOptimizer end
 
 function Workspace(model::VecModel, optimizer::IpoptAlg, args...; kwargs...,)
     return IpoptWorkspace(model, args...; kwargs...)

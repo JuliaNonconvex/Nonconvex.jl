@@ -63,12 +63,12 @@ function tovecmodel(m::AbstractModel, x0 = getmin(m))
     v, _unflatten = flatten(x0)
     unflatten = Unflatten(x0, _unflatten)
     return VecModel(
-        Objective(x -> m.objective(unflatten(x))),
+        Objective(x -> m.objective(unflatten(x)), flags = m.objective.flags),
         length(m.eq_constraints.fs) != 0 ? VectorOfFunctions(map(m.eq_constraints.fs) do c
-            EqConstraint(x -> maybeflatten(c.f(unflatten(x)))[1], maybeflatten(c.rhs)[1], c.dim)
+            EqConstraint(x -> maybeflatten(c.f(unflatten(x)))[1], maybeflatten(c.rhs)[1], c.dim, c.flags)
         end) : VectorOfFunctions(EqConstraint[]),
         length(m.ineq_constraints.fs) != 0 ? VectorOfFunctions(map(m.ineq_constraints.fs) do c
-            IneqConstraint(x -> maybeflatten(c.f(unflatten(x)))[1], maybeflatten(c.rhs)[1], c.dim)
+            IneqConstraint(x -> maybeflatten(c.f(unflatten(x)))[1], maybeflatten(c.rhs)[1], c.dim, c.flags)
         end) : VectorOfFunctions(IneqConstraint[]),
         float.(flatten(m.box_min)[1]),
         float.(flatten(m.box_max)[1]),
