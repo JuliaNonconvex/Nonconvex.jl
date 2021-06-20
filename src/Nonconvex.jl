@@ -6,6 +6,7 @@ const show_residuals = Ref(false)
 export  Model,
         DictModel,
         addvar!,
+        set_objective!,
         add_ineq_constraint!,
         add_eq_constraint!,
         getmin,
@@ -28,6 +29,7 @@ export  Model,
         JuniperIpoptAlg,
         PavitoIpoptCbcAlg,
         HyperoptAlg,
+        BayesOptAlg,
         KKTCriteria,
         IpoptCriteria,
         FunctionWrapper,
@@ -39,6 +41,7 @@ export  Model,
         JuniperIpoptOptions,
         PavitoIpoptCbcOptions,
         HyperoptOptions,
+        BayesOptOptions,
         Tolerance,
         @constructor,
         RandomSampler,
@@ -103,6 +106,10 @@ include("algorithms/ammal.jl")
 
 include("models/auglag_model.jl")
 include("algorithms/auglag_algorithm.jl")
+
+# Bayesian optimization
+
+include("algorithms/bayesian.jl")
 
 # Wrappers
 

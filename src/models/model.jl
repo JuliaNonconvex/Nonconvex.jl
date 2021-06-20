@@ -139,16 +139,16 @@ end
 
 Sets the objective of the moodel `m` to the function `f`. `f` must return a scalar.
 """
-function set_objective!(m::AbstractModel, f::Function)
-    m.objective = Objective(f)
+function set_objective!(m::AbstractModel, f::Function; kwargs...)
+    m.objective = Objective(f; kwargs...)
     return m
 end
 
-function add_ineq_constraint!(m::AbstractModel, f::Function, s = 0.0; dim = length(flatten(f(getinit(m)))[1]))
-    return add_ineq_constraint!(m, FunctionWrapper(f, dim), s)
+function add_ineq_constraint!(m::AbstractModel, f::Function, s = 0.0; dim = length(flatten(f(getinit(m)))[1]), kwargs...)
+    return add_ineq_constraint!(m, FunctionWrapper(f, dim), s; kwargs...)
 end
-function add_ineq_constraint!(m::AbstractModel, f::AbstractFunction, s = 0.0)
-    return add_ineq_constraint!(m, IneqConstraint(f, s))
+function add_ineq_constraint!(m::AbstractModel, f::AbstractFunction, s = 0.0; kwargs...)
+    return add_ineq_constraint!(m, IneqConstraint(f, s; kwargs...))
 end
 function add_ineq_constraint!(m::AbstractModel, f::IneqConstraint)
     push!(m.ineq_constraints.fs, f)
@@ -159,11 +159,11 @@ function add_ineq_constraint!(m::AbstractModel, fs::Vector{<:IneqConstraint})
     return m
 end
 
-function add_eq_constraint!(m::AbstractModel, f::Function, s = 0.0; dim = length(flatten(f(getinit(m)))[1]))
-    return add_eq_constraint!(m, FunctionWrapper(f, dim), s)
+function add_eq_constraint!(m::AbstractModel, f::Function, s = 0.0; dim = length(flatten(f(getinit(m)))[1]), kwargs...)
+    return add_eq_constraint!(m, FunctionWrapper(f, dim), s; kwargs...)
 end
-function add_eq_constraint!(m::AbstractModel, f::AbstractFunction, s = 0.0)
-    return add_eq_constraint!(m, EqConstraint(f, s))
+function add_eq_constraint!(m::AbstractModel, f::AbstractFunction, s = 0.0; kwargs...)
+    return add_eq_constraint!(m, EqConstraint(f, s; kwargs...))
 end
 function add_eq_constraint!(m::AbstractModel, f::EqConstraint)
     push!(m.eq_constraints.fs, f)

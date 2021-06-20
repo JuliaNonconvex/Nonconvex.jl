@@ -14,3 +14,4 @@ end
 @safetestset "Juniper" begin include("juniper.jl") end
 @safetestset "Pavito" begin include("pavito.jl") end
 @safetestset "Hyperopt" begin include("hyperopt.jl") end
+@safetestset "Bayesian optimization" begin include("bayesian.jl") end

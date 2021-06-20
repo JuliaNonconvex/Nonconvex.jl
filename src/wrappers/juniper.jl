@@ -76,10 +76,7 @@ function optimize!(workspace::JuniperIpoptWorkspace)
     )
 end
 
-struct JuniperIpoptAlg{O} <: AbstractOptimizer
-    options::O
-end
-JuniperIpoptAlg(; kwargs...) = JuniperIpoptAlg(kwargs)
+struct JuniperIpoptAlg{O} <: AbstractOptimizer end
 
 function Workspace(model::VecModel, optimizer::JuniperIpoptAlg, args...; kwargs...,)
     return JuniperIpoptWorkspace(model, args...; kwargs...)

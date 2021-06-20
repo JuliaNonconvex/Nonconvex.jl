@@ -131,6 +131,7 @@ abstract type AbstractConstraint <: AbstractFunction end
 struct Objective <: AbstractFunction
     f
     multiple
+    flags::Set{Symbol}
 end
 ```
 
@@ -139,6 +140,7 @@ The objective function to be optimized. The objective is always assumed to be of
 @params struct Objective <: AbstractFunction
     f
     multiple::Base.RefValue
+    flags::Set{Symbol}
 end
 
 """
@@ -146,7 +148,9 @@ end
 
 Constructs an instance of `Objective` wrapping `f`. When an instance of `Objective`, it calls `f` returning the output multiplied by `multiple`. `f` must return a number.
 """
-Objective(f, multiple::Number = 1.0) = Objective(f, Ref(multiple))
+function Objective(f, multiple::Number = 1.0; flags = Set{Symbol}())
+    return Objective(f, Ref(multiple), Set(flags))
+end
 
 """
     (obj::Objective)(args...; kwargs...)
@@ -174,6 +178,7 @@ struct IneqConstraint <: AbstractConstraint
     f::Function
     rhs
     dim::Int
+    flags::Set{Symbol}
 end
 ```
 
@@ -183,6 +188,7 @@ A struct for an inequality constraint of the form `f(x) .- rhs .<= 0`. The dimen
     f::Function
     rhs
     dim::Int
+    flags::Set{Symbol}
 end
 
 """
@@ -190,8 +196,12 @@ end
 
 Constructs an instance of `IneqConstraint` with a left-hand-side function `f` and right-hand-side bound `rhs`. If `f` is an instance of `AbstractFunction`, the dimension of the constraint will be `getdim(f)`, otherwise it is assumed to be `length(rhs)` by default.
 """
-IneqConstraint(f, rhs) = IneqConstraint(f, rhs, length(rhs))
-IneqConstraint(f::AbstractFunction, rhs) = IneqConstraint(f, rhs, getdim(f))
+function IneqConstraint(f, rhs; flags = Set{Symbol}())
+    return IneqConstraint(f, rhs, length(rhs), Set(flags))
+end
+function IneqConstraint(f::AbstractFunction, rhs; flags = Set{Symbol}())
+    return IneqConstraint(f, rhs, getdim(f), Set(flags))
+end
 
 """
     (c::IneqConstraint)(args...; kwargs...)
@@ -219,6 +229,7 @@ struct EqConstraint <: AbstractConstraint
     f::Function
     rhs
     dim::Int
+    flags::Set{Symbol}
 end
 ```
 
@@ -228,6 +239,7 @@ A struct for an equality constraint of the form `f(x) .- rhs .== 0`. The dimensi
     f::Function
     rhs
     dim::Int
+    flags::Set{Symbol}
 end
 
 """
@@ -235,8 +247,12 @@ end
 
 Constructs an instance of `EqConstraint` with a left-hand-side function `f` and right-hand-side bound `rhs`. If `f` is an instance of `AbstractFunction`, the dimension of the constraint will be `getdim(f)`, otherwise it is assumed to be `length(rhs)` by default.
 """
-EqConstraint(f, rhs) = EqConstraint(f, rhs, length(rhs))
-EqConstraint(f::AbstractFunction, rhs) = EqConstraint(f, rhs, getdim(f))
+function EqConstraint(f, rhs; flags = Set{Symbol}())
+    return EqConstraint(f, rhs, length(rhs), Set(flags))
+end
+function EqConstraint(f::AbstractFunction, rhs; flags = Set{Symbol}())
+    return EqConstraint(f, rhs, getdim(f), Set(flags))
+end
 
 """
     (c::EqConstraint)(args...; kwargs...)

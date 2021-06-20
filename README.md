@@ -186,6 +186,27 @@ r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
 ```
 The `sub_options` keyword argument must be a function here that specifies the resources option for the sub-solver used.
 
+## Bayesian/surrogate-assisted optimization
+
+You can use a Gaussian process surrogate in place of the expensive objectives and/or constraints.
+```julia
+f(x) = sqrt(x[2])
+g(x, a, b) = (a*x[1] + b)^3 - x[2]
+
+m = Model()
+set_objective!(m, f, flags = [:expensive])
+addvar!(m, [1e-4, 1e-4], [10.0, 10.0])
+add_ineq_constraint!(m, x -> g(x, 2, 0), flags = [:expensive])
+add_ineq_constraint!(m, x -> g(x, -1, 1))
+
+alg = BayesOptAlg(IpoptAlg())
+options = BayesOptOptions(
+    sub_options = IpoptOptions(),
+    maxiter = 50, ftol = 1e-4, ctol = 1e-5,
+)
+r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
+```
+
 ## Custom gradient / adjoint
 
 A custom gradient rule for a function should be defined using [`ChainRulesCore`](https://github.com/JuliaDiff/ChainRulesCore.jl)'s `rrule`.
