@@ -72,10 +72,7 @@ function optimize!(workspace::PavitoIpoptCbcWorkspace)
     )
 end
 
-struct PavitoIpoptCbcAlg{O} <: AbstractOptimizer
-    options::O
-end
-PavitoIpoptCbcAlg(; kwargs...) = PavitoIpoptCbcAlg(kwargs)
+struct PavitoIpoptCbcAlg <: AbstractOptimizer end
 
 function Workspace(model::VecModel, optimizer::PavitoIpoptCbcAlg, args...; kwargs...,)
     return PavitoIpoptCbcWorkspace(model, args...; kwargs...)
