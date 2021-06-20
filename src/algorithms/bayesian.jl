@@ -235,22 +235,23 @@ function optimize!(workspace::BayesOptWorkspace)
     end
     sub_workspace.x0 .= minimizer
     r = optimize!(sub_workspace)
-    m = r.minimum
-    x = r.minimizer
+    x = copy(r.minimizer)
+    prevm = minval
     iter = 1
     while iter < maxiter
         iter += 1
         ob, ineq, eq = update_surrogates!(smodel, surrogates, x)
         feasible = all(ineq .<= ctol) && all(abs.(eq) .<= ctol)
         if feasible && ob <= minval
+            prevm = minval
             minval = ob
             minimizer = copy(x)
         end
-        converged = feasible && ob <= m + ftol
+        converged = feasible && abs((ob - prevm) / (prevm + ftol)) <= ftol
         converged && break
         r = optimize!(sub_workspace)
-        m = r.minimum
-        x = r.minimizer
+        m = ob
+        x = copy(r.minimizer)
     end
     ob, ineq, eq = update_surrogates!(smodel, surrogates, x)
     feasible = all(ineq .<= ctol) && all(abs.(eq) .<= ctol)
