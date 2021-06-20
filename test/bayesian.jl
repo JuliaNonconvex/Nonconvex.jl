@@ -129,7 +129,7 @@ end
     )
     alg = BayesOptAlg(NLoptAlg(:LD_CCSAQ))
     options = BayesOptOptions(
-        sub_options = NLoptOptions(), maxiter = 30,
+        sub_options = NLoptOptions(), maxiter = 50,
         std_multiple = 2.0,
     )
     r = Nonconvex.optimize(
