@@ -13,7 +13,7 @@ end
 function ZeroOrderGPSurrogate(
     f, x; kernel = SqExponentialKernel(),
     X = [x], y = [f(x)],
-    noise = 1e-6, std_multiple = 3.0, mode = :interval,
+    noise = 1e-8, std_multiple = 3.0, mode = :interval,
 )
     @assert noise > 0
     gp = GP(kernel)
@@ -128,24 +128,33 @@ end
 @params struct BayesOptOptions
     sub_options
     maxiter::Int
+    initialize::Bool
+    ninit::Int
     ctol::Float64
     ftol::Float64
+    postoptimize::Bool
     nt::NamedTuple
 end
 function BayesOptOptions(;
     sub_options = IpoptOptions(),
+    initialize = true,
+    ninit = 10,
     maxiter = 100,
     std_multiple = 3.0,
     kernel = SqExponentialKernel(),
     noise = 1e-8,
-    ctol = 1e-6,
-    ftol = 1e-5,
+    ctol = 1e-4,
+    ftol = 1e-4,
+    postoptimize = false,
 )
     return BayesOptOptions(
         sub_options,
         maxiter,
+        initialize,
+        ninit,
         ctol,
         ftol,
+        postoptimize,
         (
             std_multiple = std_multiple,
             kernel = kernel,
@@ -170,12 +179,59 @@ end
     surrogates
 end
 
+# ScaledSobolIterator adapted from BayesianOptimization.jl
+struct ScaledSobolIterator{T,D}
+    lowerbounds::Vector{T}
+    upperbounds::Vector{T}
+    N::Int
+    seq::SobolSeq{D}
+end
+
+"""
+    ScaledSobolIterator(lowerbounds, upperbounds, N;
+                        seq = SobolSeq(length(lowerbounds)))
+Returns an iterator over `N` elements of a Sobol sequence between `lowerbounds`
+and `upperbounds`. The first `N` elements of the Sobol sequence are skipped for
+better uniformity (see https://github.com/stevengj/Sobol.jl)
+"""
+function ScaledSobolIterator(lowerbounds, upperbounds, N;
+                             seq = SobolSeq(length(lowerbounds)))
+    N > 0 && skip(seq, N)
+    ScaledSobolIterator(lowerbounds, upperbounds, N, seq)
+end
+Base.length(it::ScaledSobolIterator) = it.N
+@inline function Base.iterate(it::ScaledSobolIterator, s = 1)
+    s == it.N + 1 && return nothing
+    Sobol.next!(it.seq, it.lowerbounds, it.upperbounds), s + 1
+end
+
 function optimize!(workspace::BayesOptWorkspace)
     @unpack sub_workspace, surrogates = workspace
     @unpack options, x0 = workspace
-    @unpack maxiter, ctol, ftol = options
+    @unpack maxiter, ctol, ftol, postoptimize = options
+    @unpack ninit, initialize = options
     smodel = sub_workspace.model
-    sub_workspace.x0 .= x0
+    minval = Inf
+    minimizer = copy(x0)
+    if initialize
+        initializer = ScaledSobolIterator(getmin(smodel), getmax(smodel),
+        ninit)
+        x2 = x0
+        for x1 in initializer
+            sub_workspace.x0 .= x1
+            r = optimize!(sub_workspace)
+            if r.minimizer != x2
+                ob, ineq, eq = update_surrogates!(smodel, surrogates, r.minimizer)
+                feasible = all(ineq .<= ctol) && all(abs.(eq) .<= ctol)
+                if feasible && ob <= minval
+                    minval = ob
+                    minimizer = copy(r.minimizer)
+                end
+            end
+            x2 = r.minimizer
+        end
+    end
+    sub_workspace.x0 .= minimizer
     r = optimize!(sub_workspace)
     m = r.minimum
     x = r.minimizer
@@ -183,15 +239,41 @@ function optimize!(workspace::BayesOptWorkspace)
     while iter < maxiter
         iter += 1
         ob, ineq, eq = update_surrogates!(smodel, surrogates, x)
-        converged = ob <= m + ftol &&
-            all(ineq .<= ctol) && all(abs.(eq) .<= ctol)
+        feasible = all(ineq .<= ctol) && all(abs.(eq) .<= ctol)
+        if feasible && ob <= minval
+            minval = ob
+            minimizer = copy(x)
+        end
+        converged = feasible && ob <= m + ftol
         converged && break
         r = optimize!(sub_workspace)
         m = r.minimum
         x = r.minimizer
     end
+    ob, ineq, eq = update_surrogates!(smodel, surrogates, x)
+    feasible = all(ineq .<= ctol) && all(abs.(eq) .<= ctol)
+    if feasible && ob <= minval
+        minval = ob
+        minimizer = r.minimizer
+    end
+    if postoptimize
+        foreach(surrogates) do s
+            s.mode = :exact
+        end
+    end
+    sub_workspace.x0 .= minimizer
+    r = optimize!(sub_workspace)
+    if postoptimize
+        if r.minimum <= minval
+            minval = r.minimum
+            minimizer = copy(r.minimizer)
+        end
+        foreach(surrogates) do s
+            s.mode = :interval
+        end
+    end
     return BayesOptResult(
-        copy(x), getobjective(workspace.model)(x), iter, r, surrogates,
+        minimizer, minval, iter, r, surrogates,
     )
 end
 
