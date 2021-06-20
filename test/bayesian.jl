@@ -13,7 +13,7 @@ g(x::AbstractVector, a, b) = (a*x[1] + b)^3 - x[2]
 
     alg = BayesOptAlg(IpoptAlg())
     options = BayesOptOptions(
-        sub_options = IpoptOptions(print_level = 0), maxiter = 10, ftol = 1e-4,
+        sub_options = IpoptOptions(print_level = 0), maxiter = 10, ctol = 1e-4,
         ninit = 2, initialize = true, postoptimize = false,
     )
     r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
@@ -31,7 +31,7 @@ end
 
     alg = BayesOptAlg(IpoptAlg())
     options = BayesOptOptions(
-        sub_options = IpoptOptions(print_level = 0), maxiter = 10, ftol = 1e-4,
+        sub_options = IpoptOptions(print_level = 0), maxiter = 10, ctol = 1e-4,
         ninit = 2, initialize = true, postoptimize = false,
     )
     r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
@@ -49,7 +49,7 @@ end
 
     alg = BayesOptAlg(IpoptAlg())
     options = BayesOptOptions(
-        sub_options = IpoptOptions(print_level = 0), maxiter = 10, ftol = 1e-4,
+        sub_options = IpoptOptions(print_level = 0), maxiter = 10, ctol = 1e-4,
         ninit = 2, initialize = true, postoptimize = true,
     )
     r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
@@ -67,7 +67,7 @@ end
 
     alg = BayesOptAlg(IpoptAlg())
     options = BayesOptOptions(
-        sub_options = IpoptOptions(print_level = 0), maxiter = 10, ftol = 1e-4,
+        sub_options = IpoptOptions(print_level = 0), maxiter = 10, ctol = 1e-4,
         initialize = false, postoptimize = true,
     )
     r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
@@ -84,8 +84,8 @@ end
 
     alg = BayesOptAlg(IpoptAlg())
     options = BayesOptOptions(
-        sub_options = IpoptOptions(print_level = 0), maxiter = 20, ftol = 1e-4,
-        ninit = 2, initialize = true, postoptimize = false,
+        sub_options = IpoptOptions(print_level = 0), maxiter = 30, ctol = 1e-4,
+        ninit = 5, initialize = true, postoptimize = false,
     )
     r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
     @test abs(r.minimum - sqrt(8/27)) < 1e-3
@@ -101,7 +101,7 @@ end
 
     alg = BayesOptAlg(IpoptAlg())
     options = BayesOptOptions(
-        sub_options = IpoptOptions(print_level = 0), maxiter = 20, ftol = 1e-4,
+        sub_options = IpoptOptions(print_level = 0), maxiter = 20, ctol = 1e-4,
         ninit = 2, initialize = true, postoptimize = false,
     )
     r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
@@ -118,7 +118,7 @@ end
 
     alg = BayesOptAlg(IpoptAlg())
     options = BayesOptOptions(
-        sub_options = IpoptOptions(print_level = 0), maxiter = 20, ftol = 1e-4,
+        sub_options = IpoptOptions(print_level = 0), maxiter = 20, ctol = 1e-4,
         ninit = 2, initialize = true, postoptimize = false,
     )
     r = Nonconvex.optimize(m, alg, [1.234, 2.345], options = options)
@@ -137,7 +137,7 @@ end
     )
     alg = BayesOptAlg(IpoptAlg())
     options = BayesOptOptions(
-        sub_options = IpoptOptions(print_level = 0), maxiter = 10, ftol = 1e-4,
+        sub_options = IpoptOptions(print_level = 0), maxiter = 10, ctol = 1e-4,
         ninit = 2, initialize = true, postoptimize = false,
     )
     r = Nonconvex.optimize(
@@ -156,7 +156,7 @@ end
     )
     alg = BayesOptAlg(IpoptAlg())
     options = BayesOptOptions(
-        sub_options = IpoptOptions(print_level = 0), maxiter = 20, ftol = 1e-4,
+        sub_options = IpoptOptions(print_level = 0), maxiter = 20, ctol = 1e-4,
         ninit = 2, initialize = true, postoptimize = false,
     )
     r = Nonconvex.optimize(
@@ -173,9 +173,9 @@ end
     add_ineq_constraint!(
         m, x -> [g(x, 2, 0), g(x, -1, 1)], flags = [:expensive],
     )
-    alg = BayesOptAlg(NLoptAlg(:LD_CCSAQ))
+    alg = BayesOptAlg(IpoptAlg())
     options = BayesOptOptions(
-        sub_options = NLoptOptions(), maxiter = 50, ftol = 1e-4,
+        sub_options = IpoptOptions(), maxiter = 50, ctol = 1e-3,
         ninit = 2, initialize = true, postoptimize = false,
     )
     r = Nonconvex.optimize(
@@ -197,7 +197,7 @@ end
     )
     alg = BayesOptAlg(IpoptAlg())
     options = BayesOptOptions(
-        sub_options = IpoptOptions(print_level = 0), maxiter = 30, ftol = 1e-4,
+        sub_options = IpoptOptions(print_level = 0), maxiter = 30, ctol = 1e-4,
         ninit = 2, initialize = true, postoptimize = false,
     )
     r = Nonconvex.optimize(
@@ -220,7 +220,7 @@ end
     )
     alg = BayesOptAlg(IpoptAlg())
     options = BayesOptOptions(
-        sub_options = IpoptOptions(print_level = 0), maxiter = 40, ftol = 1e-4,
+        sub_options = IpoptOptions(print_level = 0), maxiter = 50, ctol = 1e-4,
         ninit = 2, initialize = true, postoptimize = false,
     )
     r = Nonconvex.optimize(
