@@ -26,8 +26,8 @@ function PercivalWorkspace(
     model::VecModel, x0::AbstractVector = getinit(model);
     options = PercivalOptions(), kwargs...,
 )
-    problem, counter = getpercival_problem(model, x0)
-    return PercivalWorkspace(model, problem, x0, options, counter)
+    problem, counter = get_percival_problem(model, copy(x0))
+    return PercivalWorkspace(model, problem, copy(x0), options, counter)
 end
 @params struct PercivalResult <: AbstractResult
     minimizer
@@ -94,7 +94,7 @@ function reset!(w::AugLagWorkspace, x0 = nothing)
     return w
 end
 
-function getpercival_problem(model::VecModel, x0::AbstractVector)
+function get_percival_problem(model::VecModel, x0::AbstractVector)
     eq = if length(model.eq_constraints.fs) == 0
         nothing
     else
@@ -106,7 +106,7 @@ function getpercival_problem(model::VecModel, x0::AbstractVector)
         model.ineq_constraints
     end
     obj = CountingFunction(getobjective(model))
-    return getpercival_problem(
+    return get_percival_problem(
         obj,
         ineq,
         eq,
@@ -115,7 +115,7 @@ function getpercival_problem(model::VecModel, x0::AbstractVector)
         getmax(model),
     ), obj.counter
 end
-function getpercival_problem(obj, ineq_constr, eq_constr, x0, xlb, xub)
+function get_percival_problem(obj, ineq_constr, eq_constr, x0, xlb, xub)
     nvars = length(x0)
     if ineq_constr !== nothing
         ineqval = ineq_constr(x0)

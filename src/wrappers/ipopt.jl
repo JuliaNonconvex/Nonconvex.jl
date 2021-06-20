@@ -27,11 +27,11 @@ function IpoptWorkspace(
     options = IpoptOptions(), kwargs...,
 )
     problem, counter = get_ipopt_problem(
-        model, x0,
+        model, copy(x0),
         options.nt.hessian_approximation == "limited-memory",
         options.nt.jac_c_constant == "yes" && options.nt.jac_d_constant == "yes",
     )
-    return IpoptWorkspace(model, problem, x0, options, counter)
+    return IpoptWorkspace(model, problem, copy(x0), options, counter)
 end
 @params struct IpoptResult <: AbstractResult
     minimizer

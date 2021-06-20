@@ -42,10 +42,10 @@ function PavitoIpoptCbcWorkspace(
         "mip_solver" => JuMP.optimizer_with_attributes(Cbc.Optimizer),
     )
     problem, counter = get_jump_problem(
-        model, x0; first_order = options.first_order,
+        model, copy(x0); first_order = options.first_order,
         optimizer = optimizer, integers = integers,
     )
-    return PavitoIpoptCbcWorkspace(model, problem, x0, integers, options, counter)
+    return PavitoIpoptCbcWorkspace(model, problem, copy(x0), integers, options, counter)
 end
 @params struct PavitoIpoptCbcResult <: AbstractResult
     minimizer

@@ -46,10 +46,10 @@ function JuniperIpoptWorkspace(
         Juniper.Optimizer, "nl_solver" => nl_solver, Dict(solver_options)...,
     )
     problem, counter = get_jump_problem(
-        model, x0; first_order = options.first_order,
+        model, copy(x0); first_order = options.first_order,
         optimizer = optimizer, integers = integers,
     )
-    return JuniperIpoptWorkspace(model, problem, x0, integers, options, counter)
+    return JuniperIpoptWorkspace(model, problem, copy(x0), integers, options, counter)
 end
 @params struct JuniperIpoptResult <: AbstractResult
     minimizer

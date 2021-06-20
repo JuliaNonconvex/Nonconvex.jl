@@ -55,7 +55,7 @@ function set_objective_multiple!(model::VecModel, m)
 end
 
 function optimize(model::VecModel, optimizer::AbstractOptimizer, x0, args...; kwargs...)
-    workspace = Workspace(model, optimizer, x0, args...; kwargs...)
+    workspace = Workspace(model, optimizer, copy(x0), args...; kwargs...)
     return optimize!(workspace)
 end
 

@@ -15,3 +15,4 @@ end
 @safetestset "Pavito" begin include("pavito.jl") end
 @safetestset "Hyperopt" begin include("hyperopt.jl") end
 @safetestset "Bayesian optimization" begin include("bayesian.jl") end
+@safetestset "Deflation" begin include("deflation.jl") end

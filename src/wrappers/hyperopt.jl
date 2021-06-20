@@ -49,7 +49,7 @@ function Workspace(model::VecModel, alg::HyperoptAlg, x0::AbstractVector; option
     sub_options = options.sub_options isa Function ? options.sub_options(1) : options.sub_options
     return HyperoptWorkspace(
         Workspace(
-            model, alg.sub_alg, x0;
+            model, alg.sub_alg, copy(x0);
             options = sub_options, kwargs...,
         ),
         x0,
