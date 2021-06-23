@@ -16,6 +16,7 @@ makedocs(
             "algorithms/hyperopt.md",
             "algorithms/surrogate.md",
         ],
+        "Gradients, Jacobians and Hessians" => "gradients.md",
     ],
 )
 
