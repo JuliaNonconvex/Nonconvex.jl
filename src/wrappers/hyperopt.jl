@@ -10,10 +10,10 @@ end
 - `sub_options`: options for the sub-optimizer.
 - `lb`: Lower bound of starting point, if don't specify it, the default value will be `nothing`, 
             then will end up be replaced by the lower bound of optimization problem.
-- `rb`: Hier bound of starting point, same as above. 
+- `ub`: Upper bound of starting point, same as above. 
 - `searchspace_size::Integer`: How many potential starting points we generate.
 - `iters::Integer`: Among all generated potential starting points, how many of them will be evaluated. 
-- `sampler::Hyperopt.Sampler`: An instance of ['Hyperopt.Sampler'](@ref), which decides search algorithm. 
+- `sampler::Hyperopt.Sampler`: An instance of 'Hyperopt.Sampler', which decides search algorithm. 
 - `ctol`: infeasibility tolerance for accepting a solution as feasible
 - `keep_all`: if true, all the solutions of the sub-problems will be saved
 """

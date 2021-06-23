@@ -86,6 +86,15 @@ function Base.:*(t::Tolerance, m::Real)
     return Tolerance(t.x * m, t.fabs * m, t.frel * m, t.kkt * m, t.infeas * m)
 end
 
+"""
+    ConvergenceCriteria
+
+This an abstract type with 4 subtypes:
+1. [`GenericCriteria`](@ref)
+2. [`KKTCriteria`](@ref)
+3. [`ScaledKKTCriteria`](@ref)
+4. [`IpoptCriteria`](@ref)
+"""
 abstract type ConvergenceCriteria end
 
 """
@@ -117,7 +126,7 @@ struct IpoptCriteria <: ConvergenceCriteria end
 """
     ScaledKKTCriteria
 
-This convergence criteria uses another scaled version of the Karush-Kuhn-Tucker (KKT) residual and maximum infeasibility to assess convergence. In particular if the objective was scaled by a factor `m`, the KKT residual will be scaled down by a factor `max(m, 1/m)`. The objective scaling is explained in [`optimize!`](@ref). This scaling was found to make the convergence criteria less sensitive to scale compared to using the traditional KKT residual. More details are given in [`assess_convergence!`](@ref). 
+This convergence criteria uses another scaled version of the Karush-Kuhn-Tucker (KKT) residual and maximum infeasibility to assess convergence. In particular if the objective was scaled by a factor `m`, the KKT residual will be scaled down by a factor `max(m, 1/m)`. This scaling was found to make the convergence criteria less sensitive to scale compared to using the traditional KKT residual. More details are given in [`assess_convergence!`](@ref). 
 """
 struct ScaledKKTCriteria <: ConvergenceCriteria end
 
@@ -186,7 +195,7 @@ A summary result struct returned by [`optimize`](@ref), including following fiel
  - `iter`: number of inner iterations run
  - `maxiter_reached`: true if the algorithm stopped due to reaching the maximum number of iterations
  - `tol`: an instance of [`Tolerance`](@ref) that specifies the convergence tolerances
- - `convstate`: an instance of [`ConvergenceCriteria`](@ref) that summarizes the convergenc state of the best solution found
+ - `convstate`: an instance of [`ConvergenceCriteria`](@ref) that summarizes the convergence state of the best solution found
  - `fcalls`: the number of times the objective and constraint functions were called during the optimization
 """
 @params mutable struct GenericResult <: AbstractResult

@@ -58,8 +58,8 @@ end
 
 struct IpoptAlg <: AbstractOptimizer end
 
-function Workspace(model::VecModel, optimizer::IpoptAlg, args...; kwargs...,)
-    return IpoptWorkspace(model, args...; kwargs...)
+function Workspace(model::VecModel, optimizer::IpoptAlg, x0::AbstractVector; kwargs...,)
+    return IpoptWorkspace(model, x0; kwargs...)
 end
 
 # Implement these for sparse matrices

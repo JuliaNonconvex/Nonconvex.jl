@@ -125,7 +125,7 @@ function Workspace(
     )
     defmodel = deflatedmodel(model, defop)
     sub_workspace = Workspace(
-        defmodel, optimizer.sub_alg, copy(x0),
+        defmodel, optimizer.sub_alg, copy(x0);
         options = sub_options, kwargs...,
     )
     return DeflatedWorkspace(
@@ -156,10 +156,13 @@ function optimize!(workspace::DeflatedWorkspace)
         while i < ndeflations
             sub_workspace.x0 .= x0
             r = optimize!(sub_workspace)
-            minimizer = copy(r.minimizer)
-            minval = getobjective(model)(minimizer)
-            push!(X, copy(minimizer))
-            push!(solutions, (copy(minimizer), minval))
+            objval = getobjective(model)(r.minimizer)
+            push!(X, copy(r.minimizer))
+            push!(solutions, (copy(r.minimizer), objval))
+            if objval <= minval
+                minval = objval
+                minimizer = copy(r.minimizer)
+            end
             i += 1
         end
     end

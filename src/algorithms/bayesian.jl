@@ -294,8 +294,7 @@ function Workspace(
         smodel, surrogates = surrogate_model(model; options.nt...)
     end
     sub_workspace = Workspace(
-        smodel,
-        optimizer.sub_alg, x0;
+        smodel, optimizer.sub_alg, x0;
         options = options.sub_options, kwargs...,
     )
     return BayesOptWorkspace(

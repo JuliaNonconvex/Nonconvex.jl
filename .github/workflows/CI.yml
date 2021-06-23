@@ -29,3 +29,25 @@ jobs:
         if: ${{ matrix.julia-version == '1.6' && matrix.os == 'ubuntu-latest' }}
         with:
           file: lcov.info
+  docs:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        julia-version: ['1.6',]
+        os: ['ubuntu-latest',]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: julia-actions/setup-julia@v1
+        with:
+          version: ${{ matrix.julia-version }}
+      - name: Install dependencies
+        run: |
+          julia --project=docs -e '
+            using Pkg
+            Pkg.instantiate()
+            Pkg.develop(PackageSpec(path=pwd()))'
+      - name: Build and deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+        run: julia --project=docs --color=yes docs/make.jl
