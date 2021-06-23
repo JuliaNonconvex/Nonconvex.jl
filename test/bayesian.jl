@@ -197,7 +197,7 @@ end
     )
     alg = BayesOptAlg(IpoptAlg())
     options = BayesOptOptions(
-        sub_options = IpoptOptions(print_level = 0), maxiter = 30, ctol = 1e-4,
+        sub_options = IpoptOptions(print_level = 0), maxiter = 100, ctol = 1e-4,
         ninit = 2, initialize = true, postoptimize = false,
     )
     r = Nonconvex.optimize(
