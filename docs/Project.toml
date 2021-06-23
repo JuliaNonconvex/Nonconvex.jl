@@ -1,0 +1,4 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+Hyperopt = "93e5fe13-2215-51db-baaf-2e9a34fb2712"
+Nonconvex = "01bcebdf-4d21-426d-b5c4-6132c1619978"
