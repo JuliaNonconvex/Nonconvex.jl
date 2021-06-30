@@ -210,7 +210,7 @@ end
         add_eq_constraint!(m, x -> sum(x) - 1/3 - 8/27, flags = [:expensive])
         alg = BayesOptAlg(IpoptAlg())
         options = BayesOptOptions(
-            sub_options = IpoptOptions(print_level = 0), maxiter = 50, ctol = 1e-4,
+            sub_options = IpoptOptions(print_level = 0), maxiter = 100, ctol = 1e-4,
             ninit = 2, initialize = true, postoptimize = false, last = 30, skip = 2,
             every = 2, fit_prior = fit_prior,
         )
