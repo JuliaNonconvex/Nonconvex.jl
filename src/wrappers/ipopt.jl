@@ -143,11 +143,11 @@ function get_ipopt_problem(model::VecModel, x0::AbstractVector, first_order::Boo
     ), obj.counter
 end
 function get_ipopt_problem(obj, ineq_constr, eq_constr, x0, xlb, xub, first_order, linear)
-    nvars = 0
+    nvars = length(x0)
     if ineq_constr !== nothing
         ineqJ0 = Zygote.jacobian(ineq_constr, x0)[1]
         ineqJ0 = linear ? sparse(ineqJ0) : ineqJ0
-        ineq_nconstr, nvars = size(ineqJ0)
+        ineq_nconstr, _ = size(ineqJ0)
         Joffset = nvalues(ineqJ0)
     else
         ineqJ0 = nothing
@@ -157,12 +157,11 @@ function get_ipopt_problem(obj, ineq_constr, eq_constr, x0, xlb, xub, first_orde
     if eq_constr !== nothing
         eqJ0 = Zygote.jacobian(eq_constr, x0)[1]
         eqJ0 = linear ? sparse(eqJ0) : eqJ0
-        eq_nconstr, nvars = size(eqJ0)
+        eq_nconstr, _ = size(eqJ0)
     else
         eqJ0 = nothing
         eq_nconstr = 0
     end
-    @assert nvars > 0
     lag(factor, y) = x -> begin
         return factor * obj(x) + 
             _dot(ineq_constr, x, @view(y[1:ineq_nconstr])) + 
