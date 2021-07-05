@@ -45,6 +45,8 @@ end
         r = Nonconvex.optimize(m, alg, T.([1.234, 2.345]), options = options)
         @test abs(r.minimum - sqrt(T(8/27))) < T(1e-6)
         @test norm(r.minimizer - T.([1/3, 8/27])) < T(1e-6)
+        @test r.minimum isa T
+        @test eltype(r.minimizer) <: T
     end
 end
 
