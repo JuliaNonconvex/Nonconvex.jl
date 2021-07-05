@@ -10,7 +10,7 @@ Given a model `model` and an initial solution `x0`, the following can be used to
 ```julia
 import Percival
 
-alg = AugAlg()
+alg = AugLag()
 options = AugLagOptions()
 result = optimize(model, alg, x0, options = options)
 ```
