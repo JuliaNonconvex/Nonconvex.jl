@@ -33,6 +33,21 @@ end
     end
 end
 
+@testset "Equality constraints BigFloat" begin
+    T = BigFloat
+    m = Model(f)
+    addvar!(m, T.([0.0, 0.0]), T.([10.0, 10.0]))
+    add_ineq_constraint!(m, x -> g(x, T(2), T(0)))
+    add_ineq_constraint!(m, x -> g(x, T(-1), T(1)))
+    add_eq_constraint!(m, x -> sum(x) - T(1/3) - T(8/27))
+    for first_order in (true, false)
+        options = AugLagOptions(first_order = first_order)
+        r = Nonconvex.optimize(m, alg, T.([1.234, 2.345]), options = options)
+        @test abs(r.minimum - sqrt(T(8/27))) < T(1e-6)
+        @test norm(r.minimizer - T.([1/3, 8/27])) < T(1e-6)
+    end
+end
+
 @testset "Block constraints" begin
     m = Model(f)
     addvar!(m, [0.0, 0.0], [10.0, 10.0])
