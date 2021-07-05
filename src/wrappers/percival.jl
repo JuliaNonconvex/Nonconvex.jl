@@ -43,7 +43,8 @@ function optimize!(workspace::PercivalWorkspace)
     counter[] = 0
     m = getnconstraints(workspace.model)
     problem.meta.x0 .= x0
-    result = _percival(problem; options.nt..., inity = options.nt.inity(m))
+    result = _percival(problem; options.nt...,
+    inity = options.nt.inity(eltype(x0), m))
     result.solution = result.solution[1:length(x0)]
     return PercivalResult(
         copy(result.solution), result.objective, problem, result, counter[],
@@ -51,14 +52,19 @@ function optimize!(workspace::PercivalWorkspace)
 end
 
 function _percival(nlp;
-    μ::Real = eltype(nlp.meta.x0)(10.0),
-    max_iter::Int = 1000, max_time::Real = Inf,
-    max_eval::Int = 100000, atol::Real = 1e-6,
-    rtol::Real = 1e-6, ctol::Real = 1e-6, first_order = true, memory = 5,
+    T = eltype(nlp.meta.x0),
+    μ::Real = convert(T, 10),
+    max_iter::Int = 1000, max_time::Real = convert(T, Inf),
+    max_eval::Int = 100000, atol::Real = convert(T, 1e-6),
+    rtol::Real = convert(T, 1e-6), ctol::Real = convert(T, 1e-6),
+    first_order = true, memory = 5,
     subsolver_logger::Percival.AbstractLogger = Percival.NullLogger(),
     inity = nothing, max_cgiter = 100, subsolver_max_eval = 200, kwargs...,
 )
-    modifier = m -> NLPModelsModifiers.LBFGSModel(m, mem = memory)
+    modifier = m -> begin
+        op = NLPModelsModifiers.LinearOperators.LBFGSOperator(T, m.meta.nvar; mem = memory)
+        return NLPModelsModifiers.LBFGSModel(m.meta, m, op)
+    end
     _kwargs = (
         max_iter = max_iter, max_time = max_time,
         max_eval = max_eval, atol = atol, rtol = rtol,
@@ -116,19 +122,20 @@ function get_percival_problem(model::VecModel, x0::AbstractVector)
     ), obj.counter
 end
 function get_percival_problem(obj, ineq_constr, eq_constr, x0, xlb, xub)
+    T = eltype(x0)
     nvars = length(x0)
     if ineq_constr !== nothing
         ineqval = ineq_constr(x0)
         ineq_nconstr = length(ineqval)
     else
-        ineqval = Float64[]
+        ineqval = T[]
         ineq_nconstr = 0
     end
     if eq_constr !== nothing
         eqval = eq_constr(x0)
         eq_nconstr = length(eqval)
     else
-        eqval = Float64[]
+        eqval = T[]
         eq_nconstr = 0
     end
     c = x -> begin
@@ -144,7 +151,7 @@ function get_percival_problem(obj, ineq_constr, eq_constr, x0, xlb, xub)
         end
         return [v1; v2]
     end
-    lcon = [fill(-Inf, ineq_nconstr); zeros(eq_nconstr)]
-    ucon = zeros(ineq_nconstr + eq_nconstr)
+    lcon = [fill(convert(T, -Inf), ineq_nconstr); zeros(T, eq_nconstr)]
+    ucon = zeros(T, ineq_nconstr + eq_nconstr)
     return ADNLPModels.ADNLPModel(obj, x0, xlb, xub, c, lcon, ucon, adbackend = ADNLPModels.ZygoteAD())
 end
