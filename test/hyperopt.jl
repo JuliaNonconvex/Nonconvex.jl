@@ -7,11 +7,11 @@ g(x::AbstractVector, a, b) = (a*x[1] + b)^3 - x[2]
 alg = HyperoptAlg(IpoptAlg())
 
 @testset "Sampler - $spl_name" for (spl_name, spl) in [
-    ("RandomSampler", RandomSampler()),
+    # ("RandomSampler", RandomSampler()),
     ("Hyperband", Hyperband(R=100, η=3, inner=RandomSampler())),
     ("LHSampler", LHSampler()),
     ("CLHSampler", CLHSampler()),
-    ("GPSampler", GPSampler()),
+    # ("GPSampler", GPSampler()),
 ]
     if spl_name == "Hyperband"
         options = HyperoptOptions(
