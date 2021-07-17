@@ -21,7 +21,7 @@ result = optimize(model, alg, x0, options = options
 
 ## Options
 
-You can choose which algorithm to use by spycifying `option.method`. Avaliable list is `[MTS (default), localsearch1, Nonconvex.localsearch2 (not recommend), Nonconvex.localsearch3 (not recommend)]`.
+You can choose which algorithm to use by specifying `option.method`. Avaliable list is `[MTS (default), localsearch1, Nonconvex.localsearch2 (not recommended), Nonconvex.localsearch3 (not recommended)]`.
 
 ```julia
 LS1_options = MTSOptions(method=localsearch1)
