@@ -16,7 +16,7 @@ lb = [0, 0]
 ub = [5, 5]
 # Must have a box constraint. And (in)equality constraints are not supported for MTS methods.
 addvar!(m, lb, ub)
-result = optimize(model, alg, x0, options = options
+result = optimize(model, alg, x0, options = options)
 ```
 
 ## Options
