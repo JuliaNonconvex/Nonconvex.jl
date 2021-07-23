@@ -83,7 +83,7 @@ function _localsearch1(workspace, k)
     @unpack box_min, box_max, n_dim = model
     grade = 0
     # search_range in paper is one-dimensional. Expand it to multidimensional. 
-    if improve[k] == false
+    if !improve[k]
         reduce_search_range(search_range, k, n_dim, box_min, box_max, search_range_tol)
     end
     improve[k] = false
