@@ -252,15 +252,8 @@ end
 """
 Clamp the box constraint and evaluate objective function at point x
 """
-function evaluate!(model::AbstractModel, x::AbstractVector)
+function clamp_and_evaluate!(model::AbstractModel, x::AbstractVector)
     @unpack box_min, box_max = model
     x .= clamp.(x, box_min, box_max)
-    model.objective(x)
-end
-
-"""
-Evaluate without truncate
-"""
-function evaluate(model::AbstractModel, x::AbstractVector)
     model.objective(x)
 end
