@@ -2,7 +2,7 @@
 
 ## Description
 
-MTS: Multiple Trajectory Search for Large Scale Global Optimization, is a derivative-free heuristic optimization method presented in paper (Lin-Yu Tseng and Chun Chen, 2008)[https://sci2s.ugr.es/sites/default/files/files/TematicWebSites/EAMHCO/contributionsCEC08/tseng08mts.pdf]. 
+MTS: Multiple Trajectory Search for Large-Scale Global Optimization, is a derivative-free heuristic optimization method presented in paper [Lin-Yu Tseng and Chun Chen, 2008](https://sci2s.ugr.es/sites/default/files/files/TematicWebSites/EAMHCO/contributionsCEC08/tseng08mts.pdf). 
 The main algorihtm `MTS` contains three subalgorithms `localsearch1`, `localsearch2` and `localsearch3`. This module implelents all the optimization methods in paper. People often use entire `MTS` or only `localsearch1` subalgorithm to optimize functions, and generally nobody use `localsearch2` or `localsearch3` independently. Therefore, the module only exports `MTS` and `localsearch1`.
 
 ## Quick start
