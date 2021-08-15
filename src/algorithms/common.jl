@@ -212,6 +212,9 @@ end
 
 abstract type AbstractModel end
 
+
+function pre_tovecmodel!(model::AbstractModel) end
+
 """
 ```
 optimize(
@@ -224,6 +227,7 @@ optimize(
     callback::Function = plot_trace ? LazyPlottingCallback() : NoCallback(),
     kwargs...,
 )
+
 ```
 
 Optimizes `model` using the algorithm `optimizer`, e.g. an instance of [`MMA87`](@ref) or [`MMA02`](@ref). `x0` is the initial solution. The keyword arguments are:
@@ -235,6 +239,7 @@ Optimizes `model` using the algorithm `optimizer`, e.g. an instance of [`MMA87`]
  The details of the MMA optimization algorithms can be found in the original [1987 MMA paper](https://onlinelibrary.wiley.com/doi/abs/10.1002/nme.1620240207) and the [2002 paper](https://epubs.siam.org/doi/abs/10.1137/S1052623499362822).
 """
 function optimize(model::AbstractModel, optimizer::AbstractOptimizer, x0, args...; kwargs...)
+    pre_tovecmodel!(model, optimizer, x0, args...; kwargs...)
     _model, _x0, unflatten = tovecmodel(model, x0)
     r = optimize(_model, optimizer, _x0, args...; kwargs...)
     return @set r.minimizer = unflatten(r.minimizer)

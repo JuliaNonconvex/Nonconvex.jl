@@ -9,6 +9,9 @@ export  Model,
         set_objective!,
         add_ineq_constraint!,
         add_eq_constraint!,
+        add_sd_constraint!,
+        set_A0,
+        add_Ai,
         getmin,
         getmax,
         isinteger,
@@ -31,9 +34,11 @@ export  Model,
         PavitoIpoptCbcAlg,
         HyperoptAlg,
         BayesOptAlg,
+        SDPAlg,
         KKTCriteria,
         IpoptCriteria,
         FunctionWrapper,
+        MatrixFunctionWrapper,
         MMAOptions,
         IpoptOptions,
         DeflatedOptions,
@@ -44,6 +49,7 @@ export  Model,
         PavitoIpoptCbcOptions,
         HyperoptOptions,
         BayesOptOptions,
+        SDPOptions,
         Tolerance,
         @constructor,
         RandomSampler,
@@ -69,6 +75,7 @@ using JuMP: VariableRef, is_binary, is_integer, has_lower_bound,
 # General
 
 include("utilities/params.jl")
+include("utilities/matrices.jl")
 include("functions/functions.jl")
 include("functions/value_jacobian.jl")
 include("functions/function_docs.jl")
@@ -116,6 +123,9 @@ include("algorithms/bayesian.jl")
 # Deflated algorithms
 
 include("algorithms/deflation.jl")
+
+# Semi-definite programming
+include("algorithms/sdp.jl")
 
 # Wrappers
 

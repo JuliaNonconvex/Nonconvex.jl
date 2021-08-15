@@ -60,7 +60,8 @@ NLopt = "76087f3c-5699-56af-9a33-bf431cd00edd"
 Pavito = "cd433a01-47d1-575d-afb7-6db927ee8d8f"
 Percival = "01435c0c-c90d-11e9-3788-63660f8fbccc"
 SafeTestsets = "1bc83da4-3b8d-516f-aca4-4fe02f6d838f"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["FiniteDifferences", "Hyperopt", "Juniper", "NLopt", "Pavito", "Percival", "SafeTestsets", "Test"]
+test = ["FiniteDifferences", "Hyperopt", "Juniper", "NLopt", "Pavito", "Percival", "SafeTestsets", "Distributions", "Test"]
