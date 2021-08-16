@@ -23,7 +23,7 @@ end
 
 function length_to_dim(l)
     @assert isinteger(l) "Dimension numbers shoule be a integer. "
-    trunc(Int, sqrt(l))
+    isqrt(l)
 end
 
 function lowertriangind(mat::Matrix; lower::Bool=true, separate::Bool=false)
