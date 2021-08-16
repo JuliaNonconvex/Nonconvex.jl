@@ -81,7 +81,6 @@ function set_A0(options::SDPOptions, A0::TypeA)
 end
 
 function add_Ai(options::SDPOptions, A::TypeA)
-    # first_mat = findfirst(e -> e isa Matrix, options._A)
     @unpack A0, Ai = options
     first_mat = A0 isa Matrix ? A0 : length(Ai) == 0 ? nothing : Ai[findfirst(e -> e isa MatTypeA, Ai)]
     @assert first_mat isa Nothing || size(first_mat) == size(A) "Semidefinite constraints should all be same size. "
