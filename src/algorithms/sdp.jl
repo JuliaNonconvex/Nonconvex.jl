@@ -22,7 +22,7 @@ function apply_sd_constraint(A0::TypeA, Ai::AbstractVector, x::AbstractVector)
 end
 
 function rearrange_x(x::AbstractVector)
-    d = trunc(Int, (sqrt(8*length(x)+1)-1)÷2)
+    d = isqrt((sqrt(8*length(x)+1)-1)÷2)
     size_L = (d^2-d)÷2
     size_D = d
     D = diagm(x[size_L+1:size_L+size_D])
