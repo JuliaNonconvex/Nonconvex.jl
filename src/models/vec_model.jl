@@ -6,7 +6,6 @@ mutable struct VecModel{Tv <: AbstractVector} <: AbstractModel
     box_max::Tv
     init::Tv
     integer::BitVector
-    n_dim::Int
 end
 function VecModel(objective, eq_constraints, ineq_constraints, box_min, box_max, init, integer)
     VecModel(objective, eq_constraints, ineq_constraints, box_min, box_max, init, integer, length(box_min))

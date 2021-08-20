@@ -133,12 +133,13 @@ end
 
 # Tool functions
 function initialize_x(model::VecModel, options::Union{MTSOptions, LS1Options})
-    @unpack n_dim, box_min, box_max = model
+    @unpack box_min, box_max = model
     @unpack M = options
-    SOA = build_SOA(M, n_dim, M)
-    x0 = Array{Real,2}(undef, M, n_dim)
+    n_vars = getdim(model)[2]
+    SOA = build_SOA(M, n_vars, M)
+    x0 = Array{Real,2}(undef, M, n_vars)
     for i in 1:M
-        for j in 1:n_dim
+        for j in 1:n_vars
             # To be confirmed: At the 5th line of "Multi Trajectory Search" algorithm in paper, I do think (u_i, l_i) shoule be (u_j, l_j)
             x0[i, j] = box_min[j] + (box_max[j]-box_min[j])*(SOA[i, j]/(M-1))
         end
@@ -146,9 +147,9 @@ function initialize_x(model::VecModel, options::Union{MTSOptions, LS1Options})
     [x0[i, :] for i in 1:size(x0, 1)]
 end
 
-function reduce_search_range(search_range, k, n_dim, box_min, box_max, search_range_tol, REDUCE_SEARCH_RANGE_FACTOR)
+function reduce_search_range(search_range, k, n_vars, box_min, box_max, search_range_tol, REDUCE_SEARCH_RANGE_FACTOR)
     search_range[k] ./= 2
-    for i in 1:n_dim
+    for i in 1:n_vars
         if search_range[k][i] < search_range_tol
             search_range[k][i] = (box_max[i] - box_min[i]) / REDUCE_SEARCH_RANGE_FACTOR
         end
@@ -172,15 +173,16 @@ function _localsearch1(workspace, k)
     @unpack x, improve, search_range = workspace
     @unpack BONUS1, BONUS2, search_range_tol = options
     @unpack SEARCH_RANGE_DEGERATE_FACTOR, REDUCE_SEARCH_RANGE_FACTOR = options
-    @unpack box_min, box_max, n_dim = model
+    @unpack box_min, box_max = model
+    n_vars = getdim(model)[2]
     grade = 0
     # search_range in paper is one-dimensional. Expand it to multidimensional. 
     if improve[k] == false
-        reduce_search_range(search_range, k, n_dim, box_min, box_max, search_range_tol, REDUCE_SEARCH_RANGE_FACTOR)
+        reduce_search_range(search_range, k, n_vars, box_min, box_max, search_range_tol, REDUCE_SEARCH_RANGE_FACTOR)
     end
     improve[k] = false
     buffered_clamp_and_evaluate! = get_buffered_clamp_and_evaluate!()
-    for i in 1:n_dim
+    for i in 1:n_vars
         # Original value
         _xk = copy(x[k])
         xk_val = buffered_clamp_and_evaluate!(model, _xk)
@@ -233,17 +235,18 @@ function _localsearch2(workspace, k)
     @unpack x, improve, search_range = workspace
     @unpack BONUS1, BONUS2, search_range_tol = options
     @unpack SEARCH_RANGE_DEGERATE_FACTOR, REDUCE_SEARCH_RANGE_FACTOR = options
-    @unpack box_min, box_max, n_dim = model
+    @unpack box_min, box_max = model
+    n_vars = getdim(model)[2]
     grade = 0
     # search_range in paper is one-dimensional. Expand it to multidimensional. 
     if improve[k] == false
-        reduce_search_range(search_range, k, n_dim, box_min, box_max, search_range_tol, REDUCE_SEARCH_RANGE_FACTOR)
+        reduce_search_range(search_range, k, n_vars, box_min, box_max, search_range_tol, REDUCE_SEARCH_RANGE_FACTOR)
     end
     improve[k] = false
-    D = zeros(Int, n_dim)
-    r = zeros(Int, n_dim)
+    D = zeros(Int, n_vars)
+    r = zeros(Int, n_vars)
     buffered_clamp_and_evaluate! = get_buffered_clamp_and_evaluate!()
-    for i in 1:n_dim
+    for i in 1:n_vars
         # Original value
         xk_val = buffered_clamp_and_evaluate!(model, x[k])
         update_xk = true
@@ -296,11 +299,12 @@ function _localsearch3(workspace, k)
     @unpack BONUS1, BONUS2 = options
     @unpack Y1_INCR, Y1_DECR, X2_INCR = options
     @unpack a_min, a_max, b_min, b_max, c_min, c_max = options
+    n_vars = getdim(model)[2]
     grade = 0
     _xk = copy(x[k])
     update_xk = false
     buffered_clamp_and_evaluate! = get_buffered_clamp_and_evaluate!()
-    for i in 1:model.n_dim
+    for i in 1:n_vars
         # Original value
         _xk_val = buffered_clamp_and_evaluate!(model, _xk)
         update_xk = true
@@ -351,16 +355,24 @@ function mts(workspace::MTSWorkspace)
             continue
         end
         LS_testgrades = [0 for _ in 1:length(LOCAL_SEARCH_METHODS)]
-        for _ in 1:n_local_search_test
-            LS_testgrades = [LS_testgrades[m]+_local_search(workspace, i) for (m, _local_search) in enumerate(LOCAL_SEARCH_METHODS)]
+        LS_testgrades[1] += _localsearch1(workspace, i)
+        LS_testgrades[2] += _localsearch2(workspace, i)
+        LS_testgrades[3] += _localsearch3(workspace, i)
+        max_ind = findmax(LS_testgrades)[2]
+        local _best_local_search
+        if max_ind == 1
+            _best_local_search = _localsearch1
+        elseif max_ind == 2
+            _best_local_search = _localsearch2
+        else
+            _best_local_search = _localsearch3
         end
-        _best_local_search = LOCAL_SEARCH_METHODS[argmax(LS_testgrades)]
         grade_x[i] = 0
-        for _ in 1:n_local_search
+        for _ in 1:n_local_search_best
             grade_x[i] += _best_local_search(workspace, i)
         end
     end
-    for _ in 1:n_local_search_best
+    for _ in 1:n_local_search
         _localsearch1(workspace, workspace.optimal_ind)
     end
     enable_ind = reverse(sortperm(grade_x))[begin:n_foreground]
@@ -379,7 +391,7 @@ function optimize!(workspace::MTSWorkspace)
     MTSResult(workspace.optimal_val, workspace.optimal_x) 
 end
 
-# Build a SOA (Simultaed Orthogonal Array). Refers to section 2 of the paper posted above. 
+# Build a SOA (Simulated Orthogonal Array). Refers to section 2 of the paper posted above. 
 function build_SOA(m, k, q)
     SOA = Array{Int,2}(undef, m, k)
     for c in 1:k

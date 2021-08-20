@@ -10,6 +10,7 @@ The main algorihtm `MTS` contains three subalgorithms `localsearch1`, `localsear
 Using default `MTSOptions()`. `MTS` is used for optimization. 
 
 ```julia
+alg = MTSAlg() # Or LS1Alg()
 LS1_options = MTSOptions()
 m = Model(f)
 lb = [0, 0]
@@ -24,6 +25,7 @@ result = optimize(model, alg, x0, options = options)
 You can choose which algorithm to use by specifying `option.method`. Avaliable list is `[MTS (default), localsearch1, Nonconvex.localsearch2 (not recommended), Nonconvex.localsearch3 (not recommended)]`.
 
 ```julia
+alg = MTSAlg() # Or LS1Alg()
 LS1_options = MTSOptions(method=localsearch1)
 m = Model(f))
 lb = [0, 0]
