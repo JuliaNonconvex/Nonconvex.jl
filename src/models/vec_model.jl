@@ -7,6 +7,9 @@ mutable struct VecModel{Tv <: AbstractVector} <: AbstractModel
     init::Tv
     integer::BitVector
 end
+function VecModel(objective, eq_constraints, ineq_constraints, box_min, box_max, init, integer)
+    VecModel(objective, eq_constraints, ineq_constraints, box_min, box_max, init, integer, length(box_min))
+end
 
 function isfeasible(model::VecModel, x::AbstractVector; ctol = 1e-4)
     return all(getmin(model) .<= x .<= getmax(model)) &&
@@ -59,6 +62,14 @@ function optimize(model::VecModel, optimizer::AbstractOptimizer, x0, args...; kw
     return optimize!(workspace)
 end
 
+"""
+ Workspace constructor without x0
+"""
+function optimize(model::VecModel, optimizer::AbstractOptimizer, args...; kwargs...)
+    workspace = Workspace(model, optimizer, args...; kwargs...)
+    return optimize!(workspace)
+end
+
 function tovecmodel(m::AbstractModel, x0 = getmin(m))
     v, _unflatten = flatten(x0)
     unflatten = Unflatten(x0, _unflatten)
@@ -76,3 +87,4 @@ function tovecmodel(m::AbstractModel, x0 = getmin(m))
         convert(BitVector, flatten(m.integer)[1]),
     ), float.(v), unflatten
 end
+

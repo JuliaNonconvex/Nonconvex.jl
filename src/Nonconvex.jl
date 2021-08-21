@@ -16,6 +16,7 @@ export  Model,
         setmax!,
         setinteger!,
         optimize,
+        MTS,
         Workspace,
         MMA87,
         MMA,
@@ -31,6 +32,8 @@ export  Model,
         PavitoIpoptCbcAlg,
         HyperoptAlg,
         BayesOptAlg,
+        MTSAlg,
+        LS1Alg,
         KKTCriteria,
         IpoptCriteria,
         FunctionWrapper,
@@ -44,6 +47,8 @@ export  Model,
         PavitoIpoptCbcOptions,
         HyperoptOptions,
         BayesOptOptions,
+        MTSOptions,
+        LS1Options,
         Tolerance,
         @constructor,
         RandomSampler,
@@ -112,6 +117,10 @@ include("algorithms/auglag_algorithm.jl")
 # Bayesian optimization
 
 include("algorithms/bayesian.jl")
+
+# Bayesian optimization
+
+include("algorithms/mts.jl")
 
 # Deflated algorithms
 
