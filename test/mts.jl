@@ -30,16 +30,16 @@ test_dim = 2
     end
 end
 
-@testset "Localsearch1" begin
-    println("Testing Localsearch1... ")
+@testset "LocalSearch" begin
+    println("Testing LocalSearch... ")
     for F in setdiff(TEST_FUNCTIONS, (ROSENBROCK, ))
         println("Testing nonconvex function: ", F)
         m = Model(x -> F(x))
         lb = [lu_bounds(F)[1] for _ in 1:test_dim]
         ub = [lu_bounds(F)[2] for _ in 1:test_dim]
         addvar!(m, lb, ub)
-        alg = LS1Alg()
-        r = Nonconvex.optimize(m, alg, options=LS1Options())
+        alg = LocalSearchAlg()
+        r = Nonconvex.optimize(m, alg, options=LocalSearchOptions())
         println(r.minimizer)
         println(r.minimum)
         @test abs(r.minimum) < tol(F)
