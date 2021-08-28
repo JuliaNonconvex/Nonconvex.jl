@@ -40,26 +40,24 @@ end
 mutable struct SDPBarrierOptions
     # Dimension of objective matrix
     # Hyperparameters 
-    c_init::Real
-    c_decr::Real
+    # Initial value of `c` in barrier method: 
+    # `Real` for using same value for all `sd_constraints`, `AbstractArray` for assign them respectively
+    c_init::Union{Real, AbstractArray}
+    # Decrease rate of `c` for every epoch, same as above
+    c_decr::Union{Real, AbstractArray}
     n_iter::Int
-    # Dimension of input matrix
-    mat_dim::Int
     # sub_option to solve (in)equality constraints
     sub_options
-    # Semidefinite function, returns target
-    # criteria to keep semidefiniteness
-    sd_criteria::String
     # Keep all results or not
     keep_all::Bool
 end
-function SDPBarrierOptions(c_init, c_decr, n_iter, mat_dim; sub_options, sd_criteria="neg_determinant", keep_all=true)
+function SDPBarrierOptions(c_init, c_decr, n_iter; sub_options, keep_all=true)
     @assert 0 < c_decr < 1 "c_decr should be between 0 and 1. "
     @assert c_init > 0 "c_init shoule be larger than 0. "
-    SDPBarrierOptions(c_init, c_decr, n_iter, mat_dim, sub_options, sd_criteria, keep_all)
+    SDPBarrierOptions(c_init, c_decr, n_iter, sub_options, keep_all)
 end
-function SDPBarrierOptions(;c_init, c_decr, n_iter, mat_dim, sub_options, sd_criteria="neg_determinant", keep_all=true)
-    SDPBarrierOptions(c_init, c_decr, n_iter, mat_dim, sub_options=sub_options, sd_criteria=sd_criteria, keep_all=keep_all)
+function SDPBarrierOptions(;c_init, c_decr, n_iter, sub_options, keep_all=true)
+    SDPBarrierOptions(c_init, c_decr, n_iter, sub_options=sub_options, keep_all=keep_all)
 end
 
 # Result
@@ -78,41 +76,51 @@ end
 end
 
 function Workspace(model::VecModel, optimizer::SDPBarrierAlg, x0, args...; options, kwargs...,)
-    A = model.sd_function(x0)
-    @assert all(eigvals(A) .≥ 0) "x0 matrix should be positive semidefinite. "
+    @unpack c_init, c_decr = options
+    for c in model.sd_constraints.fs
+        @assert isposdef(c(x0)) "Initial matrix should be positive semidefinite. "
+    end
+    if c_init isa AbstractArray
+        @assert length(model.sd_constraints.fs) == length(c_init) "c_init should be same length with number of `sd_constraints` when using array. "
+    end
+    if c_decr isa AbstractArray
+        @assert length(model.sd_constraints.fs) == length(c_decr) "c_decr should be same length with number of `sd_constraints` when using array. "
+    end
+    if c_init isa AbstractArray && c_decr isa AbstractArray
+        @assert length(c_init) == length(c_decr) "c_decr should be same length with c_init. "
+    end
     return SDPWorkspace(model, copy(x0), options, optimizer.sub_alg)
 end
 
-_sd_criterias = Dict(
-    "neg_determinant" => (mat) -> -logdet(mat)
-)
-
-function sd_objective(objective0, sd_function, sd_criteria, c)
+function sd_objective(objective0, sd_constraints, c::AbstractArray)
     function _objective(args)
         target = objective0(args)
-        barrier = c * _sd_criterias[sd_criteria](sd_function(args))
+        barrier = sum(c .* -logdet.(sd_constraints.fs.(args)))
         return target + barrier
     end
     return _objective
 end
 
-function to_barrier(model::VecModel, c::Real, sd_criteria::String)
-    @unpack objective, sd_function = model
-    _model = deepcopy(model)
-    set_objective!(_model, sd_objective(objective, sd_function, sd_criteria, c))
+function to_barrier(model, c::AbstractArray)
+    sd_constraints, objective0 = model.sd_constraints, model.objective
+    _model = set_objective(model, sd_objective(objective0, sd_constraints, c))
     return _model
 end
 
 function optimize!(workspace::SDPWorkspace)
     @unpack model, x0, options, sub_alg = workspace
-    @unpack c_init, c_decr, n_iter, mat_dim, sub_options, sd_criteria, keep_all = options
-    c = c_init
+    @unpack c_init, c_decr, n_iter, sub_options, keep_all = options
+    objective0 = model.objective
+    x = copy(x0)
+    c = c_init isa Real ? ([c_init for _ in 1:length(model.sd_constraints.fs)]) : c_init
     results = []
     for _ in 1:n_iter
-        model_i = to_barrier(model, c, sd_criteria)
-        result_i = optimize(model_i, sub_alg, copy(x0), options = sub_options)
-        push!(results, (result_i.minimum, result_i.minimizer))
-        c *= c_decr
+        model_i = to_barrier(model, c)
+        result_i = optimize(model_i, sub_alg, x, options = sub_options)
+        minimizer_i = result_i.minimizer
+        push!(results, (objective0(minimizer_i), minimizer_i))
+        c = c .* c_decr
+        x = copy(minimizer_i)
     end
     optimal_ind = argmin(first.(results))
     minimum, minimizer = results[optimal_ind]

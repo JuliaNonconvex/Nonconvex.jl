@@ -47,23 +47,6 @@ getfunction(f::FunctionWrapper) = f.f
 
 getdim(f::FunctionWrapper) = f.dim
 
-
-
-"""
-Wrapper for function whose first dim*dim input contains a matrix. 
-"""
-struct MatrixFunctionWrapper <: AbstractFunction
-    f
-    mat_dim::Int
-end
-
-getdim(wrapper::MatrixFunctionWrapper) = wrapper.mat_dim
-
-function (wrapper::MatrixFunctionWrapper)(args...; kwargs...)
-    out = wrapper.f(args...; kwargs...)
-    return out
-end
-
 """
 ```
 struct VectorOfFunctions <: AbstractFunction
@@ -290,3 +273,23 @@ getdim(c::EqConstraint) = c.dim
 Returns the function wrapped in `f`.
 """
 getfunction(f::EqConstraint) = f.f
+
+
+"""
+
+Used in semidefinite programming
+"""
+@params struct SDConstraint <: AbstractConstraint
+    f::Function
+    dim::Int
+end
+
+function (c::SDConstraint)(args...; kwargs...)
+    out = c.f(args...; kwargs...)
+    @assert length(out) == getdim(c)^2
+    return out
+end
+
+getdim(c::SDConstraint) = c.dim
+
+getfunction(c::SDConstraint) = c.f

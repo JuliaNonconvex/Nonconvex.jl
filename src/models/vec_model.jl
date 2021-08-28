@@ -2,7 +2,7 @@ mutable struct VecModel{Tv <: AbstractVector} <: AbstractModel
     objective::Union{Nothing, Objective}
     eq_constraints::VectorOfFunctions
     ineq_constraints::VectorOfFunctions
-    sd_function::Union{MatrixFunctionWrapper, Nothing}
+    sd_constraints::VectorOfFunctions
     box_min::Tv
     box_max::Tv
     init::Tv
@@ -92,8 +92,10 @@ function tovecmodel(m::AbstractModel, x0 = getmin(m))
         length(m.ineq_constraints.fs) != 0 ? VectorOfFunctions(map(m.ineq_constraints.fs) do c
             IneqConstraint(x -> maybeflatten(c.f(unflatten(x)))[1], maybeflatten(c.rhs)[1], c.dim, c.flags)
         end) : VectorOfFunctions(IneqConstraint[]),
-        # sd_function
-        m.sd_function isa Nothing ? nothing : MatrixFunctionWrapper(x -> m.sd_function(unflatten(x)), m.sd_function.mat_dim), 
+        # sd_constraints
+        length(m.sd_constraints.fs) != 0 ? VectorOfFunctions(map(m.ineq_constraints.fs) do c
+            SDConstraint(x -> maybeflatten(c.f(unflatten(x)))[1], c.dim)
+        end) : VectorOfFunctions(IneqConstraint[]),
         # box_min
         float.(flatten(m.box_min)[1]),
         # box_max
