@@ -1,12 +1,14 @@
-# Surrogate-assited Bayesian optimization
+# Surrogate-assisted Bayesian optimization
 
 ## Description
 
-Surrogate-assited optimization replaces expensive functions in the objecitve and/or constraints by a surrogate. In Nonconvex, a Gaussian process (GP) from [AbstractGPs.jl](https://github.com/JuliaGaussianProcesses/AbstractGPs.jl) is used. A certain amount of "benefit of the doubt" is given to solutions by minimizing:
+Surrogate-assisted optimization replaces expensive functions in the objecitve and/or constraints by a surrogate. In Nonconvex, a Gaussian process (GP) from [AbstractGPs.jl](https://github.com/JuliaGaussianProcesses/AbstractGPs.jl) is used. A certain amount of "benefit of the doubt" is given to solutions by minimizing:
 ```julia
 μ(x) - η * σ(x)
 ```
-where `μ(x)` and `σ(x)` are the mean and standard deviation of the posterior GP's prediction of the function's value at point `x`. `η` is a positive number that resembles how much benefit of the doubt we want to give the solution. A high `η` means ore exploration and a low `η` means more exploitation.
+where `μ(x)` and `σ(x)` are the mean and standard deviation of the posterior GP's prediction of the function's value at point `x`.
+`η` is a positive number that resembles how much benefit of the doubt we want to give the solution.
+A high `η` means more exploration and a low `η` means more exploitation.
 
 Similarly, expensive inequality constraints are replaced by:
 ```julia

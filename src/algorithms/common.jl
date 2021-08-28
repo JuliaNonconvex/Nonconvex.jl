@@ -241,3 +241,21 @@ function optimize(model::AbstractModel, optimizer::AbstractOptimizer, x0, args..
     r = optimize(_model, optimizer, _x0, args...; kwargs...)
     return @set r.minimizer = unflatten(r.minimizer)
 end
+
+"""
+ optimize without x0
+"""
+ function optimize(model::AbstractModel, optimizer::AbstractOptimizer, args...; kwargs...)
+    _model, _, unflatten = tovecmodel(model)
+    r = optimize(_model, optimizer, args...; kwargs...)
+    return @set r.minimizer = unflatten(r.minimizer)
+end
+
+"""
+Clamp the box constraint and evaluate objective function at point x
+"""
+function clamp_and_evaluate!(model::AbstractModel, x::AbstractVector)
+    @unpack box_min, box_max = model
+    x .= clamp.(x, box_min, box_max)
+    model.objective(x)
+end
