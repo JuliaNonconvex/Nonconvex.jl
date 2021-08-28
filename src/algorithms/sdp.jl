@@ -88,12 +88,12 @@ _sd_criterias = Dict(
 )
 
 function sd_objective(objective0, sd_function, sd_criteria, c)
-    function objective(args)
+    function _objective(args)
         target = objective0(args)
         barrier = c * _sd_criterias[sd_criteria](sd_function(args))
         return target + barrier
     end
-    return objective
+    return _objective
 end
 
 function to_barrier(model::VecModel, c::Real, sd_criteria::String)
