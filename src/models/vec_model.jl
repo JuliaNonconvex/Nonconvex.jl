@@ -16,7 +16,7 @@ function VecModel(
         box_max, 
         init, 
         integer::BitVector)
-    return VecModel(objective, eq_constraints, ineq_constraints, nothing, box_min, box_max, init, integer)
+    return VecModel(objective, eq_constraints, ineq_constraints, VectorOfFunctions(SDConstraint[]), box_min, box_max, init, integer)
 end
 
 function isfeasible(model::VecModel, x::AbstractVector; ctol = 1e-4)

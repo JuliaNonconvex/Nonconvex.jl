@@ -20,13 +20,13 @@ Optim = "429524aa-4258-5aef-a3af-852621145aeb"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 Parameters = "d96e819e-fc66-5662-9728-84c9c7592b0a"
 PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 Setfield = "efcf1570-3423-57d1-acb7-fd33fddbac46"
 Sobol = "ed01d8cd-4d21-5b2a-85b4-cc3bdc58bad4"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
-Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
 ADNLPModels = "0.1, 0.2, 0.3"
@@ -55,6 +55,8 @@ Zygote = "0.6"
 julia = "1"
 
 [extras]
+ChainRulesTestUtils = "cdddcdb0-9152-4a09-a978-84456f9df70a"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 FiniteDifferences = "26cc04aa-876d-5657-8c51-4c34ba976000"
 Hyperopt = "93e5fe13-2215-51db-baaf-2e9a34fb2712"
 Juniper = "2ddba703-00a4-53a7-87a5-e8b9971dde84"
@@ -62,9 +64,7 @@ NLopt = "76087f3c-5699-56af-9a33-bf431cd00edd"
 Pavito = "cd433a01-47d1-575d-afb7-6db927ee8d8f"
 Percival = "01435c0c-c90d-11e9-3788-63660f8fbccc"
 SafeTestsets = "1bc83da4-3b8d-516f-aca4-4fe02f6d838f"
-Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-ChainRulesTestUtils = "cdddcdb0-9152-4a09-a978-84456f9df70a"
 
 [targets]
 test = ["FiniteDifferences", "Hyperopt", "Juniper", "NLopt", "Pavito", "Percival", "SafeTestsets", "Distributions", "Test", "ChainRulesTestUtils"]

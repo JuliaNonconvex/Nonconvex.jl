@@ -29,8 +29,8 @@ end
 
 
 # Optimizer (algorithm)
-struct SDPBarrierAlg <: AbstractOptimizer
-    sub_alg::AbstractOptimizer
+struct SDPBarrierAlg{Alg <: AbstractOptimizer} <: AbstractOptimizer
+    sub_alg::Alg
 end
 function SDPBarrierAlg(;sub_alg)
     return SDPBarrierAlg(sub_alg)
