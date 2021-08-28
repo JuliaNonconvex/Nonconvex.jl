@@ -53,18 +53,14 @@ getdim(f::FunctionWrapper) = f.dim
 Wrapper for function whose first dim*dim input contains a matrix. 
 """
 struct MatrixFunctionWrapper <: AbstractFunction
-    f::FunctionWrapper
+    f
     mat_dim::Int
-    function MatrixFunctionWrapper(f::Function, mat_dim::Int, f_dim::Int)
-        new(FunctionWrapper(f, f_dim), mat_dim)
-    end
 end
 
-getdim(wrapper::MatrixFunctionWrapper) = wrapper.dim
+getdim(wrapper::MatrixFunctionWrapper) = wrapper.mat_dim
 
 function (wrapper::MatrixFunctionWrapper)(args...; kwargs...)
     out = wrapper.f(args...; kwargs...)
-    @assert size(out) == getdim(wrapper)
     return out
 end
 

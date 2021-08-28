@@ -15,15 +15,26 @@ The `Model` structs stores information about the nonlinear optimization problem.
 - `objective`: the objective function of the problem of type [`Objective`](@ref).
 - `eq_constraints`: the equality constraints of the problem of type [`VectorOfFunctions`](@ref). Each function in `ineq_constraints` can be an instance of [`IneqConstraint`](@ref) or [`AbstractFunction`](@ref). If the function is not an `IneqConstraint`, its right-hand-side bound is assumed to be 0.
 - `ineq_constraints`: the inequality constraints of the problem of type [`VectorOfFunctions`](@ref). Each function in `ineq_constraints` can be an instance of [`IneqConstraint`](@ref) or [`AbstractFunction`](@ref). If the function is not an `IneqConstraint`, its right-hand-side bound is assumed to be 0.
+- `sd_function`: used for semidefinite programming, accepts same objective as `objective` returns a optimization target matrix
 """
 mutable struct Model{Tv <: AbstractVector} <: AbstractModel
     objective::Union{Nothing, Objective}
     eq_constraints::VectorOfFunctions
     ineq_constraints::VectorOfFunctions
+    sd_function::Union{AbstractFunction, Nothing}
     box_min::Tv
     box_max::Tv
     init::Tv
     integer::BitVector
+end
+function Model(objective::Union{Nothing, Objective},
+    eq_constraints::VectorOfFunctions,
+    ineq_constraints::VectorOfFunctions,
+    box_min,
+    box_max,
+    init,
+    integer::BitVector)
+    return Model(objective, eq_constraints, ineq_constraints, nothing, box_min, box_max, init, integer)
 end
 
 """
@@ -171,5 +182,11 @@ function add_eq_constraint!(m::AbstractModel, f::EqConstraint)
 end
 function add_eq_constraint!(m::AbstractModel, fs::Vector{<:EqConstraint})
     append!(m.eq_constraints.fs, fs)
+    return m
+end
+
+function add_sd_constraint!(m::AbstractModel, sd_function::MatrixFunctionWrapper)
+    @assert m.sd_function isa Nothing "Model already had a semidefinite function. "
+    m.sd_function = sd_function
     return m
 end

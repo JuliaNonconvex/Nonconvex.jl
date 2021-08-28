@@ -62,6 +62,7 @@ Percival = "01435c0c-c90d-11e9-3788-63660f8fbccc"
 SafeTestsets = "1bc83da4-3b8d-516f-aca4-4fe02f6d838f"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+ChainRulesTestUtils = "cdddcdb0-9152-4a09-a978-84456f9df70a"
 
 [targets]
-test = ["FiniteDifferences", "Hyperopt", "Juniper", "NLopt", "Pavito", "Percival", "SafeTestsets", "Distributions", "Test"]
+test = ["FiniteDifferences", "Hyperopt", "Juniper", "NLopt", "Pavito", "Percival", "SafeTestsets", "Distributions", "Test", "ChainRulesTestUtils"]
