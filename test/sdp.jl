@@ -64,4 +64,4 @@ println("abs(_μ - μ): \n $(abs.(_μ - μ))")
 println("mean(abs(_Σ - Σ)): \n $(mean(abs.(_Σ - Σ)))")
 println("mean(abs(_μ - μ)): \n $(mean(abs.(_μ - μ)))")
 
-@assert mean(abs.(_Σ - Σ)) < 0.1 && mean(abs.(_μ - μ)) < 0.1
+@test mean(abs.(_Σ - Σ)) < 0.1 && mean(abs.(_μ - μ)) < 0.1
