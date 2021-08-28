@@ -236,7 +236,6 @@ function optimize!(workspace::MMAWorkspace)
             # Evaluates the exact objective and constraints and their gradients at the optimal x
             optimalx = getoptimalx(dualmodel)
 
-            # println("optimalx: $optimalx")
             fg, ∇fg = value_jacobian(
                 approxmodel.objective_ineq_constraints,
                 optimalx,

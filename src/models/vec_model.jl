@@ -81,7 +81,6 @@ end
 function tovecmodel(m::AbstractModel, x0 = getmin(m))
     v, _unflatten = flatten(x0)
     unflatten = Unflatten(x0, _unflatten)
-    # obj = Objective(x -> m.objective(unflatten(x)), flags = m.objective.flags)
     # wrapper = MatrixFunctionWrapper(x -> m.sd_function(unflatten(x)), m.sd_function.mat_dim)
     return VecModel(
         # objective
