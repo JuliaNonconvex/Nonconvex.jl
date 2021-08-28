@@ -65,20 +65,31 @@ function set_objective_multiple!(model::VecModel, m)
     return model
 end
 
-function optimize(model::VecModel, optimizer::AbstractOptimizer, x0, args...; kwargs...)
-    workspace = Workspace(model, optimizer, copy(x0), args...; kwargs...)
+"""
+Generic `optimize` for VecModel
+"""
+function optimize(model::VecModel, optimizer::AbstractOptimizer, x0::Nothing, args...; options=nothing, kwargs...)
+    if options isa Nothing
+        workspace = Workspace(model, optimizer, args...; kwargs...)
+    else
+        workspace = Workspace(model, optimizer, args...; options=options, kwargs...)
+    end
     return optimize!(workspace)
 end
 
-"""
- Workspace constructor without x0
-"""
-function optimize(model::VecModel, optimizer::AbstractOptimizer, args...; kwargs...)
-    workspace = Workspace(model, optimizer, args...; kwargs...)
+function optimize(model::VecModel, optimizer::AbstractOptimizer, x0, args...; options=nothing, kwargs...)
+    if options isa Nothing
+        workspace = Workspace(model, optimizer, copy(x0), args...; kwargs...)
+    else
+        workspace = Workspace(model, optimizer, copy(x0), args...; options=options, kwargs...)
+    end
     return optimize!(workspace)
 end
 
-function tovecmodel(m::AbstractModel, x0 = getmin(m))
+function tovecmodel(m::AbstractModel, x0=nothing)
+    if x0 isa Nothing
+        x0 = getmin(m)
+    end
     v, _unflatten = flatten(x0)
     unflatten = Unflatten(x0, _unflatten)
     return VecModel(
