@@ -7,9 +7,9 @@ const FDM = FiniteDifferences
 # Test setting
 mat_dim = 3
 mat_length = mat_dim^2
-n_sample = 1000
+n_sample = 3000
 
-test_rrule(Nonconvex.rearrange_x, rand(mat_dim), rand(mat_dim))
+test_rrule(Nonconvex.rearrange_x, rand((mat_dim^2-mat_dim)÷2), rand(mat_dim))
 
 function random_psd_mat(mat_dim)
     _mat = randn(mat_dim, mat_dim)
@@ -25,7 +25,7 @@ samples = rand(mn, n_sample)
 
 alg = SDPBarrierAlg(sub_alg=IpoptAlg())
 
-options = SDPBarrierOptions(c_init=2, c_decr=0.5, n_iter=10, mat_dim=mat_dim, sub_options=IpoptOptions(max_iter=100, first_order=true))
+options = SDPBarrierOptions(c_init=1, c_decr=0.6, n_iter=5, mat_dim=mat_dim, sub_options=IpoptOptions(max_iter=100, first_order=true))
 
 # Objective function
 function f((μ_, x_L, x_D))
