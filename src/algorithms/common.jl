@@ -185,6 +185,22 @@ An abstract type that stores optimization result.
 abstract type AbstractResult end
 
 """
+    restore_input!
+    Some fields of `AbstractResult` should be flattened after optimization, use this method whenever before returning it to frontend
+"""
+function restore_input!(r::AbstractResult, unflatten)
+    if :minimizer in fieldnames(typeof(r))
+        @set! r.minimizer = unflatten(r.minimizer)
+    end
+    if :initial_x in fieldnames(typeof(r))
+        @set! r.initial_x = unflatten(r.initial_x)
+    end
+    return r
+end
+
+
+
+"""
     GenericResult
 
 A summary result struct returned by [`optimize`](@ref), including following fields:
@@ -212,6 +228,7 @@ end
 
 abstract type AbstractModel end
 
+
 """
 ```
 optimize(
@@ -224,6 +241,7 @@ optimize(
     callback::Function = plot_trace ? LazyPlottingCallback() : NoCallback(),
     kwargs...,
 )
+
 ```
 
 Optimizes `model` using the algorithm `optimizer`, e.g. an instance of [`MMA87`](@ref) or [`MMA02`](@ref). `x0` is the initial solution. The keyword arguments are:
@@ -237,7 +255,7 @@ Optimizes `model` using the algorithm `optimizer`, e.g. an instance of [`MMA87`]
 function optimize(model::AbstractModel, optimizer::AbstractOptimizer, x0, args...; kwargs...)
     _model, _x0, unflatten = tovecmodel(model, x0)
     r = optimize(_model, optimizer, _x0, args...; kwargs...)
-    return @set r.minimizer = unflatten(r.minimizer)
+    return restore_input!(r, unflatten)
 end
 
 """
@@ -246,7 +264,7 @@ end
  function optimize(model::AbstractModel, optimizer::AbstractOptimizer, args...; kwargs...)
     _model, _, unflatten = tovecmodel(model)
     r = optimize(_model, optimizer, args...; kwargs...)
-    return @set r.minimizer = unflatten(r.minimizer)
+    return restore_input!(r, unflatten)
 end
 
 """
