@@ -3,7 +3,7 @@ function is_triangular(n)
     if (n < 0)
         return false
     end
-    c = (-2 * n)
+    c = -2 * n
     a, b = 1, 1
     d = (b * b) - (4 * a * c)
     if (d < 0)
