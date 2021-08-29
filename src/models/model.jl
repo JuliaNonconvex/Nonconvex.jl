@@ -15,7 +15,7 @@ The `Model` structs stores information about the nonlinear optimization problem.
 - `objective`: the objective function of the problem of type [`Objective`](@ref).
 - `eq_constraints`: the equality constraints of the problem of type [`VectorOfFunctions`](@ref). Each function in `ineq_constraints` can be an instance of [`IneqConstraint`](@ref) or [`AbstractFunction`](@ref). If the function is not an `IneqConstraint`, its right-hand-side bound is assumed to be 0.
 - `ineq_constraints`: the inequality constraints of the problem of type [`VectorOfFunctions`](@ref). Each function in `ineq_constraints` can be an instance of [`IneqConstraint`](@ref) or [`AbstractFunction`](@ref). If the function is not an `IneqConstraint`, its right-hand-side bound is assumed to be 0.
-- `sd_constraints`: used for semidefinite programming: a list of functions that each of them accepts same input as `objective` and returns a optimization target matrix
+- `sd_constraints`: a list of matrix-valued functions which must be positive semidefinite at any feasible solution.
 """
 mutable struct Model{Tv <: AbstractVector} <: AbstractModel
     objective::Union{Nothing, Objective}
