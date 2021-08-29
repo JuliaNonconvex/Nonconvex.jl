@@ -17,3 +17,4 @@ end
 @safetestset "Bayesian optimization" begin include("bayesian.jl") end
 @safetestset "Multiple trajectory search" begin include("mts.jl") end
 @safetestset "Deflation" begin include("deflation.jl") end
+@safetestset "Semidefinite programming" begin include("sdp.jl") end

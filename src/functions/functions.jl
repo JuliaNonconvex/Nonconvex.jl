@@ -273,3 +273,25 @@ getdim(c::EqConstraint) = c.dim
 Returns the function wrapped in `f`.
 """
 getfunction(f::EqConstraint) = f.f
+
+
+"""
+
+Used in semidefinite programming
+"""
+@params struct SDConstraint <: AbstractConstraint
+    f::Function
+    dim::Int
+end
+
+function (c::SDConstraint)(args...; kwargs...)
+    out = c.f(args...; kwargs...)
+    # println(length(out))
+    # println(getdim(c))
+    @assert length(out) == getdim(c)^2
+    return out
+end
+
+getdim(c::SDConstraint) = c.dim
+
+getfunction(c::SDConstraint) = c.f

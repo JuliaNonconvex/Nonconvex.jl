@@ -235,6 +235,7 @@ function optimize!(workspace::MMAWorkspace)
 
             # Evaluates the exact objective and constraints and their gradients at the optimal x
             optimalx = getoptimalx(dualmodel)
+
             fg, ∇fg = value_jacobian(
                 approxmodel.objective_ineq_constraints,
                 optimalx,
@@ -245,7 +246,6 @@ function optimize!(workspace::MMAWorkspace)
             # Reduces the chance of overflow or underflow in λs 
             # Helps with the convergence
             auto_scale && iter < 5 && scaleobjective!(model, fg, ∇fg, approxfg, λ)
-            #iter < 10 && scaleobjective!(model, fg, ∇fg, approxfg, λ)
 
             # Check if the approximation is an upper bound at the current x.
             # If not, increase ρ. Only used in MMA02

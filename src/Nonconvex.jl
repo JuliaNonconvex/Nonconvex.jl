@@ -9,6 +9,8 @@ export  Model,
         set_objective!,
         add_ineq_constraint!,
         add_eq_constraint!,
+        add_sd_constraint!,
+        decompress_symmetric,
         getmin,
         getmax,
         isinteger,
@@ -32,6 +34,7 @@ export  Model,
         PavitoIpoptCbcAlg,
         HyperoptAlg,
         BayesOptAlg,
+        SDPBarrierAlg,
         MTSAlg,
         LS1Alg,
         KKTCriteria,
@@ -47,6 +50,7 @@ export  Model,
         PavitoIpoptCbcOptions,
         HyperoptOptions,
         BayesOptOptions,
+        SDPBarrierOptions,
         MTSOptions,
         LS1Options,
         Tolerance,
@@ -125,6 +129,9 @@ include("algorithms/mts.jl")
 # Deflated algorithms
 
 include("algorithms/deflation.jl")
+
+# Semi-definite programming
+include("algorithms/sdp.jl")
 
 # Wrappers
 
