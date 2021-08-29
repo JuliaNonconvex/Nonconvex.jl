@@ -42,7 +42,7 @@ function SDPBarrierAlg(;sub_alg)
 end
 
 # Options
-mutable struct SDPBarrierOptions
+@params mutable struct SDPBarrierOptions
     # Dimension of objective matrix
     # Hyperparameters 
     # Initial value of `c` in barrier method: 
@@ -100,7 +100,7 @@ end
 function sd_objective(objective0, sd_constraints, c::AbstractArray)
     function _objective(args)
         target = objective0(args)
-        barrier = sum(c .* -logdet.(sd_constraints.fs.(args)))
+        barrier = sum(c .* -logdet.(map(f -> f(args), sd_constraints.fs)))
         return target + barrier
     end
     return _objective
