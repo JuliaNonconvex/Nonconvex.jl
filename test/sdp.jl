@@ -18,6 +18,9 @@ function random_psd_mat(mat_dim)
     _mat = randn(mat_dim, mat_dim)
     return _mat' * _mat
 end
+function sd_constraint((x_L, x_D))
+    decompress_symmetric(x_L, x_D)
+end
 
 @testset "Single semi-definite constraint" begin
     # Randomize groundtruth
@@ -31,10 +34,6 @@ end
         -loglikelihood(MvNormal(μ, decompress_symmetric(x_L, x_D)), samples)
     end
 
-    function sd_contraint((x_L, x_D))
-        decompress_symmetric(x_L, x_D)
-    end
-
     model = Model(f)
 
     mat_x0 = random_psd_mat(mat_dim)
@@ -43,14 +42,14 @@ end
     ubs = [fill(Inf, length(x0[1])), fill(Inf, length(x0[2]))]
     addvar!(model, lbs, ubs)
 
-    add_sd_constraint!(model, sd_contraint)
+    add_sd_constraint!(model, sd_constraint)
 
     alg = SDPBarrierAlg(sub_alg=IpoptAlg())
     options = SDPBarrierOptions(sub_options=IpoptOptions(max_iter=200))
     result = optimize(model, alg, x0, options = options)
 
     minimum, minimizer, optimal_ind = result.minimum, result.minimizer, result.optimal_ind
-    _Σ = sd_contraint(minimizer)
+    _Σ = sd_constraint(minimizer)
 
     println("result: \n $result")
 
@@ -93,16 +92,16 @@ end
 
     addvar!(model, lbs, ubs)
 
-    add_sd_constraint!(model, x -> sd_contraint(x[1:2]))
-    add_sd_constraint!(model, x -> sd_contraint(x[3:4]))
+    add_sd_constraint!(model, x -> sd_constraint(x[1:2]))
+    add_sd_constraint!(model, x -> sd_constraint(x[3:4]))
 
     alg = SDPBarrierAlg(sub_alg=IpoptAlg())
     options = SDPBarrierOptions(sub_options=IpoptOptions(max_iter=200))
     result = optimize(model, alg, x0, options = options)
 
     minimum, minimizer, optimal_ind = result.minimum, result.minimizer, result.optimal_ind
-    _Σ1 = sd_contraint(minimizer[1:2])
-    _Σ2 = sd_contraint(minimizer[3:4])
+    _Σ1 = sd_constraint(minimizer[1:2])
+    _Σ2 = sd_constraint(minimizer[3:4])
 
     println("result: \n $result")
 
@@ -123,6 +122,12 @@ end
 end
 
 @testset "Different algorithm" begin
+    # Randomize groundtruth
+    μ, Σ = randn(mat_dim), random_psd_mat(mat_dim)
+
+    # Generate samples
+    samples = rand(MvNormal(μ, Σ), n_sample)
+
     # Passing sd_constraint but not using SDPBarrierOptions
     # Objective function
     function f((x_L, x_D))
@@ -135,7 +140,7 @@ end
     lbs = [fill(-Inf, length(x0[1])), zeros(length(x0[2]))]
     ubs = [fill(Inf, length(x0[1])), fill(Inf, length(x0[2]))]
     addvar!(model, lbs, ubs)
-    add_sd_constraint!(model, sd_contraint)
+    add_sd_constraint!(model, sd_constraint)
 
     result = optimize(model, IpoptAlg(), x0, options=IpoptOptions(max_iter=1, first_order=true))
 end
