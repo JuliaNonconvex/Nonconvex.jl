@@ -98,7 +98,7 @@ function tovecmodel(m::AbstractModel, x0 = getmin(m))
         # sd_constraints
         length(m.sd_constraints.fs) != 0 ? VectorOfFunctions(map(m.sd_constraints.fs) do c
             SDConstraint(x -> c.f(unflatten(x)), c.dim)
-        end) : VectorOfFunctions(IneqConstraint[]),
+        end) : VectorOfFunctions(SDConstraint[]),
         # box_min
         float.(flatten(m.box_min)[1]),
         # box_max
