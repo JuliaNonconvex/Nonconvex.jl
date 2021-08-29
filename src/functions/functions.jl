@@ -286,8 +286,6 @@ end
 
 function (c::SDConstraint)(args...; kwargs...)
     out = c.f(args...; kwargs...)
-    # println(length(out))
-    # println(getdim(c))
     @assert length(out) == getdim(c)^2
     return out
 end
