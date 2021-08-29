@@ -1,6 +1,11 @@
 # Semidefinite programming
 
 # Decompress
+function lowertriangind(mat::Matrix)
+    indices = [i for i in CartesianIndices(mat) if i[1]>i[2]]
+    return LinearIndices(mat)[indices]
+end
+
 function rearrange_x(x_L::AbstractVector, x_D::AbstractVector)
     mat_dim = length(x_D)
     L = zeros(mat_dim, mat_dim)
@@ -78,7 +83,7 @@ end
 function Workspace(model::VecModel, optimizer::SDPBarrierAlg, x0, args...; options, kwargs...,)
     @unpack c_init, c_decr = options
     for c in model.sd_constraints.fs
-        @assert isposdef(c(x0)) "Initial matrix should be positive semidefinite. "
+        @assert isposdef(c(x0)) "Initial matrix should be positive definite. "
     end
     if c_init isa AbstractArray
         @assert length(model.sd_constraints.fs) == length(c_init) "c_init should be same length with number of `sd_constraints` when using array. "

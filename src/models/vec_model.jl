@@ -68,28 +68,20 @@ end
 """
 Generic `optimize` for VecModel
 """
-function optimize(model::VecModel, optimizer::AbstractOptimizer, x0::Nothing, args...; options=nothing, kwargs...)
-    if options isa Nothing
-        workspace = Workspace(model, optimizer, args...; kwargs...)
-    else
-        workspace = Workspace(model, optimizer, args...; options=options, kwargs...)
-    end
+function optimize(model::VecModel, optimizer::AbstractOptimizer, x0, args...; kwargs...)
+    workspace = Workspace(model, optimizer, copy(x0), args...; kwargs...)
     return optimize!(workspace)
 end
 
-function optimize(model::VecModel, optimizer::AbstractOptimizer, x0, args...; options=nothing, kwargs...)
-    if options isa Nothing
-        workspace = Workspace(model, optimizer, copy(x0), args...; kwargs...)
-    else
-        workspace = Workspace(model, optimizer, copy(x0), args...; options=options, kwargs...)
-    end
+"""
+ Workspace constructor without x0
+"""
+function optimize(model::VecModel, optimizer::AbstractOptimizer, args...; kwargs...)
+    workspace = Workspace(model, optimizer, args...; kwargs...)
     return optimize!(workspace)
 end
 
-function tovecmodel(m::AbstractModel, x0=nothing)
-    if x0 isa Nothing
-        x0 = getmin(m)
-    end
+function tovecmodel(m::AbstractModel, x0 = getmin(m))
     v, _unflatten = flatten(x0)
     unflatten = Unflatten(x0, _unflatten)
     return VecModel(
@@ -104,8 +96,8 @@ function tovecmodel(m::AbstractModel, x0=nothing)
             IneqConstraint(x -> maybeflatten(c.f(unflatten(x)))[1], maybeflatten(c.rhs)[1], c.dim, c.flags)
         end) : VectorOfFunctions(IneqConstraint[]),
         # sd_constraints
-        length(m.sd_constraints.fs) != 0 ? VectorOfFunctions(map(m.ineq_constraints.fs) do c
-            SDConstraint(x -> maybeflatten(c.f(unflatten(x)))[1], c.dim)
+        length(m.sd_constraints.fs) != 0 ? VectorOfFunctions(map(m.sd_constraints.fs) do c
+            SDConstraint(x -> c.f(unflatten(x)), c.dim)
         end) : VectorOfFunctions(IneqConstraint[]),
         # box_min
         float.(flatten(m.box_min)[1]),

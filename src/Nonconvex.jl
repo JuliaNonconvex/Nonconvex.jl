@@ -78,7 +78,6 @@ using JuMP: VariableRef, is_binary, is_integer, has_lower_bound,
 # General
 
 include("utilities/params.jl")
-include("utilities/matrices.jl")
 include("functions/functions.jl")
 include("functions/value_jacobian.jl")
 include("functions/function_docs.jl")

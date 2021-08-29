@@ -32,7 +32,7 @@ function f((μ_, x_L, x_D))
     -loglikelihood(MvNormal(μ_, decompress_symmetric(x_L, x_D)), samples)
 end
 
-function sdp_contraint((μ_, x_L, x_D))
+function sd_contraint((μ_, x_L, x_D))
     decompress_symmetric(x_L, x_D)
 end
 
@@ -43,12 +43,12 @@ x0 = (zeros(mat_dim), mat_x0[Nonconvex.lowertriangind(mat_x0)], diag(mat_x0))
 
 addvar!(model, [-Inf*ones(length(_x0)) for _x0 in x0], [Inf*ones(length(_x0)) for _x0 in x0])
 
-add_sd_constraint!(model, sdp_contraint)
+add_sd_constraint!(model, sd_contraint)
 
 result = optimize(model, alg, x0, options = options)
 
 minimum, minimizer, optimal_ind = result.minimum, result.minimizer, result.optimal_ind
-_μ, _Σ = minimizer[1], sdp_contraint(minimizer)
+_μ, _Σ = minimizer[1], sd_contraint(minimizer)
 
 println("result: \n $result")
 
@@ -57,12 +57,12 @@ println("minimizer: \n $minimizer")
 println("_μ: \n $_μ")
 println("_Σ: \n $(_Σ)")
 
-println("Σ: \n $Σ")
 println("μ: \n $μ")
-println("abs(_Σ - Σ): \n $(abs.(_Σ - Σ))")
+println("Σ: \n $Σ")
 println("abs(_μ - μ): \n $(abs.(_μ - μ))")
-println("mean(abs(_Σ - Σ)): \n $(mean(abs.(_Σ - Σ)))")
+println("abs(_Σ - Σ): \n $(abs.(_Σ - Σ))")
 println("mean(abs(_μ - μ)): \n $(mean(abs.(_μ - μ)))")
+println("mean(abs(_Σ - Σ)): \n $(mean(abs.(_Σ - Σ)))")
 
 @test mean(abs.(_Σ - Σ)) < 0.1 && mean(abs.(_μ - μ)) < 0.1
 
@@ -74,13 +74,13 @@ x0 = (zeros(mat_dim), mat_x0[Nonconvex.lowertriangind(mat_x0)], diag(mat_x0))
 
 addvar!(model, [-Inf*ones(length(_x0)) for _x0 in x0], [Inf*ones(length(_x0)) for _x0 in x0])
 
-add_sd_constraint!(model, sdp_contraint)
-add_sd_constraint!(model, sdp_contraint)
+add_sd_constraint!(model, sd_contraint)
+add_sd_constraint!(model, sd_contraint)
 
 result = optimize(model, alg, x0, options = options)
 
 minimum, minimizer, optimal_ind = result.minimum, result.minimizer, result.optimal_ind
-_μ, _Σ = minimizer[1], sdp_contraint(minimizer)
+_μ, _Σ = minimizer[1], sd_contraint(minimizer)
 
 
 println("result: \n $result")
@@ -90,11 +90,24 @@ println("minimizer: \n $minimizer")
 println("_μ: \n $_μ")
 println("_Σ: \n $(_Σ)")
 
-println("Σ: \n $Σ")
 println("μ: \n $μ")
-println("abs(_Σ - Σ): \n $(abs.(_Σ - Σ))")
+println("Σ: \n $Σ")
 println("abs(_μ - μ): \n $(abs.(_μ - μ))")
-println("mean(abs(_Σ - Σ)): \n $(mean(abs.(_Σ - Σ)))")
+println("abs(_Σ - Σ): \n $(abs.(_Σ - Σ))")
 println("mean(abs(_μ - μ)): \n $(mean(abs.(_μ - μ)))")
+println("mean(abs(_Σ - Σ)): \n $(mean(abs.(_Σ - Σ)))")
 
 @test mean(abs.(_Σ - Σ)) < 0.1 && mean(abs.(_μ - μ)) < 0.1
+
+# Robust test: passing sd_constraint but not using SDPBarrierOptions
+model = Model(f)
+
+mat_x0 = random_psd_mat(mat_dim)
+x0 = (zeros(mat_dim), mat_x0[Nonconvex.lowertriangind(mat_x0)], diag(mat_x0))
+
+addvar!(model, [-Inf*ones(length(_x0)) for _x0 in x0], [Inf*ones(length(_x0)) for _x0 in x0])
+
+add_sd_constraint!(model, sd_contraint)
+add_sd_constraint!(model, sd_contraint)
+
+result = optimize(model, IpoptAlg(), x0, options=IpoptOptions(max_iter=1, first_order=true))
