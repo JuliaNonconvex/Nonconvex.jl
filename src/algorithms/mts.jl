@@ -9,7 +9,7 @@ using Random: randperm
 
 # Algs
 struct MTSAlg <: AbstractOptimizer end
-struct LS1Alg <: AbstractOptimizer end
+struct LocalSearchAlg <: AbstractOptimizer end
 
 # Options
 @with_kw struct MTSOptions
@@ -36,7 +36,7 @@ struct LS1Alg <: AbstractOptimizer end
     X2_INCR = 0.2
 end
 
-@with_kw struct LS1Options
+@with_kw struct LocalSearchOptions
     M = 100
     maxiter=200
     search_range_tol=1e-15
@@ -66,11 +66,11 @@ end
     optimal_val::Real
 end
 
-@params mutable struct LS1Workspace <: Workspace
+@params mutable struct LocalSearchWorkspace <: Workspace
     model::VecModel
     x0::AbstractVector
     x::AbstractVector
-    options::LS1Options
+    options::LocalSearchOptions
     enable::BitVector
     improve::BitVector
     search_range::AbstractVector
@@ -101,27 +101,27 @@ function MTSWorkspace(model::VecModel, x0::AbstractVector, options::MTSOptions; 
 end
 
 
-function LS1Workspace(model::VecModel, x0::AbstractVector, options::LS1Options; kwargs...)
+function LocalSearchWorkspace(model::VecModel, x0::AbstractVector, options::LocalSearchOptions; kwargs...)
     @unpack box_min, box_max = model
     M = options.M
     # Initialize improve and serch range
     enable = trues(M)
     improve =  trues(M)
     search_range = [(box_max-box_min) ./ 2 for _ in 1:M]
-    LS1Workspace(model, x0, copy(x0), options, enable, improve, search_range, x0[1], -1, Inf)
+    LocalSearchWorkspace(model, x0, copy(x0), options, enable, improve, search_range, x0[1], -1, Inf)
 end
 
 # Exposed workspace constructors
-function Workspace(model::VecModel, optimizer::LS1Alg, x0::AbstractVector; options::LS1Options=LS1Options(), kwargs...,)
+function Workspace(model::VecModel, optimizer::LocalSearchAlg, x0::AbstractVector; options::LocalSearchOptions=LocalSearchOptions(), kwargs...,)
     @assert length(x0) > 0 && x0[1] isa AbstractVector
     if length(model.ineq_constraints) > 0 || length(model.eq_constraints) > 0
-        @warn "LS1 does not support (in)equality constraints. Your input would be ignored. "
+        @warn "LocalSearch does not support (in)equality constraints. Your input would be ignored. "
     end
-    return LS1Workspace(model, x0, options)
+    return LocalSearchWorkspace(model, x0, options)
 end
 
-# LS1 Workspace constructor without x0 (use method in paper to initialize)
-function Workspace(model::VecModel, optimizer::LS1Alg; options::LS1Options=LS1Options(), kwargs...)
+# LocalSearch Workspace constructor without x0 (use method in paper to initialize)
+function Workspace(model::VecModel, optimizer::LocalSearchAlg; options::LocalSearchOptions=LocalSearchOptions(), kwargs...)
     x0 = initialize_x(model, options)
     return Workspace(model, optimizer, x0; options=options)
 end
@@ -132,7 +132,7 @@ end
 end
 
 # Tool functions
-function initialize_x(model::VecModel, options::Union{MTSOptions, LS1Options})
+function initialize_x(model::VecModel, options::Union{MTSOptions, LocalSearchOptions})
     @unpack box_min, box_max = model
     @unpack M = options
     n_vars = getdim(model)[2]
@@ -421,15 +421,15 @@ function Workspace(model::VecModel, optimizer::MTSAlg; options::MTSOptions=MTSOp
 end
 
 # Export localsearch1 independently
-function localsearch1(workspace::Union{MTSWorkspace, LS1Workspace})
+function localsearch1(workspace::Union{MTSWorkspace, LocalSearchWorkspace})
     M = workspace.options.M
     for i in 1:M
         _localsearch1(workspace, i)
     end
 end
 
-# Export LS1 independently
-function optimize!(workspace::LS1Workspace)
+# Export LocalSearch independently
+function optimize!(workspace::LocalSearchWorkspace)
     options = workspace.options
     for iter in 1:options.maxiter
         if debugging[] && iter % 50 == 0
