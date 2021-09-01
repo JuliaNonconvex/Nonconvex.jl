@@ -98,3 +98,36 @@ end
         @test norm(r.minimizer - [1/3, 8/27]) < 1e-6
     end
 end
+
+# Test unflatten minimizer and initial_x
+@testset "Unflatten initial_x" begin
+    function _f((x, _))
+        sqrt(x[2])
+    end
+    function _g((x, _), a, b)
+        (a*x[1] + b)^3 - x[2]
+    end
+
+    _options = MMAOptions(
+        tol = Tolerance(kkt = 1e-6, f = 0.0),
+        s_init = 0.1,
+        maxiter = 1
+    )
+
+    m = Model(_f)
+    addvar!(m, [(0.0, 0.0), (0.0, 0.0)], [(10.0, Inf), (10.0, Inf)])
+
+    function eqc1(x)
+        _g(x, 2, 0)
+    end
+    function eqc2(x)
+        _g(x, -1, 1)
+    end
+    add_ineq_constraint!(m, eqc1)
+    add_ineq_constraint!(m, eqc2)
+
+    x0 = [(0.0, 0.0), (0.0, 0.0)]
+    r = Nonconvex.optimize(m, MMA02(), x0, options = _options, convcriteria = KKTCriteria())
+    @test size(r.minimizer) == (2,)
+    @test size(r.initial_x) == (2,)
+end
