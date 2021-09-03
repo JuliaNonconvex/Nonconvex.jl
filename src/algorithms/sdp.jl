@@ -14,7 +14,7 @@ function rearrange_x(x_L::AbstractVector, x_D::AbstractVector)
     return (L, D)
 end
 
-```
+"""
     decompress_symmetric
 
     For example: 
@@ -29,7 +29,7 @@ end
 
 - `x_L::AbstractArray`: representing lower triangular part of a `n*n` matrix, length should be `(n^2-n)÷2`
 - `x_D::AbstractArray`: representing diagonal part of a `n*n` matrix, length should be `n`
-```
+"""
 function decompress_symmetric(L::Matrix, D::Matrix)
     L + D + L'
 end
