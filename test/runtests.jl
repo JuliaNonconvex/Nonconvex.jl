@@ -2,16 +2,21 @@ using Test, Nonconvex
 
 @test_throws ArgumentError using NonconvexIpopt
 Nonconvex.@load Ipopt
-alg = IpoptAlg()
+IpoptAlg()
 
 @test_throws ArgumentError using NonconvexNLopt
 Nonconvex.@load NLopt
-alg = NLoptAlg(:LD_MMA)
+NLoptAlg(:LD_MMA)
 
 @test_throws ArgumentError using NonconvexJuniper
 Nonconvex.@load Juniper
 JuniperIpoptAlg()
 IpoptAlg()
+
+@test_throws ArgumentError using NonconvexMMA
+Nonconvex.@load MMA
+MMA87()
+MMA02()
 
 @test_throws ArgumentError using NonconvexPavito
 Nonconvex.@load Pavito
