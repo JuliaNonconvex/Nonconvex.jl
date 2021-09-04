@@ -1,4 +1,4 @@
-using Documenter, Nonconvex
+using Documenter
 
 makedocs(
     sitename="Nonconvex.jl",
@@ -22,7 +22,7 @@ makedocs(
 
 if get(ENV, "CI", nothing) == "true"
     deploydocs(
-        repo = "github.com/mohamed82008/Nonconvex.jl.git",
+        repo = "github.com/JuliaNonconvex/Nonconvex.jl.git",
         push_preview=true,
     )
 end
