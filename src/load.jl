@@ -1,6 +1,12 @@
 macro load(algo)
     esc(_load(string(algo)))
 end
+macro load(algos...)
+    exprs = map(algos) do algo
+        :(Nonconvex.@load $algo)
+    end
+    return Expr(:block, exprs...)
+end
 
 function _load(algo)
     if algo in ("MMA", "GCMMA", "MMA87", "MMA02")

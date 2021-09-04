@@ -54,7 +54,7 @@ MMAOptions
 The `tol` option in MMA can be set to an instance of the `Tolerance` struct:
 ```@docs
 Tolerance
-Nonconvex.ConvergenceState
+NonconvexCore.ConvergenceState
 ```
 
 ## Convergence criteria
@@ -66,12 +66,12 @@ There are 4 convergence criteria available for the MMA algorithm:
 - `IpoptCriteria`
 
 ```@docs
-Nonconvex.ConvergenceCriteria
-Nonconvex.GenericCriteria
-Nonconvex.KKTCriteria
-Nonconvex.ScaledKKTCriteria
-Nonconvex.IpoptCriteria
-Nonconvex.assess_convergence!
+NonconvexCore.ConvergenceCriteria
+NonconvexCore.GenericCriteria
+NonconvexCore.KKTCriteria
+NonconvexCore.ScaledKKTCriteria
+NonconvexCore.IpoptCriteria
+NonconvexCore.assess_convergence!
 ```
 
 To specify the convergence criteria, use:
