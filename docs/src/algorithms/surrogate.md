@@ -23,6 +23,9 @@ Once the surrogates are formed, they are solved using a sub-optimizer to get the
 ## Quick start
 
 ```julia
+using Nonconvex
+Nonconvex.@load BayesOpt
+
 f(x) = sqrt(x[2])
 g(x, a, b) = (a*x[1] + b)^3 - x[2]
 
@@ -37,7 +40,7 @@ options = BayesOptOptions(
     sub_options = IpoptOptions(),
     maxiter = 50, ftol = 1e-4, ctol = 1e-5,
 )
-r = Nonconvex.optimize(model, alg, [1.234, 2.345], options = options)
+r = optimize(model, alg, [1.234, 2.345], options = options)
 ```
 Note that the `flags` keyword argument was used when defining the objective and constraints and set to `[:expensive]`. This is a hint to Nonconvex to use a surrogate in place of these constraint functions.
 
@@ -88,5 +91,5 @@ options = BayesOptOptions(
     sub_options = IpoptOptions(print_level = 0), maxiter = 50, ctol = 1e-4,
     ninit = 2, initialize = true, postoptimize = false,
 )
-r = Nonconvex.optimize(model, alg, x0, options = options, surrogates = [s1, s2])
+r = optimize(model, alg, x0, options = options, surrogates = [s1, s2])
 ```

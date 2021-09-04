@@ -8,7 +8,8 @@
 
 Given a model `model` and an initial solution `x0`, the following can be used to optimize the model using Hyperopt.
 ```julia
-import Hyperopt
+using Nonconvex
+Nonconvex.@load Hyperopt
 
 alg = HyperoptAlg(IpoptAlg())
 options = HyperoptOptions(sub_options = IpoptOptions(), sampler = GPSampler())

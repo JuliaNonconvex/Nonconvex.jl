@@ -8,7 +8,8 @@
 
 Given a model `model` and an initial solution `x0`, the following can be used to optimize the model using NLopt.
 ```julia
-import NLopt
+using Nonconvex
+Nonconvex.@load NLopt
 
 alg = NLoptAlg(:LD_SLSQP)
 options = NLoptOptions()
