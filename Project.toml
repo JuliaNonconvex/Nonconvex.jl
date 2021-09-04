@@ -1,7 +1,7 @@
 name = "Nonconvex"
 uuid = "01bcebdf-4d21-426d-b5c4-6132c1619978"
 authors = ["Mohamed Tarek <mohamed82008@gmail.com> and contributors"]
-version = "0.7.3"
+version = "1.0.0"
 
 [deps]
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
