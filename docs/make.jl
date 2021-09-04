@@ -1,4 +1,3 @@
-import Hyperopt
 using Documenter, Nonconvex
 
 makedocs(

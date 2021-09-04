@@ -1,20 +1,45 @@
-using SafeTestsets, Test
+using Test, Nonconvex
 
-@safetestset "Model" begin include("model.jl") end
-@safetestset "DictModel" begin include("dict_model.jl") end
-@safetestset "JuMP" begin include("jump.jl") end
-@testset "MMA" begin
-    @safetestset "Approximation" begin include("approximation.jl") end
-    @safetestset "Algorithm" begin include("mma.jl") end
-end
-@safetestset "AugLag/Percival" begin include("percival.jl") end
-@safetestset "AugLag2" begin include("auglag.jl") end
-@safetestset "Ipopt" begin include("ipopt.jl") end
-@safetestset "NLopt" begin include("nlopt.jl") end
-@safetestset "Juniper" begin include("juniper.jl") end
-@safetestset "Pavito" begin include("pavito.jl") end
-@safetestset "Hyperopt" begin include("hyperopt.jl") end
-@safetestset "Bayesian optimization" begin include("bayesian.jl") end
-@safetestset "Multiple trajectory search" begin include("mts.jl") end
-@safetestset "Deflation" begin include("deflation.jl") end
-@safetestset "Semidefinite programming" begin include("sdp.jl") end
+@test_throws ArgumentError using NonconvexIpopt
+Nonconvex.@load Ipopt
+alg = IpoptAlg()
+
+@test_throws ArgumentError using NonconvexNLopt
+Nonconvex.@load NLopt
+alg = NLoptAlg(:LD_MMA)
+
+@test_throws ArgumentError using NonconvexJuniper
+Nonconvex.@load Juniper
+JuniperIpoptAlg()
+IpoptAlg()
+
+@test_throws ArgumentError using NonconvexPavito
+Nonconvex.@load Pavito
+PavitoIpoptCbcAlg()
+IpoptAlg()
+
+@test_throws ArgumentError using NonconvexPercival
+Nonconvex.@load AugLag
+AugLag()
+
+@test_throws ArgumentError using NonconvexBayesian
+Nonconvex.@load Bayesian
+BayesOptAlg(IpoptAlg())
+
+#@test_throws ArgumentError using NonconvexAugLagLab
+#Nonconvex.@load AugLag2
+#AugLag2()
+
+@test_throws ArgumentError using NonconvexSemidefinite
+Nonconvex.@load Semidefinite
+SDPBarrierAlg(IpoptAlg())
+
+@test_throws ArgumentError using NonconvexSearch
+Nonconvex.@load Search
+MTSAlg()
+LS1Alg()
+
+@test_throws ArgumentError using NonconvexMultistart
+Nonconvex.@load Multistart
+HyperoptAlg(IpoptAlg())
+DeflatedAlg(IpoptAlg())
