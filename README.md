@@ -29,14 +29,14 @@ The `JuliaNonconvex` organization hosts a number of packages which are available
 
 ## How to contribute?
 
-<mark>A beginner?</mark> The easiest way to contribute is to read the documentation, test the package and report issues.
+**A beginner?** The easiest way to contribute is to read the documentation, test the package and report issues.
 
-<mark>An impulsive tester?</mark> Improving the test coverage of any package is another great way to contribute to the `JuliaNonconvex` org. Check the coverage report of any of the packages above by clicking the coverage badge. Find the red lines in the report and figure out tests that would cover these lines of code.
+**An impulsive tester?** Improving the test coverage of any package is another great way to contribute to the `JuliaNonconvex` org. Check the coverage report of any of the packages above by clicking the coverage badge. Find the red lines in the report and figure out tests that would cover these lines of code.
 
-<mark>An algorithm head?</mark> There are plenty of optimization algorithms that can be implemented and interfaced in `Nonconvex.jl`. You could be developing the next big nonconvex semidefinite programming algorithm right now! Or the next constraint handling method for evolutionary algorithms!
+**An algorithm head?** There are plenty of optimization algorithms that can be implemented and interfaced in `Nonconvex.jl`. You could be developing the next big nonconvex semidefinite programming algorithm right now! Or the next constraint handling method for evolutionary algorithms!
 
-<mark>A hacker?</mark> Let's figure out how to wrap some optimization package in Julia in the unique, simple and nimble `Nonconvex.jl` style.
+**A hacker?** Let's figure out how to wrap some optimization package in Julia in the unique, simple and nimble `Nonconvex.jl` style.
 
-<mark>A software designer?</mark> Let's talk about design decisions and how to improve the modularity of the ecosystem.
+**A software designer?** Let's talk about design decisions and how to improve the modularity of the ecosystem.
 
 You can always reach out by opening an issue.
