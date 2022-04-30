@@ -8,7 +8,8 @@
 
 Given a model `model` and an initial solution `x0`, the following can be used to optimize the model using Hyperopt.
 ```julia
-import Hyperopt
+using Nonconvex
+Nonconvex.@load Hyperopt
 
 alg = HyperoptAlg(IpoptAlg())
 options = HyperoptOptions(sub_options = IpoptOptions(), sampler = GPSampler())
@@ -37,7 +38,7 @@ The `sampler` argument can be of type:
 
 When optimizing the starting point, the upper and lower bounds on the initial solution must be finite, or finite bounds must be passed in to the `options` constructor. All the options that can be passed to the `HyperoptOptions` constructor are listed below:
 ```@docs
-HyperoptOptions
+NonconvexMultistart.HyperoptOptions
 ```
 
 ### Sampler choice

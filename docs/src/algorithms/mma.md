@@ -12,6 +12,9 @@ The MMA algorithm only supports inequality constraints. However, the original al
 
 Given a model `model` and an initial solution `x0`, the following can be used to optimize the model using MMA.
 ```julia
+using Nonconvex
+Nonconvex.@load MMA
+
 alg = MMA87() # or MMA02()
 options = MMAOptions()
 result = optimize(model, alg, x0, options = options, convcriteria = KKTCriteria())
@@ -51,7 +54,7 @@ MMAOptions
 The `tol` option in MMA can be set to an instance of the `Tolerance` struct:
 ```@docs
 Tolerance
-Nonconvex.ConvergenceState
+NonconvexCore.ConvergenceState
 ```
 
 ## Convergence criteria
@@ -63,12 +66,12 @@ There are 4 convergence criteria available for the MMA algorithm:
 - `IpoptCriteria`
 
 ```@docs
-Nonconvex.ConvergenceCriteria
-Nonconvex.GenericCriteria
-Nonconvex.KKTCriteria
-Nonconvex.ScaledKKTCriteria
-Nonconvex.IpoptCriteria
-Nonconvex.assess_convergence!
+NonconvexCore.ConvergenceCriteria
+NonconvexCore.GenericCriteria
+NonconvexCore.KKTCriteria
+NonconvexCore.ScaledKKTCriteria
+NonconvexCore.IpoptCriteria
+NonconvexCore.assess_convergence!
 ```
 
 To specify the convergence criteria, use:

@@ -8,6 +8,9 @@
 
 Given a model `model` and an initial solution `x0`, the following can be used to optimize the model using Ipopt.
 ```julia
+using Nonconvex
+Nonconvex.@load Ipopt
+
 alg = IpoptAlg()
 options = IpoptOptions()
 result = optimize(model, alg, x0, options = options)

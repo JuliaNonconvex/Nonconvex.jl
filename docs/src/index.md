@@ -29,6 +29,9 @@ using Nonconvex
 ## Quick start
 
 ```julia
+using Nonconvex
+Nonconvex.@load NLopt
+
 f(x) = sqrt(x[2])
 g(x, a, b) = (a*x[1] + b)^3 - x[2]
 
@@ -37,9 +40,9 @@ addvar!(model, [0.0, 0.0], [10.0, 10.0])
 add_ineq_constraint!(model, x -> g(x, 2, 0))
 add_ineq_constraint!(model, x -> g(x, -1, 1))
 
-alg = IpoptAlg()
-options = IpoptOptions()
-r = Nonconvex.optimize(model, alg, [1.234, 2.345], options = options)
+alg = NLoptAlg(:LD_MMA)
+options = NLoptOptions()
+r = optimize(model, alg, [1.0, 1.0], options = options)
 ```
 
 ## Table of contents
