@@ -2,54 +2,56 @@
 
 ## Description
 
-If you need to keep your optimization objective semidefinite, Nonconvex supports a series of interfaces for [Barrier method for semidefinite programming](http://eaton.math.rpi.edu/faculty/Mitchell/courses/matp6640/notes/24A_SDPbarrierbeamer.pdf), which is a meta-algorithm transferring your optimization target to a general linear programming problem, then solving using pre-specified `sub_options`.
+If you need to keep your any matrix-valued function of the decision variables positive semidefinite, Nonconvex supports an interface for the [barrier method for semidefinite programming](http://eaton.math.rpi.edu/faculty/Mitchell/courses/matp6640/notes/24A_SDPbarrierbeamer.pdf), which is a meta-algorithm transforming the optimization problem to a series of nonlinear programming problems and solving them using the pre-specified `sub_alg` and `sub_options`.
 
 ## Quick start
 
-Optimizating over a multivariate gaussian distribution with artificial samples using `Ipopt`:
+Optimizing over a multivariate gaussian distribution with artificial samples using `Ipopt`:
 
 ```julia
-    # Draw random multivariate gaussian samples
-    # Random groundtruth
-    μ, Σ = randn(mat_dim), random_psd_mat(mat_dim)
-    # Generate
-    samples = rand(MvNormal(μ, Σ), n_sample)
+using Nonconvex, Distributions
+Nonconvex.@load Semidefinite Ipopt
 
-    # Define objective function
-    function f((x_L, x_D))
-        -loglikelihood(MvNormal(μ, decompress_symmetric(x_L, x_D)), samples)
-    end
+# Draw random multivariate gaussian samples
+# Random groundtruth
+mat_dim = 3
+μ = randn(mat_dim)
+Σ = rand(mat_dim, mat_dim)
+Σ = Σ + Σ' + 2I
+# Generate
+n_sample = 1000
+samples = rand(MvNormal(μ, Σ), n_sample)
 
-    # Define settings
-    model = Model(f)
-    mat_x0 = random_psd_mat(mat_dim)
-    x0 = [mat_x0[Nonconvex.lowertriangind(mat_x0)], diag(mat_x0)]
-    lbs = [fill(-Inf, length(x0[1])), zeros(length(x0[2]))]
-    ubs = [fill(Inf, length(x0[1])), fill(Inf, length(x0[2]))]
-    addvar!(model, lbs, ubs)
-    add_sd_constraint!(model, sd_constraint)
-    alg = SDPBarrierAlg(sub_alg=IpoptAlg())
-    options = SDPBarrierOptions(sub_options=IpoptOptions(max_iter=200))
+# Define objective function
+function f((x_L, x_D))
+    return -loglikelihood(MvNormal(μ, decompress_symmetric(x_L, x_D)), samples)
+end
+# Define the matrix-valued function
+function sd_constraint((x_L, x_D))
+    return decompress_symmetric(x_L, x_D)
+end
 
-    # Optimize
-    result = optimize(model, alg, x0, options = options)
+# Define settings
+model = Model(f)
+mat_x0 = rand(mat_dim, mat_dim)
+mat_x0 = mat_x0 + mat_x0' + I
 
-    # Check result
-    minimum, minimizer, optimal_ind = result.minimum, result.minimizer, result.optimal_ind
-    _Σ = sd_constraint(minimizer)
-    println("result: \n $result")
-    println("minimum: \n $minimum")
-    println("minimizer: \n $minimizer")
-    println("_Σ: \n $(_Σ)")
-    println("Σ: \n $Σ")
-    println("abs(_Σ - Σ): \n $(abs.(_Σ - Σ))")
-    println("mean(abs(_Σ - Σ)): \n $(mean(abs.(_Σ - Σ)))")
+x0 = [mat_x0[NonconvexSemidefinite.lowertriangind(mat_x0)], diag(mat_x0)]
+lbs = [fill(-Inf, length(x0[1])), zeros(length(x0[2]))]
+ubs = [fill(Inf, length(x0[1])), fill(Inf, length(x0[2]))]
+addvar!(model, lbs, ubs)
+add_sd_constraint!(model, sd_constraint)
+alg = SDPBarrierAlg(sub_alg=IpoptAlg())
+options = SDPBarrierOptions(sub_options=IpoptOptions(max_iter=200), n_iter = 20)
 
+# Optimize
+result = optimize(model, alg, x0, options = options)
+
+# Relative error norm
+norm(sd_constraint(result.minimizer) - Σ) / norm(Σ)
 ```
 
 ## Options
-
-`SDPBarrierOptions` only transfers your optimization target to a regular NLP problem, please specify a `sub_options` to solve that 
 
 ```@docs
 SDPBarrierOptions
