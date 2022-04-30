@@ -14,6 +14,14 @@ function rearrange_x(x_L::AbstractVector, x_D::AbstractVector)
     return (L, D)
 end
 
+```
+    decompress_symmetric
+
+    For example: a 3*3 positive semidefinite matrix [a b d; b c e; d e f] represents by [x_D[1] x_L[3] x_L[2]; x_L[1] x_D[2] x_L[1]; x_L[2] x_L[3] x_D[3]]
+
+- `x_L::AbstractArray`: representing lower triangular part of a `n*n` matrix, length should be `(n^2-n)÷2`
+- `x_D::AbstractArray`: representing diagonal part of a `n*n` matrix, length should be `n`
+```
 function decompress_symmetric(L::Matrix, D::Matrix)
     L + D + L'
 end
@@ -33,7 +41,11 @@ function ChainRulesCore.rrule(::typeof(rearrange_x), x_L::AbstractVector, x_D::A
 end
 
 
-# Optimizer (algorithm)
+"""
+    SDPBarrierAlg: a meta-algorithm used for Semidefinite barrier programming
+
+- `sub_alg`: algorithm to solve underlying optimization objective, which should be in consistent with `sub_options` of `SDPBarrierOptions`
+"""
 struct SDPBarrierAlg{Alg <: AbstractOptimizer} <: AbstractOptimizer
     sub_alg::Alg
 end
@@ -41,6 +53,17 @@ function SDPBarrierAlg(;sub_alg)
     return SDPBarrierAlg(sub_alg)
 end
 
+
+"""
+    SDPBarrierOptions: options for sdp programming
+
+- `c_init`: initial multiplier `c` for barrier, could be a real number or vector. Vector input is for the case that objective contains multiple matrix and each element of vector for corresponding one of them
+- `c_decr`: decreasing rate that multiplies `c` in every iteration. Could be either a real number of a vector, same as `c_init`
+- `n_iter`: how many iterations in total for barrier method
+- `sub_options`: options to solve underlying optimization target
+- `keep_all`: if set to `True`, `SDPBarrierResult` keeps all results in each iteration but not only optima
+- `sub_alg`: algorithm to solve underlying optimization objective, which should be in consistent with `sub_options` in `SDPBarrierOptions`
+"""
 # Options
 @params mutable struct SDPBarrierOptions
     # Dimension of objective matrix
@@ -66,14 +89,14 @@ function SDPBarrierOptions(;sub_options, c_init=1.0, c_decr=0.1, n_iter=10, keep
 end
 
 # Result
-@params struct SDPResult
+@params struct SDPBarrierResult
     minimum
     minimizer
     results
     optimal_ind
 end
 
-@params struct SDPWorkspace <: Workspace
+@params struct SDPBarrierWorkspace <: Workspace
     model::VecModel
     x0::AbstractVector
     options::SDPBarrierOptions
@@ -94,7 +117,7 @@ function Workspace(model::VecModel, optimizer::SDPBarrierAlg, x0, args...; optio
     if c_init isa AbstractArray && c_decr isa AbstractArray
         @assert length(c_init) == length(c_decr) "c_decr should be same length with c_init. "
     end
-    return SDPWorkspace(model, copy(x0), options, optimizer.sub_alg)
+    return SDPBarrierWorkspace(model, copy(x0), options, optimizer.sub_alg)
 end
 
 function sd_objective(objective0, sd_constraints, c::AbstractArray)
@@ -112,7 +135,7 @@ function to_barrier(model, c::AbstractArray)
     return _model
 end
 
-function optimize!(workspace::SDPWorkspace)
+function optimize!(workspace::SDPBarrierWorkspace)
     @unpack model, x0, options, sub_alg = workspace
     @unpack c_init, c_decr, n_iter, sub_options, keep_all = options
     objective0 = model.objective
@@ -130,8 +153,8 @@ function optimize!(workspace::SDPWorkspace)
     optimal_ind = argmin(first.(results))
     minimum, minimizer = results[optimal_ind]
     if keep_all
-        return SDPResult(minimum, minimizer, results, optimal_ind)
+        return SDPBarrierResult(minimum, minimizer, results, optimal_ind)
     else
-        return SDPResult(minimum, minimizer, nothing, nothing)
+        return SDPBarrierResult(minimum, minimizer, nothing, nothing)
     end
 end
