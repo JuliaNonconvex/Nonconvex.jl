@@ -2,7 +2,7 @@
 
 ## Description
 
-If you have matrix in your optimization objective and you need to keep that positive semidefinite, Nonconvex supports a series of interfaces for [Barrier method for semidefinite programming](http://eaton.math.rpi.edu/faculty/Mitchell/courses/matp6640/notes/24A_SDPbarrierbeamer.pdf), which is implemented as a meta-algorithm transferring your optimization target to a general linear programming problem, then solving by pre-specified `sub_options`.
+If you have a matrix in your optimization problem that needs to remain positive semidefinite, Nonconvex supports a series of interfaces for the [Barrier method for semidefinite programming](http://eaton.math.rpi.edu/faculty/Mitchell/courses/matp6640/notes/24A_SDPbarrierbeamer.pdf), which is implemented as a meta-algorithm transferring your optimization target to a general linear programming problem, then solving by pre-specified `sub_options`.
 
 ## Quick start
 
