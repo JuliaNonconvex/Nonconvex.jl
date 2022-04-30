@@ -6,7 +6,7 @@ If you have matrix in your optimization objective and you need to keep that posi
 
 ## Quick start
 
-Optimizating over a multivariate gaussian distribution with artificial samples using `Ipopt`:
+Optimizing over a multivariate Gaussian distribution with artificial samples using `Ipopt`:
 
 ```julia
     # Draw random multivariate gaussian samples
