@@ -10,6 +10,9 @@ The main algorihtm `MTS` contains three subroutines `localsearch1`, `localsearch
 Using default `MTSOptions()`. `MTS` is used for optimization. 
 
 ```julia
+using Nonconvex
+Nonconvex.@load MTS
+
 alg = MTSAlg() # Or LS1Alg()
 LS1_options = MTSOptions()
 m = Model(f)

@@ -8,7 +8,8 @@
 
 Given a model `model` and an initial solution `x0`, the following can be used to optimize the model using Percival.
 ```julia
-import Percival
+using Nonconvex
+Nonconvex.@load Percival
 
 alg = AugLag()
 options = AugLagOptions()

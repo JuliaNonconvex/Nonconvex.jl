@@ -14,7 +14,8 @@ These rely on local nonlinear programming solvers and a branch and bound procedu
 
 Given a model `model` and an initial solution `x0`, the following can be used to optimize the model using Juniper and Ipopt.
 ```julia
-import Juniper
+using Nonconvex
+Nonconvex.@load Juniper
 
 alg = JuniperIpoptAlg()
 options = JuniperIpoptOptions()
@@ -48,7 +49,8 @@ All the other options to Juniper can be found in the [Juniper documentation](htt
 
 Given a model `model` and an initial solution `x0`, the following can be used to optimize the model using Juniper and Ipopt.
 ```julia
-import Pavito
+using Nonconvex
+Nonconvex.@load Pavito
 
 alg = PavitoIpoptCbcAlg()
 options = PavitoIpoptCbcOptions()
