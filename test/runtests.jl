@@ -47,4 +47,3 @@ LS1Alg()
 @test_throws ArgumentError using NonconvexMultistart
 Nonconvex.@load Multistart
 HyperoptAlg(IpoptAlg())
-DeflatedAlg(IpoptAlg())
