@@ -1,5 +1,5 @@
 using Documenter, Nonconvex
-Nonconvex.@load MMA Ipopt NLopt Percival Bayesian Hyperopt Juniper Pavito MTS
+Nonconvex.@load MMA Ipopt NLopt Percival Bayesian Hyperopt Juniper Pavito MTS Semidefinite
 
 makedocs(
     sitename="Nonconvex.jl",
