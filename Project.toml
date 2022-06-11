@@ -1,15 +1,17 @@
 name = "Nonconvex"
 uuid = "01bcebdf-4d21-426d-b5c4-6132c1619978"
 authors = ["Mohamed Tarek <mohamed82008@gmail.com> and contributors"]
-version = "1.0.3"
+version = "1.0.4"
 
 [deps]
 NonconvexCore = "035190e5-69f1-488f-aaab-becca2889735"
+NonconvexUtils = "c48e48a2-1f5e-44ff-8799-c8e168d11d1b"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 
 [compat]
 NonconvexCore = "1"
+NonconvexUtils = "0.2"
 Reexport = "1"
 julia = "1"
 
