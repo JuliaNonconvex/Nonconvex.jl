@@ -73,13 +73,6 @@ You can the initial solution using:
 x0 = NonconvexCore.getinit(model)
 ```
 
-## Minimum variables bounds
-
-You can the initial solution using:
-```julia
-x0 = NonconvexCore.getmin(model)
-```
-
 ## Variables bounds
 
 You can query the maximum variable bounds for all the variables using:
