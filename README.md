@@ -29,6 +29,55 @@ The `JuliaNonconvex` organization hosts a number of packages which are available
 | [NonconvexUtils.jl](https://github.com/JuliaNonconvex/NonconvexUtils.jl) | Some utility functions for automatic differentiation, history tracing, implicit functions and more. | [![Build Status](https://github.com/JuliaNonconvex/NonconvexUtils.jl/workflows/CI/badge.svg)](https://github.com/JuliaNonconvex/NonconvexUtils.jl/actions) | [![Coverage](https://codecov.io/gh/JuliaNonconvex/NonconvexUtils.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JuliaNonconvex/NonconvexUtils.jl) |
 | [NonconvexTOBS.jl](https://github.com/JuliaNonconvex/NonconvexTOBS.jl) | Binary optimization algorithm called "topology optimization of binary structures" ([TOBS](https://www.sciencedirect.com/science/article/abs/pii/S0168874X17305619?via%3Dihub)) which was originally developed in the context of optimal distribution of material in mechanical components. | [![Build Status](https://github.com/JuliaNonconvex/NonconvexTOBS.jl/workflows/CI/badge.svg)](https://github.com/JuliaNonconvex/NonconvexTOBS.jl/actions) | [![Coverage](https://codecov.io/gh/JuliaNonconvex/NonconvexTOBS.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JuliaNonconvex/NonconvexTOBS.jl) |
 
+## Design philosophy
+
+Nonconvex.jl is a Julia package that implements and wraps a number of constrained nonlinear and mixed integer nonlinear programming solvers. There are 4 unique features of Nonconvex.jl compared to similar packages such as JuMP.jl and NLPModels.jl:
+
+1. Emphasis on a function-based API. Objectives and constraints are normal Julia functions.
+2. The use of Zygote.jl for automatic differentiation (AD) of the objective and constraint functions. Specifying analytic gradients is also possible by defining a custom chain rule using ChainRulesCore.jl.
+3. The ability to nest algorithms to create more complicated algorithms.
+4. The ability to automatically handle structs and different container types in the decision variables by automatically vectorizing and un-vectorizing them in an AD compatible way.
+
+## Installing Nonconvex
+
+To install Nonconvex.jl, open a Julia REPL and type `]` to enter the package mode. Then run:
+```julia
+add Nonconvex
+```
+
+Alternatively, copy and paste the following code to a Julia REPL:
+```julia
+using Pkg; Pkg.add("Nonconvex")
+```
+
+## Loading Nonconvex
+
+To load and start using Nonconvex.jl, run:
+```julia
+using Nonconvex
+```
+
+## Quick example
+
+```julia
+using Nonconvex
+Nonconvex.@load NLopt
+
+f(x) = sqrt(x[2])
+g(x, a, b) = (a*x[1] + b)^3 - x[2]
+
+model = Model(f)
+addvar!(model, [0.0, 0.0], [10.0, 10.0])
+add_ineq_constraint!(model, x -> g(x, 2, 0))
+add_ineq_constraint!(model, x -> g(x, -1, 1))
+
+alg = NLoptAlg(:LD_MMA)
+options = NLoptOptions()
+r = optimize(model, alg, [1.0, 1.0], options = options)
+r.minimum # objective value
+r.minimzer # decision variables
+```
+
 ## How to contribute?
 
 **A beginner?** The easiest way to contribute is to read the documentation, test the package and report issues.

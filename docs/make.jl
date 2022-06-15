@@ -6,6 +6,7 @@ makedocs(
     pages = [
         "Getting started" => "index.md",
         "Problem definition" => "problem.md",
+        "Gradients, Jacobians and Hessians" => "gradients/gradients.md",
         "Algorithms" => [
             "Overview" => "algorithms/algorithms.md",
             "algorithms/mma.md",
@@ -18,7 +19,7 @@ makedocs(
             "algorithms/mts.md",
             "algorithms/sdp.md",
         ],
-        "Gradients, Jacobians and Hessians" => "gradients.md",
+        "Optimization result" => "result.md"
     ],
 )
 

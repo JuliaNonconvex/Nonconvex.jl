@@ -43,11 +43,13 @@ add_ineq_constraint!(model, x -> g(x, -1, 1))
 alg = NLoptAlg(:LD_MMA)
 options = NLoptOptions()
 r = optimize(model, alg, [1.0, 1.0], options = options)
+r.minimum # objective value
+r.minimzer # decision variables
 ```
 
 ## Table of contents
 
 ```@contents
-Pages = ["problem.md", "algorithms/algorithms.md", "gradients.md"]
+Pages = ["problem/problem.md", "algorithms/algorithms.md", "gradients.md", "result.md"]
 Depth = 3
 ```
