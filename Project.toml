@@ -11,7 +11,7 @@ Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 
 [compat]
 NonconvexCore = "1"
-NonconvexUtils = "0.2"
+NonconvexUtils = "0.2, 0.3"
 Reexport = "1"
 julia = "1"
 
