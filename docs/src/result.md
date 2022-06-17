@@ -4,4 +4,4 @@ Each algorithm is free to return a different result type from the `optimize` fun
 - `result.minimum`: stores the minimum objective value reached in the optimization
 - `result.minimizer`: stores the optimal decision variables reached during optimization
 
-Some result types store additional information returned by the solver, e.g. the convergence status. Please explore the fields of the `result` output from `optimize` and/or check the documentation of the individual algorithms in the algorithms section of the documentation. If you have further questions, feel free to open issues in the `Nonconvex.jl` repository.
+Some result types store additional information returned by the solver, e.g. the convergence status. Please explore the fields of the `result` output from `optimize` and/or check the documentation of the individual algorithms in the [algorithms section](algorithms/algorithms.md) of the documentation. If you have further questions, feel free to open issues in the `Nonconvex.jl` repository.

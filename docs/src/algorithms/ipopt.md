@@ -31,7 +31,7 @@ options = IpoptOptions(first_order = false, tol = 1e-4, sparse = false)
 ```
 There are 3 important and special options:
 - `first_order`: `true` by default. When `first_order` is `true`, the first order Ipopt algorithm will be used. And when it is `false`, the second order Ipopt algorithm will be used.
-- `sparse`: `false` by default. When `sparse` is set to `true`, the gradients, Jacobians and Hessians of the function, constraint and Lagrangian functions will be treated as sparse vectors/matrices. In order to be effective, this should be combined with custom gradient/Hessian rules, sparsification or symbolification of some functions in the model. For more on custom gradients, sparsification and symbolification, see the gradients section in the documentation.
+- `sparse`: `false` by default. When `sparse` is set to `true`, the gradients, Jacobians and Hessians of the function, constraint and Lagrangian functions will be treated as sparse vectors/matrices. In order to be effective, this should be combined with custom gradient/Hessian rules, sparsification or symbolification of some functions in the model. For more on custom gradients, sparsification and symbolification, see the [gradients section](../gradients/gradients.md) in the documentation.
 - `linear_constraints`:  `false` by default. When `linear_constraints` is `true`, the Jacobian of the constraints will be computed and sparsified once at the beginning. When it is `false`, dense Jacobians will be computed in every iteration.
 
 All the other options that can be set can be found on the [Ipopt options](https://coin-or.github.io/Ipopt/OPTIONS.html) section of Ipopt's documentation.
