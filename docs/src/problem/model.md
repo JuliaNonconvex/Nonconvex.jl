@@ -1,4 +1,4 @@
-# Model definition
+# `Model` definition
 
 To define an empty model, run:
 ```julia
@@ -10,9 +10,9 @@ model = Model(obj)
 ```
 where `obj` is a function that takes a single vector argument.
 
-# Variable definition
+## Variable definition
 
-## Add a single variable
+### Add a single variable
 
 To add a new variable to a `Model` with lower and upper bounds `lb` and `ub` respectively, use:
 ```julia
@@ -35,7 +35,7 @@ addvar!(model, 0.0, 10.0, init = 1.0, integer = true)
 ```
 `init` must have the same type as the lower and upper bounds.
 
-## Add multiple variables
+### Add multiple variables
 
 To add multiple variables simultaneously, pass in a vector of values for the bounds and optionally for the `init` and `integer` keyword arguments.
 ```julia
@@ -51,7 +51,7 @@ The elements of the vector can be:
 
 Note that the use of vectors as elements is allowed. Similarly, the types of the lower and upper bounds and the initial values must be the same.
 
-# Objective definition
+## Objective definition
 
 To specify an objective function after creating the model, use:
 ```julia
@@ -59,7 +59,7 @@ set_objective!(model, obj)
 ```
 where `obj` is a function that takes a single vector argument. The vector input to `obj` will be of the same structure, shape and types as the initial solution, lower bound and upper bound vector.
 
-# Inequality constraint definition
+## Inequality constraint definition
 
 To define an inequality constraint `f(x) <= 0`, where `f` is a Julia function that accepts a single input vector, use:
 ```julia
@@ -70,7 +70,7 @@ The vector input to `f` will be of the same structure, shape and types as the in
 2. A vector or array of numbers, in which case the constraint will be applied element-wise `f(x) .<= 0`.
 3. An arbitrary container or data structure, in which case the output will be vectorized first and the constraint will be applied element-wise on the vectorized output.
 
-# Equality constraint definition
+## Equality constraint definition
 
 To define an inequality constraint `f(x) == 0`, where `f` is a Julia function that accepts a single input vector, use:
 ```julia
@@ -81,7 +81,7 @@ The vector input to `f` will be of the same structure, shape and types as the in
 2. A vector or array of numbers, in which case the constraint will be applied element-wise `f(x) .== 0`.
 3. An arbitrary container or data structure, in which case the output will be vectorized first and the constraint will be applied element-wise on the vectorized output.
 
-# Changing variable bounds
+## Changing variable bounds
 
 After defining the variables, it is possible to set the minimum and maximum variable bounds to different variables. This is useful for example in iterative procedures where the bounds are updated and the problem is resolved.
 
@@ -109,7 +109,7 @@ setmax!(model, i, newmax)
 ```
 instead where `newmax` is a maximum bound of the appropriate type depending on the type of the `i`th variable.
 
-# Changing integrality constraints
+## Changing integrality constraints
 
 To constrain a variable to be integer or relax the integrality constraint on the `i`th variable, you can use:
 ```julia

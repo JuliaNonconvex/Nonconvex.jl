@@ -1,4 +1,6 @@
-# User-defined gradient or Jacobian
+# User-defined gradient, Jacobian or Hessian
+
+## Gradients and Jacobians
 
 To use a user-defined gradient/Jacobian function `g(x)` for a function `f(x)`, you can use the `CustomGradFunction` modifier:
 ```julia
@@ -7,7 +9,7 @@ F(x)
 ```
 `F` can be then used in place of `f` as an objective function, as a constraint function or as part of any such function. When `f` is scalar-valued, `g` is expected to return a gradient vector. When `f` is vector-valued, `g` is expected to return a Jacobian matrix. Whenever `ForwardDiff` or any `ChainRules`-compatible AD package such as `Zygote` is used to differentiate `F`, the custom gradient/Jacobian function `g` will be used.
 
-# User-defined Hessian or Hessian vector product
+## Hessian or Hessian vector product
 
 For second-order optimization algorithms, a user-defined Hessian function `h(x)` can be used for any scalar-valued function `f(x)` with gradient `g(x)`. To use a user-defined Hessian function `h(x)`, you can use the `CustomHessianFunction` modifier:
 ```julia
