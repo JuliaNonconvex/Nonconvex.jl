@@ -11,9 +11,7 @@ However, one can force `Nonconvex` to use other AD packages or even user-defined
 
 In some cases, function modifiers can even be composed on top of each other to create more complex behaviours. 
 
----
-In `Nonconvex`, function modifiers modify the behaviour of a function when differentiated once or twice using either `ForwardDiff` or any [`ChainRules`](https://github.com/JuliaDiff/ChainRules.jl)-compatible AD package, such as `Zygote.jl`. The following features are all implemented in [`NonconvexUtils.jl`](https://github.com/JuliaNonconvex/NonconvexUtils.jl) and re-exported from `Nonconvex`.
----
+> In `Nonconvex`, function modifiers modify the behaviour of a function when differentiated once or twice using either `ForwardDiff` or any [`ChainRules`](https://github.com/JuliaDiff/ChainRules.jl)-compatible AD package, such as `Zygote.jl`. The following features are all implemented in [`NonconvexUtils.jl`](https://github.com/JuliaNonconvex/NonconvexUtils.jl) and re-exported from `Nonconvex`.
 
 ```@contents
 Pages = ["user_defined.md", "other_ad.md", "chainrules_fd.md", "sparse.md", "symbolic.md", "implicit.md", "history.md"]
