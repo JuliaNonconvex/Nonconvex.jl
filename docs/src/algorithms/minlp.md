@@ -21,7 +21,7 @@ alg = JuniperIpoptAlg()
 options = JuniperIpoptOptions()
 result = optimize(model, alg, x0, options = options)
 ```
-Juniper is an optional dependency of Nonconvex, so you need to load it in order to use it. Note that the integer constraints must be specified when defining variables. See the [problem definition](../problem.md) documentation for more details.
+Juniper is an optional dependency of Nonconvex, so you need to load it in order to use it. Note that the integer constraints must be specified when defining variables. See the [problem definition](../problem/problem.md) documentation for more details.
 
 ### Construct an instance
 
@@ -56,7 +56,7 @@ alg = PavitoIpoptCbcAlg()
 options = PavitoIpoptCbcOptions()
 result = optimize(model, alg, x0, options = options)
 ```
-Pavito is an optional dependency of Nonconvex, so you need to load it in order to use it. Note that the integer constraints must be specified when defining variables. See the [problem definition](../problem.md) documentation for more details.
+Pavito is an optional dependency of Nonconvex, so you need to load it in order to use it. Note that the integer constraints must be specified when defining variables. See the [problem definition](../problem/problem.md) documentation for more details.
 
 ### Construct an instance
 
