@@ -5,6 +5,8 @@ There are 3 ways to define a model in Nonconvex.jl:
 2. `DictModel` which assumes each variable has a name. The decision variables are stored in an `OrderedDict`, an ordered dictionary data structure.
 3. Start from `JuMP.Model` and convert it to `DictModel`. This is convenient to make use of `JuMP`'s user-friendly macros for variable and linear expression, objective or constraint definitions.
 
+## Table of contents
+
 ```@contents
 Pages = ["model.md", "dict_model.md", "queries.md"]
 Depth = 3
