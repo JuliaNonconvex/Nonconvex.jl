@@ -5,7 +5,7 @@ makedocs(
     sitename="Nonconvex.jl",
     pages = [
         "Getting started" => "index.md",
-        "Problem definition" => "problem.md",
+        "Problem definition" => "problem/problem.md",
         "Gradients, Jacobians and Hessians" => "gradients/gradients.md",
         "Algorithms" => [
             "Overview" => "algorithms/algorithms.md",
