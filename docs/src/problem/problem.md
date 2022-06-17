@@ -6,6 +6,6 @@ There are 3 ways to define a model in Nonconvex.jl:
 3. Start from `JuMP.Model` and convert it to `DictModel`. This is convenient to make use of `JuMP`'s user-friendly macros for variable and linear expression, objective or constraint definitions.
 
 ```@contents
-Pages = ["`Model`" => "model.md", "`DictModel`" => "dict_model.md", "`Model`/`DictModel` queries" => "queries.md"]
+Pages = ["model.md", "dict_model.md", "queries.md"]
 Depth = 3
 ```
