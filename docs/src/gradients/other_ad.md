@@ -10,6 +10,8 @@
 
 For more on how to construct a backend struct for each AD package, please refer to the README file of the [`AbstractDifferentiation`](https://github.com/JuliaDiff/AbstractDifferentiation.jl) repository.
 
+## `abstractdiffy`ing a function
+
 In order to use a specific `AbstractDifferentiation`-compatible AD package to differentiate a function `f(x...)` used in a `Nonconvex` objective/constraint, you can use the `abstractdiffy` function modifier from `Nonconvex`:
 ```julia
 F = abstractdiffy(f, backend, x...)
@@ -42,3 +44,22 @@ which is short for:
 backend = AbstractDifferentiation.ForwardDiffBackend()
 F = abstractdiffy(f, backend, x...)
 ```
+
+## `abstractdiffy`ing a model
+
+Instead of `abstractdiffy`ing or `forwarddiffy`ing one function at a time, the user can instead `abstractdiffy` or `forwarddiffy` an entire `Nonconvex` model including the objective, all the inequality constraint functions, all the equality constraint functions and all the semidefinite constraint functions.
+```julia
+ad_model = abstractdiffy(model, backend)
+```
+where `model` is of type `Model` or `DictModel`. `ad_model` can now be optimized using any of the `Nonconvex` algorithms compatible with the model. Similarly, `forwarddiffy` can be  used on an entire model:
+```julia
+fd_model = forwarddiffy(model)
+```
+
+By default, the objective and all the constraint functions will be modified with `abstractdiffy`/`forwarddiffy`. To prevent the modification of some component of the model, any of the following keyword arguments can be set to `false` (default is `true`):
+- `objective = false`
+- `ineq_constraints = false`
+- `eq_constraints = false`
+- `sd_constraints = false`
+
+Setting the `objective`, `ineq_constraints`, `eq_constraints`, and/or `sd_constraints` keyword arguments to `false` (default is `true`) will prevent the modification of the objective, all the inequality constraint functions, all the equality constraint functions, and/or all the semidefinite constraint functions respectively.
