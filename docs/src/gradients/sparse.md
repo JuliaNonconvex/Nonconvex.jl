@@ -23,7 +23,7 @@ In order to force `Nonconvex` to use `SparseDiffTools` when differentiating a fu
 F = sparsify(f, x...; hessian = false)
 F(x...)
 ```
-where `x` is some sample input arguments to `f`. `F(x...)` can now be used inplace of `f(x...)` in objectives and/constraints to be differentiated. Whenever `ForwardDiff` or any `ChainRules`-compatible AD package such as `Zygote` is used to differentiate `F` once, `SparseDiffTools` will now be used.
+where `x` is some sample input arguments to `f`. `F(x...)` can now be used inplace of `f(x...)` in objectives and/or constraints to be differentiated. Whenever `ForwardDiff` or any `ChainRules`-compatible AD package such as `Zygote` is used to differentiate `F` once, `SparseDiffTools` will now be used.
 
 ### Second order derivatives
 

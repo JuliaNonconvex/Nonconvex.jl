@@ -13,7 +13,7 @@ For more on implicit differentation, refer to the last part of the [_Understandi
 
 ## Relationship to [`ImplicitDifferentiation.jl`](https://github.com/gdalle/ImplicitDifferentiation.jl)
 
-[`ImplicitDifferentiation.jl`](https://github.com/gdalle/ImplicitDifferentiation.jl) is an attempt to simplify the implementation in `Nonconvex` making it more lightweight and better documented. For instance, the [documentation of `ImplicitDifferentiation`](https://gdalle.github.io/ImplicitDifferentiation.jl/) presents a number of examples of implicit functions all of which can be defined and used using `Nonconvex`.
+[`ImplicitDifferentiation.jl`](https://github.com/gdalle/ImplicitDifferentiation.jl) is an attempt to simplify the implementation in `Nonconvex` making it more lightweight and better documented. For instance, the [documentation of `ImplicitDifferentiation`](https://gdalle.github.io/ImplicitDifferentiation.jl/) presents a number of examples of implicit functions all of which can be defined using `Nonconvex` instead.
 
 ## Explicit parameters
 
@@ -78,9 +78,7 @@ In the adjoint definition of implicit functions, a linear system:
 ```julia
 (df/dy) * x = v
 ```
-is solved to find the adjoint vector. To solve the system using a matrix-free iterative solver (GMRES by default) that avoids constructing the Jacobian `df/dy`, you can set the `matrixfree` keyword argument to `true` (default is `false`).
-
-When set to `true`, the entrie Jacobian matrix is formed and the linear system is solved using LU factorization.
+is solved to find the adjoint vector. To solve the system using a matrix-free iterative solver (GMRES by default) that avoids constructing the Jacobian `df/dy`, you can set the `matrixfree` keyword argument to `true` (default is `false`). When set to `false`, the entrie Jacobian matrix is formed and the linear system is solved using LU factorization.
 
 ## Arbitrary data structures
 

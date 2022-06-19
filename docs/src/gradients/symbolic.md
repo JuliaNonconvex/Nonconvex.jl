@@ -15,7 +15,7 @@ In order to force `Nonconvex` to use `Symbolics` when differentiating a function
 F = symbolify(f, x...; hessian = false, sparse = false, simplify = false)
 F(x...)
 ```
-where `x` is some sample input arguments to `f`. `F(x...)` can now be used inplace of `f(x...)` in objectives and/constraints to be differentiated. Whenever `ForwardDiff` or any `ChainRules`-compatible AD package such as `Zygote` is used to differentiate `F` once, the `Symbolics`-derived gradient/Jacobian will now be used.
+where `x` is some sample input arguments to `f`. `F(x...)` can now be used inplace of `f(x...)` in objectives and/or constraints to be differentiated. Whenever `ForwardDiff` or any `ChainRules`-compatible AD package such as `Zygote` is used to differentiate `F` once, the `Symbolics`-derived gradient/Jacobian will now be used.
 
 The `sparse` keyword argument can be set to `true` (default is `false`) to tell `Symbolics` to return a sparse gradient/Jacobian for the function `F`. The `simplify` keyword argument can be set to `true` (default is `false`) to tell `Symbolics` to simplify the mathematical expressions for the gradient/Jacobian functions.
 
