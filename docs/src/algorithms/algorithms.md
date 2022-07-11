@@ -84,7 +84,7 @@ The `JuliaNonconvex` organization hosts a number of packages which wrap other op
 ## Table of contents
 
 ```@contents
-Pages = ["mma.md", "ipopt.md", "nlopt.md", "auglag.md", "minlp.md", "hyperopt.md", "surrogate.md", "mts.md", "nomad.md"]
+Pages = ["mma.md", "ipopt.md", "nlopt.md", "auglag.md", "minlp.md", "hyperopt.md", "surrogate.md", "mts.md", "nomad.md", "tobs.md"]
 Depth = 1
 ```
 
