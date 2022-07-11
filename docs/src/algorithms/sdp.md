@@ -1,4 +1,4 @@
-# Semidifinite programming
+# `NonconvexSemidefinite.jl`
 
 ## Description
 

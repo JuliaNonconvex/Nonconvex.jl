@@ -47,3 +47,15 @@ LS1Alg()
 @test_throws ArgumentError using NonconvexMultistart
 Nonconvex.@load Multistart
 HyperoptAlg(IpoptAlg())
+
+@test_throws ArgumentError using NonconvexTOBS
+Nonconvex.@load TOBS
+TOBSAlg()
+
+@test_throws ArgumentError using NonconvexMetaheuristics
+Nonconvex.@load Metaheuristics
+MetaheuristicsAlg(ECA)
+
+@test_throws ArgumentError using NonconvexNOMAD
+Nonconvex.@load NOMAD
+NOMADAlg()

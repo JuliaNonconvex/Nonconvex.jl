@@ -1,4 +1,4 @@
-# Augmented Lagrangian algorithm
+# `NonconvexPercival.jl`
 
 ## Description
 

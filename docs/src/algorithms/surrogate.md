@@ -1,4 +1,4 @@
-# Surrogate-assisted Bayesian optimization
+# `NonconvexBayesian.jl`
 
 ## Description
 

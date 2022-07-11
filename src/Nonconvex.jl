@@ -37,6 +37,12 @@ function _load(algo)
         return install_and_load_module(:NonconvexSearch)
     elseif algo in ("Hyperopt", "Deflated", "Multistart", "HyperoptAlg", "DeflatedAlg")
         return install_and_load_module(:NonconvexMultistart)
+    elseif algo == "TOBS"
+        return install_and_load_module(:NonconvexTOBS)
+    elseif algo == "Metaheuristics"
+        return install_and_load_module(:NonconvexMetaheuristics)
+    elseif algo == "NOMAD"
+        return install_and_load_module(:NonconvexNOMAD)
     else
         throw("Unsupported algorithm. Please check the documentation of Nonconvex.jl.")
     end
