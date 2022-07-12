@@ -1,4 +1,4 @@
-# `NonconvexBayesian.jl`
+# Surrogate-assisted continuous and discrete, constrained optimization
 
 ## Description
 

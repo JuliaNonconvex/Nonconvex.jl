@@ -1,4 +1,4 @@
-# `NonconvexSemidefinite.jl`
+# Interior point meta-algorithm for handling nonlinear semidefinite constraints
 
 ## Description
 

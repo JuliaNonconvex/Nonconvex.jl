@@ -1,4 +1,4 @@
-# `NonconvexMetaheuristics.jl`
+# A collection of meta-heuristic algorithms in pure Julia
 
 ## Description
 

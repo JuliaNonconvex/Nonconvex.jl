@@ -1,4 +1,4 @@
-# `NonconvexSearch.jl`
+# Multi-trajectory search algorithm in pure Julia
 
 ## Description
 

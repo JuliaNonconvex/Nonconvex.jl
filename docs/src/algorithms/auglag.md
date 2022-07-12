@@ -1,4 +1,4 @@
-# `NonconvexPercival.jl`
+# Augmented Lagrangian algorithm in pure Julia
 
 ## Description
 

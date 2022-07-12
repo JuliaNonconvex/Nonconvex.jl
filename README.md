@@ -9,7 +9,7 @@
 
 ## Algorithms
 
-A summary of all the algorithms available in `Nonconvex` through different packages is shown in the table below.
+A summary of all the algorithms available in `Nonconvex` through different packages is shown in the table below. (scroll right to see more columns)
 
 | Algorithm name | Is meta-algorithm? | Algorithm package | Order | Finite bounds | Infinite bounds | Inequality constraints | Equality constraints | Semidefinite constraints | Integer variables |
 | ------- | ----------- | ----- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |

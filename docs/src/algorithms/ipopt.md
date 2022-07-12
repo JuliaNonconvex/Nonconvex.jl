@@ -1,4 +1,4 @@
-# `NonconvexIpopt.jl`
+# Interior point method using `Ipopt.jl`
 
 ## Description
 

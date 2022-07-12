@@ -1,4 +1,4 @@
-# `NonconvexTOBS.jl`
+# Topology optimization of binary structures (TOBS), a nonlinear binary optimization heuristic 
 
 ## Description
 

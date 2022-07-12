@@ -1,4 +1,4 @@
-# `NonconvexNOMAD.jl`
+# Nonlinear optimization with the MADS (NOMAD) algorithm for continuous and discrete, constrained optimization
 
 ## Description
 
@@ -37,4 +37,4 @@ The options keyword argument to the `optimize` function shown above must be an i
 ```julia
 options = NOMADOptions()
 ```
-All the options that can be set for can be found in the [`NOMAD.jl` documentation](https://bbopt.github.io/NOMAD.jl/stable).
+All the options that can be set can be found in the [`NOMAD.jl` documentation](https://bbopt.github.io/NOMAD.jl/stable/nomadProblem/).

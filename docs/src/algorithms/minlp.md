@@ -1,4 +1,4 @@
-# `NonconvexJuniper.jl` and `NonconvexPavito.jl`
+# First and second order mixed integer nonlinear programming algorithms
 
 ## Description
 

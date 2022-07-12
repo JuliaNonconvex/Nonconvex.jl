@@ -1,4 +1,4 @@
-# `NonconvexNLopt.jl`
+# Various optimization algorithms from `NLopt.jl`
 
 ## Description
 

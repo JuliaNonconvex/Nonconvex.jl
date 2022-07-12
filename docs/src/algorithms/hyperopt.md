@@ -1,4 +1,4 @@
-# `NonconvexHyperopt.jl`
+# Multi-start and hyper-parameter optimization in pure Julia
 
 ## Description
 
