@@ -1,8 +1,8 @@
-# Ipopt
+# Interior point method using `Ipopt.jl`
 
 ## Description
 
-[Ipopt](https://coin-or.github.io/Ipopt) is a well known interior point optimizer developed and maintained by COIN-OR. The Julia wrapper of Ipopt is [Ipopt.jl](https://github.com/jump-dev/Ipopt.jl). Nonconvex allows the use of Ipopt.jl using the `IpoptAlg` algorithm struct. Ipopt can be used as a second order optimizer using the Hessian of the Lagrangian. Alternatively, an [l-BFGS approximation](https://en.wikipedia.org/wiki/Limited-memory_BFGS) of the Hessian can be used instead turning Ipopt into a first order optimizer tha only requires the gradient of the Lagrangian.
+[Ipopt](https://coin-or.github.io/Ipopt) is a well known interior point optimizer developed and maintained by COIN-OR. The Julia wrapper of Ipopt is [Ipopt.jl](https://github.com/jump-dev/Ipopt.jl). `Ipopt.jl` is wrapped in `NonconvexIpopt.jl`. `NonconvexIpopt` allows the use of `Ipopt.jl` using the `IpoptAlg` algorithm struct. `IpoptAlg` can be used as a second order optimizer computing the Hessian of the Lagrangian in every iteration. Alternatively, an [l-BFGS approximation](https://en.wikipedia.org/wiki/Limited-memory_BFGS) of the Hessian can be used instead turning `IpoptAlg` into a first order optimizer tha only requires the gradient of the Lagrangian.
 
 ## Quick start
 

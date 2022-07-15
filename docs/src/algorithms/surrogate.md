@@ -1,4 +1,4 @@
-# Surrogate-assisted Bayesian optimization
+# Surrogate-assisted continuous and discrete, constrained optimization
 
 ## Description
 

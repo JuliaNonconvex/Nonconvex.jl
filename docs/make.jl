@@ -32,6 +32,9 @@ makedocs(
             "algorithms/surrogate.md",
             "algorithms/mts.md",
             "algorithms/sdp.md",
+            "algorithms/metaheuristics.md",
+            "algorithms/nomad.md",
+            "algorithms/tobs.md",
         ],
         "Optimization result" => "result.md"
     ],
