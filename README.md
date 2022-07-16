@@ -33,7 +33,7 @@ The `JuliaNonconvex` organization hosts a number of packages which are available
 
 ## Design philosophy
 
-[`Nonconvex.jl`] is a Julia package that implements and wraps a number of constrained nonlinear and mixed integer nonlinear programming solvers. There are 3 focus points of `Nonconvex.jl` compared to similar packages such as `JuMP.jl` and `NLPModels.jl`:
+`Nonconvex.jl` is a Julia package that implements and wraps a number of constrained nonlinear and mixed integer nonlinear programming solvers. There are 3 focus points of `Nonconvex.jl` compared to similar packages such as `JuMP.jl` and `NLPModels.jl`:
 
 1. Emphasis on a function-based API. Objectives and constraints are normal Julia functions.
 2. The ability to nest algorithms to create more complicated algorithms.
