@@ -43,7 +43,7 @@ alg = NLoptAlg(:LD_MMA)
 options = NLoptOptions()
 r = optimize(model, alg, [1.0, 1.0], options = options)
 r.minimum # objective value
-r.minimzer # decision variables
+r.minimizer # decision variables
 ```
 
 ## Table of contents
