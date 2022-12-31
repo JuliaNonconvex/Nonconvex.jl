@@ -4,6 +4,7 @@
 [![codecov](https://codecov.io/gh/JuliaNonconvex/Nonconvex.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaNonconvex/Nonconvex.jl)
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://JuliaNonconvex.github.io/Nonconvex.jl/stable)
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://JuliaNonconvex.github.io/Nonconvex.jl/dev)
+[![DOI](https://zenodo.org/badge/338729082.svg)](https://zenodo.org/badge/latestdoi/338729082)
 
 `Nonconvex.jl` is an umbrella package over implementations and wrappers of a number of nonconvex constrained optimization algorithms and packages making use of automatic differentiation. Zero, first and second order methods are available. Nonlinear equality and inequality constraints as well as integer and nonlinear semidefinite constraints are supported. A detailed description of all the algorithms and features available in `Nonconvex` can be found in the [documentation](https://JuliaNonconvex.github.io/Nonconvex.jl/stable).
 
@@ -152,3 +153,7 @@ The following is an explanation of all the columns in the table:
 **A software designer?** Let's talk about design decisions and how to improve the modularity of the ecosystem.
 
 You can always reach out by opening an issue.
+
+## How to cite?
+
+To cite this package, please use the DOI provided in the DOI badge above.
