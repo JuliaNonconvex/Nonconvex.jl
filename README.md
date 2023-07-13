@@ -4,7 +4,6 @@
 [![codecov](https://codecov.io/gh/JuliaNonconvex/Nonconvex.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaNonconvex/Nonconvex.jl)
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://JuliaNonconvex.github.io/Nonconvex.jl/stable)
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://JuliaNonconvex.github.io/Nonconvex.jl/dev)
-[![DOI](https://zenodo.org/badge/338729082.svg)](https://zenodo.org/badge/latestdoi/338729082)
 
 `Nonconvex.jl` is an umbrella package over implementations and wrappers of a number of nonconvex constrained optimization algorithms and packages making use of automatic differentiation. Zero, first and second order methods are available. Nonlinear equality and inequality constraints as well as integer and nonlinear semidefinite constraints are supported. A detailed description of all the algorithms and features available in `Nonconvex` can be found in the [documentation](https://JuliaNonconvex.github.io/Nonconvex.jl/stable).
 
@@ -156,4 +155,13 @@ You can always reach out by opening an issue.
 
 ## How to cite?
 
-To cite this package, please use the DOI provided in the DOI badge above.
+If you use Nonconvex.jl for your own research, please consider citing the following publication: Mohamed Tarek. Nonconvex.jl: A Comprehensive Julia Package for Non-Convex Optimization. 2023. doi: 10.13140/RG.2.2.36120.37121.
+
+@article{MohamedTarekPreconditionersjl,
+  doi = {10.13140/RG.2.2.36120.37121},
+  url = {https://rgdoi.net/10.13140/RG.2.2.36120.37121},
+  author = {Tarek,  Mohamed},
+  language = {en},
+  title = {Nonconvex.jl: A Comprehensive Julia Package for Non-Convex Optimization},
+  year = {2023}
+}
