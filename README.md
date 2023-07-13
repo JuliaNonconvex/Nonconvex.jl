@@ -157,7 +157,8 @@ You can always reach out by opening an issue.
 
 If you use Nonconvex.jl for your own research, please consider citing the following publication: Mohamed Tarek. Nonconvex.jl: A Comprehensive Julia Package for Non-Convex Optimization. 2023. doi: 10.13140/RG.2.2.36120.37121.
 
-@article{MohamedTarekPreconditionersjl,
+```
+@article{MohamedTarekNonconvexjl,
   doi = {10.13140/RG.2.2.36120.37121},
   url = {https://rgdoi.net/10.13140/RG.2.2.36120.37121},
   author = {Tarek,  Mohamed},
@@ -165,3 +166,4 @@ If you use Nonconvex.jl for your own research, please consider citing the follow
   title = {Nonconvex.jl: A Comprehensive Julia Package for Non-Convex Optimization},
   year = {2023}
 }
+```
