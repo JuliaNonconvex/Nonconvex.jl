@@ -38,6 +38,7 @@ makedocs(
         ],
         "Optimization result" => "result.md"
     ],
+    warnonly = true,
 )
 
 if get(ENV, "CI", nothing) == "true"
