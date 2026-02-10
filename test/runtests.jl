@@ -23,10 +23,6 @@ Nonconvex.@load Pavito
 PavitoIpoptCbcAlg()
 IpoptAlg()
 
-@test_throws ArgumentError using NonconvexPercival
-Nonconvex.@load AugLag
-AugLag()
-
 @test_throws ArgumentError using NonconvexBayesian
 Nonconvex.@load Bayesian
 BayesOptAlg(IpoptAlg())
@@ -44,10 +40,6 @@ Nonconvex.@load Search
 MTSAlg()
 LS1Alg()
 
-@test_throws ArgumentError using NonconvexMultistart
-Nonconvex.@load Multistart
-HyperoptAlg(IpoptAlg())
-
 @test_throws ArgumentError using NonconvexTOBS
 Nonconvex.@load TOBS
 TOBSAlg()
@@ -60,3 +52,12 @@ Pkg.rm("NonconvexPercival") # https://github.com/ds4dm/Tulip.jl/issues/125
 @test_throws ArgumentError using NonconvexNOMAD
 Nonconvex.@load NOMAD
 NOMADAlg()
+
+@test_throws ArgumentError using NonconvexPercival
+Nonconvex.@load AugLag
+AugLag()
+
+@test_throws ArgumentError using NonconvexMultistart
+Nonconvex.@load Multistart
+HyperoptAlg(IpoptAlg())
+
