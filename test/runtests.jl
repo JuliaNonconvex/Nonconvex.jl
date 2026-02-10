@@ -1,4 +1,4 @@
-using Test, SafeTestsets, Nonconvex, Pkg
+using Test, Nonconvex, Pkg
 
 const GROUP = get(ENV, "GROUP", "All")
 
