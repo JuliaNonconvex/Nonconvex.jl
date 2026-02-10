@@ -3,12 +3,9 @@ name: IntegrationTest
 
 on:
   pull_request:
-    branches:
-      - master
   push:
     branches:
       - master
-    tags: '*'
 
 concurrency:
   # Skip intermediate builds: always.
