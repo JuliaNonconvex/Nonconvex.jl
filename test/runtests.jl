@@ -48,7 +48,6 @@ TOBSAlg()
 Nonconvex.@load Metaheuristics
 MetaheuristicsAlg(ECA)
 
-Pkg.rm("NonconvexPercival") # https://github.com/ds4dm/Tulip.jl/issues/125
 @test_throws ArgumentError using NonconvexNOMAD
 Nonconvex.@load NOMAD
 NOMADAlg()
