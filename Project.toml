@@ -1,6 +1,6 @@
 name = "Nonconvex"
 uuid = "01bcebdf-4d21-426d-b5c4-6132c1619978"
-authors = ["Mohamed Tarek <mohamed82008@gmail.com> and contributors"]
+authors = ["Mohamed Tarek <mohdibntarek@gmail.com> and contributors"]
 version = "2.1.3"
 
 [deps]
