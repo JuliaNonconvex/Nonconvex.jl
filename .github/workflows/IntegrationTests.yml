@@ -1,0 +1,72 @@
+# adapted from DiffTests.jl with MIT license
+name: IntegrationTest
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+    tags: '*'
+
+concurrency:
+  # Skip intermediate builds: always.
+  # Cancel intermediate builds: only if it is a pull request build.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
+jobs:
+  test:
+    name: ${{ matrix.package.repo }}/${{ matrix.package.group }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        julia-version: [1]
+        os: [ubuntu-latest]
+        package:
+          - {user: JuliaNonconvex, repo: NonconvexMMA.jl}
+          - {user: JuliaNonconvex, repo: NonconvexIpopt.jl}
+          - {user: JuliaNonconvex, repo: NonconvexNLopt.jl}
+          - {user: JuliaNonconvex, repo: NonconvexPercival.jl}
+          - {user: JuliaNonconvex, repo: NonconvexJuniper.jl}
+          - {user: JuliaNonconvex, repo: NonconvexPavito.jl}
+          - {user: JuliaNonconvex, repo: NonconvexSemidefinite.jl}
+          - {user: JuliaNonconvex, repo: NonconvexMultistart.jl}
+          - {user: JuliaNonconvex, repo: NonconvexBayesian.jl}
+          - {user: JuliaNonconvex, repo: NonconvexSearch.jl}
+          - {user: JuliaNonconvex, repo: NonconvexAugLagLab.jl}
+          - {user: JuliaNonconvex, repo: NonconvexUtils.jl}
+          - {user: JuliaNonconvex, repo: NonconvexTOBS.jl}
+          - {user: JuliaNonconvex, repo: NonconvexMetaheuristics.jl}
+          - {user: JuliaNonconvex, repo: NonconvexNOMAD.jl}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: ${{ matrix.julia-version }}
+          arch: x64
+      - uses: julia-actions/julia-buildpkg@v1
+      - name: Clone Downstream
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ matrix.package.user }}/${{ matrix.package.repo }}
+          path: downstream
+      - name: Load this and run the downstream tests
+        shell: julia --color=yes --project=downstream {0}
+        run: |
+          using Pkg
+          try
+            # force it to use this PR's version of the package
+            Pkg.develop(PackageSpec(path="."))  # resolver may fail with main deps
+            Pkg.update()
+            Pkg.test()  # resolver may fail with test time deps
+          catch err
+            err isa Pkg.Resolve.ResolverError || rethrow()
+            # If we can't resolve that means this is incompatible by SemVer and this is fine
+            # It means we marked this as a breaking change, so we don't need to worry about
+            # Mistakenly introducing a breaking change, as we have intentionally made one
+            @info "Not compatible with this release. No problem." exception=err
+            exit(0)  # Exit immediately, as a success
+          end
