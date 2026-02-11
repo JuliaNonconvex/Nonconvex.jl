@@ -1,7 +1,7 @@
 # Nonconvex
 
 [![Actions Status](https://github.com/JuliaNonconvex/Nonconvex.jl/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/JuliaNonconvex/Nonconvex.jl/actions)
-[![Actions Status](https://github.com/JuliaNonconvex/Nonconvex.jl/actions/workflows/IntegrationTest.yml/badge.svg?branch=master)](https://github.com/JuliaNonconvex/Nonconvex.jl/actions)
+[![Actions Status](https://github.com/JuliaNonconvex/Nonconvex.jl/actions/workflows/IntegrationTests.yml/badge.svg?branch=master)](https://github.com/JuliaNonconvex/Nonconvex.jl/actions)
 [![codecov](https://codecov.io/gh/JuliaNonconvex/Nonconvex.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaNonconvex/Nonconvex.jl)
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://JuliaNonconvex.github.io/Nonconvex.jl/stable)
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://JuliaNonconvex.github.io/Nonconvex.jl/dev)
