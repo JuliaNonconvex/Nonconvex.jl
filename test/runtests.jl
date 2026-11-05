@@ -1,5 +1,23 @@
 using Test, Nonconvex, Pkg
 
+@testset "Macro regression tests" begin
+    # Unsupported algorithms throw a proper ErrorException (wrapped in a
+    # LoadError at macro expansion), not a bare String.
+    err = try
+        @eval Nonconvex.@load NotAnAlgorithm
+        nothing
+    catch e
+        e
+    end
+    @test err isa LoadError
+    @test err.error isa ErrorException
+
+    # The generated install_and_load_module code must not leak the modname
+    # binding into the caller's scope.
+    Nonconvex.install_and_load_module(:NonconvexCore) |> eval
+    @test !isdefined(@__MODULE__, :modname)
+end
+
 const GROUP = get(ENV, "GROUP", "All")
 
 if GROUP == "All" || GROUP == "NonconvexIpopt"
