@@ -8,10 +8,8 @@ macro load(algo)
     esc(_load(string(algo)))
 end
 macro load(algos...)
-    exprs = map(algos) do algo
-        :(Nonconvex.@load $algo)
-    end
-    return Expr(:block, exprs...)
+    exprs = map(algo -> _load(string(algo)), algos)
+    return esc(Expr(:block, exprs...))
 end
 
 function _load(algo)
@@ -44,29 +42,34 @@ function _load(algo)
     elseif algo == "NOMAD"
         return install_and_load_module(:NonconvexNOMAD)
     else
-        throw("Unsupported algorithm. Please check the documentation of Nonconvex.jl.")
+        error("Unsupported algorithm. Please check the documentation of Nonconvex.jl.")
     end
 end
 function install_and_load_module(mod)
     quote
         using Pkg
-        modname = $(Meta.quot(mod))
-        try
-            @info "Attempting to load the package $modname."
-            using $mod
-            @info "Loading succesful."
-        catch
-            @info "Couldn't find the package $modname. Attempting to install it."
+        let modname = $(Meta.quot(mod))
             try
-                Pkg.add(string(modname))
-            catch err
-                @info "Package installation failed! Please report an issue."
-                rethrow(err)
+                @info "Attempting to load the package $modname."
+                using $mod
+                @info "Loading succesful."
+            catch e
+                if e isa ArgumentError && occursin("not found in current path", sprint(showerror, e))
+                    @info "Couldn't find the package $modname. Attempting to install it."
+                    try
+                        Pkg.add(string(modname))
+                    catch err
+                        @info "Package installation failed! Please report an issue."
+                        rethrow(err)
+                    end
+                    @info "$modname installed."
+                    @info "Attempting to load the package $modname."
+                    using $mod
+                    @info "Loading succesful."
+                else
+                    rethrow()
+                end
             end
-            @info "$modname installed."
-            @info "Attempting to load the package $modname."
-            using $mod
-            @info "Loading succesful."
         end
     end
 end
