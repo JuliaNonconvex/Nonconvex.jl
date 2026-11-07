@@ -1,5 +1,11 @@
 # NEWS
 
+## 3.2.0
+
+- `Nonconvex.@load` now accepts `RCD` and `RCDAlg` as aliases for the
+  random coordinate descent meta-algorithm in NonconvexSearch.jl. The
+  `mts.md` docs page documents `RCDAlg` and `RCDOptions`.
+
 ## 3.1.1
 
 - The `@load` macro only triggers `Pkg.add` for genuinely missing packages;
