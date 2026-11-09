@@ -111,3 +111,7 @@ elseif GROUP == "All" || GROUP == "NonconvexPercival"
 else
     throw(ArgumentError("Unknown test group: $GROUP"))
 end
+
+using Aqua, JET
+Aqua.test_all(Nonconvex)
+JET.test_package(Nonconvex; target_modules = (Nonconvex,))

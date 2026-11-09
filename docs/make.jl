@@ -1,9 +1,9 @@
 using Documenter, Nonconvex
 Nonconvex.@load MMA Ipopt NLopt Percival Bayesian Hyperopt Juniper Pavito MTS Semidefinite
 
-makedocs(
+makedocs(;
     sitename="Nonconvex.jl",
-    pages = [
+    pages=[
         "Getting started" => "index.md",
         "Problem definition" => [
             "Overview" => "problem/problem.md",
@@ -36,14 +36,11 @@ makedocs(
             "algorithms/nomad.md",
             "algorithms/tobs.md",
         ],
-        "Optimization result" => "result.md"
+        "Optimization result" => "result.md",
     ],
-    warnonly = true,
+    warnonly=true,
 )
 
 if get(ENV, "CI", nothing) == "true"
-    deploydocs(
-        repo = "github.com/JuliaNonconvex/Nonconvex.jl.git",
-        push_preview=true,
-    )
+    deploydocs(; repo="github.com/JuliaNonconvex/Nonconvex.jl.git", push_preview=true)
 end

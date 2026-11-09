@@ -5,7 +5,7 @@ using Reexport
 @reexport using NonconvexUtils
 
 macro load(algo)
-    esc(_load(string(algo)))
+    return esc(_load(string(algo)))
 end
 macro load(algos...)
     exprs = map(algo -> _load(string(algo)), algos)
@@ -54,7 +54,8 @@ function install_and_load_module(mod)
                 using $mod
                 @info "Loading succesful."
             catch e
-                if e isa ArgumentError && occursin("not found in current path", sprint(showerror, e))
+                if e isa ArgumentError &&
+                    occursin("not found in current path", sprint(showerror, e))
                     @info "Couldn't find the package $modname. Attempting to install it."
                     try
                         Pkg.add(string(modname))
