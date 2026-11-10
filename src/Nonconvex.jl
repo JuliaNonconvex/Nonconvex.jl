@@ -2,7 +2,6 @@ module Nonconvex
 
 using Reexport
 @reexport using NonconvexCore
-@reexport using NonconvexUtils
 
 macro load(algo)
     esc(_load(string(algo)))
