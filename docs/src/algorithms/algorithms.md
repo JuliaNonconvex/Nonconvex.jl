@@ -8,23 +8,23 @@ A summary of all the algorithms available in `Nonconvex` through different packa
 | ------- | ----------- | ----- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
 | Method of moving asymptotes (MMA) | ❌ | `NonconvexMMA.jl` (pure Julia) or `NLopt.jl` | 1 | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
 | Primal dual interior point method | ❌ | `Ipopt.jl` | 1 or 2 | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
-|  DIviding RECTangles algorithm (DIRECT) | ❌ | `NLopt.jl` | 0 | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
-| Controlled random search (CRS) | ❌ | `NLopt.jl` | 0 | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | 
-| Multi-Level Single-Linkage (MLSL) | Limited | `NLopt.jl` | Depends on sub-solver | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+|  DIviding RECTangles algorithm (DIRECT) | ❌ | `NLopt.jl` | 0 | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Controlled random search (CRS) | ❌ | `NLopt.jl` | 0 | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Multi-Level Single-Linkage (MLSL) | Limited | `NLopt.jl` | Depends on sub-solver | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | StoGo | ❌ | `NLopt.jl` | 1 | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | AGS | ❌ | `NLopt.jl` | 0 | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
-| Improved Stochastic Ranking Evolution Strategy (ISRES) | ❌ | `NLopt.jl` | 0 | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
-| ESCH | ❌ | `NLopt.jl` | 0 | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Improved Stochastic Ranking Evolution Strategy (ISRES) | ❌ | `NLopt.jl` | 0 | ✅ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| ESCH | ❌ | `NLopt.jl` | 0 | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | COBYLA | ❌ | `NLopt.jl` | 0 | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
 | BOBYQA | ❌ | `NLopt.jl` | 0 | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| NEWUOA | ❌ | `NLopt.jl` | 0 | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| NEWUOA | ❌ | `NLopt.jl` | 0 | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Principal AXIS (PRAXIS) | ❌ | `NLopt.jl` | 0 | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Nelder Mead | ❌ | `NLopt.jl` | 0 | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Subplex | ❌ | `NLopt.jl` | 0 | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
 | CCSAQ | ❌ | `NLopt.jl` | 1 | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
 | SLSQP | ❌ | `NLopt.jl` | 1 | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
-| TNewton | ❌ | `NLopt.jl` | 1 | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Shifted limited-memory variable-metric | ❌ | `NLopt.jl` | 1 | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| TNewton | ❌ | `NLopt.jl` | 1 | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Shifted limited-memory variable-metric | ❌ | `NLopt.jl` | 1 | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Augmented Lagrangian in `NLopt` | Limited | `NLopt.jl` | Depends on sub-solver | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
 | Augmented Lagrangian in `Percival` | ❌ | `Percival.jl` | 1 or 2 | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
 | Multiple trajectory search | ❌ | `NonconvexSearch.jl` | 0 | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
