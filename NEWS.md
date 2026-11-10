@@ -1,5 +1,15 @@
 # NEWS
 
+## 4.0.0
+
+- Support NonconvexCore 2 (`NonconvexCore = "2"` compat); the
+  NonconvexUtils dependency is dropped since its utilities were absorbed
+  into NonconvexCore 2.
+- The installation/group tests load Ipopt before constructing IpoptAlg
+  sub-solvers, and the group testsets run independently (GROUP=All runs
+  every group).
+- Aqua and JET quality gates added to the test targets.
+
 ## 3.2.0
 
 - `Nonconvex.@load` now accepts `RCD` and `RCDAlg` as aliases for the
