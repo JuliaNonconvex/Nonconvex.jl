@@ -49,6 +49,6 @@ r.minimizer # decision variables
 ## Table of contents
 
 ```@contents
-Pages = ["problem/problem.md", "algorithms/algorithms.md", "gradients/gradients.md", "result.md"]
+Pages = ["core/models.md", "core/derivatives/backends.md", "core/result.md", "algorithms/algorithms.md"]
 Depth = 3
 ```

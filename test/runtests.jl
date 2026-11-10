@@ -111,3 +111,5 @@ elseif GROUP == "All" || GROUP == "NonconvexPercival"
 else
     throw(ArgumentError("Unknown test group: $GROUP"))
 end
+
+include("aqua.jl")

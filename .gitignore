@@ -1,3 +1,19 @@
 /Manifest.toml
 docs/build/
 docs/Manifest.toml
+
+# DocumenterFragments mounts copied in during the docs build
+docs/src/core/
+docs/src/ipopt/
+docs/src/mma/
+docs/src/percival/
+docs/src/nlopt/
+docs/src/nomad/
+docs/src/metaheuristics/
+docs/src/search/
+docs/src/juniper/
+docs/src/pavito/
+docs/src/tobs/
+docs/src/multistart/
+docs/src/semidefinite/
+docs/src/auglag/
