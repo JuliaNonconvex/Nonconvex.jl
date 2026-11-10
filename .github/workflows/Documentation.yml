@@ -1,0 +1,98 @@
+name: Documentation
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      destination:
+        description: 'Site destination directory (dev, stable, preview/PRnn)'
+        required: false
+        default: dev
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  docs:
+    name: "Build and deploy docs"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1'
+          arch: x64
+      - uses: julia-actions/cache@v2
+        with:
+          cache-name: docs
+          cache-artifacts: true
+          cache-packages: true
+          cache-compiled: true
+      - name: Use General git registry (avoids CDN lag for new versions)
+        run: |
+          rm -rf ~/.julia/registries/General.toml ~/.julia/registries/General.tar.gz
+          julia -e 'using Pkg; Pkg.Registry.add(RegistrySpec(url="https://github.com/JuliaRegistries/General.git"))'
+      - name: Install dependencies
+        run: |
+          julia --project=docs -e '
+            using Pkg
+            Pkg.develop(PackageSpec(path=pwd()))
+            Pkg.instantiate()
+            Pkg.precompile()'
+      - name: Build docs with DocumenterFragments
+        run: julia --project=docs --color=yes docs/make.jl
+      - name: Assemble site with the previous destinations
+        env:
+          DEST: ${{ startsWith(github.ref, 'refs/tags/') && 'stable' || (github.event_name == 'pull_request' && format('preview/PR{0}', github.event.pull_request.number) || github.event.inputs.destination) || 'dev' }}
+        run: |
+          git clone --depth=1 --branch gh-pages \
+            "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" /tmp/site \
+            || { mkdir -p /tmp/site; }
+          rm -rf "/tmp/site/$DEST"
+          mkdir -p "/tmp/site/$DEST"
+          cp -r docs/build/. "/tmp/site/$DEST/"
+          touch /tmp/site/.nojekyll
+      - name: Persist the destination to gh-pages
+        env:
+          DEST: ${{ startsWith(github.ref, 'refs/tags/') && 'stable' || (github.event_name == 'pull_request' && format('preview/PR{0}', github.event.pull_request.number) || github.event.inputs.destination) || 'dev' }}
+        run: |
+          git clone --depth=1 --branch gh-pages \
+            "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" /tmp/ghp \
+            || { mkdir -p /tmp/ghp; }
+          rm -rf "/tmp/ghp/$DEST"
+          mkdir -p "/tmp/ghp/$DEST"
+          cp -r docs/build/. "/tmp/ghp/$DEST/"
+          touch /tmp/ghp/.nojekyll
+          cd /tmp/ghp
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || (git commit -m "deploy: $DEST" && git push origin gh-pages)
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: /tmp/site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Post preview URL comment
+        if: github.event_name == 'pull_request'
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          message: |
+            📖 PR preview docs: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/preview/PR${{ github.event.pull_request.number }}/
+          comment_tag: preview-docs
