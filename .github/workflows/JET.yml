@@ -1,0 +1,100 @@
+name: JET Report
+
+on:
+  pull_request:
+    branches:
+      - master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  jet-report:
+    name: "JET: Report"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1'
+          arch: x64
+
+      - uses: julia-actions/cache@v2
+        with:
+          cache-name: jet-report
+          cache-artifacts: true
+          cache-packages: true
+          cache-compiled: true
+
+      - name: Use General git registry
+        run: |
+          rm -rf ~/.julia/registries/General.toml ~/.julia/registries/General.tar.gz
+          julia -e 'using Pkg; Pkg.Registry.add(RegistrySpec(url="https://github.com/JuliaRegistries/General.git"))'
+
+      - name: Instantiate test environment
+        run: |
+          julia --project=test -e '
+            using Pkg
+            Pkg.develop(PackageSpec(path="."))
+            Pkg.instantiate()
+            Pkg.precompile()'
+
+      - name: Run JET on the PR branch
+        run: julia --project=test test/jet_report.jl --output pr_jet.json
+
+      - name: Post JET report comment
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            const rep = JSON.parse(fs.readFileSync('pr_jet.json', 'utf8'));
+            let body = '### JET Report\n\n';
+            body += `- Julia: ${rep.julia_version}\n`;
+            body += `- JET: ${rep.jet_version}\n`;
+            body += `- Total issues: ${rep.total_issues} (${rep.errors} errors, ${rep.warnings} warnings)\n`;
+            body += `- Filtered dependency issues: ${rep.filtered_dependency_issues}\n`;
+            if (rep.issues && rep.issues.length) {
+              body += '\n<details><summary>Issues</summary>\n\n```\n';
+              body += rep.issues.slice(0, 20).map(i => `${i.type}: ${i.signature}\n  ${i.message}`).join('\n');
+              body += '\n```\n</details>\n';
+            }
+            const tagged = body + '\n\n<!-- auto-pr-comment: jet-report -->';
+
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            // Find this checker's own previous comment (newest first), not the
+            // last comment overall, so the formatting checker's comment is ignored.
+            const myTag = '<!-- auto-pr-comment: jet-report -->';
+            const existing = comments.data
+              .slice()
+              .reverse()
+              .find(c => c.body && c.body.includes(myTag));
+
+            if (existing) {
+              if (existing.body === tagged) {
+                console.log('Comment unchanged — skipping.');
+                return;
+              }
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body: tagged,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: tagged,
+              });
+            }
