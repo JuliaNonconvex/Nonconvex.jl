@@ -16,6 +16,6 @@ In some cases, function modifiers can even be composed on top of each other to c
 ## Table of contents
 
 ```@contents
-Pages = ["user_defined.md", "other_ad.md", "chainrules_fd.md", "sparse.md", "symbolic.md", "implicit.md", "history.md"]
+Pages = ["user_defined.md", "other_ad.md", "chainrules_fd.md", "history.md"]
 Depth = 3
 ```
