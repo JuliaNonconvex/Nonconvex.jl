@@ -4,7 +4,7 @@ using NonconvexCore
 using NonconvexIpopt, NonconvexMMA, NonconvexPercival, NonconvexNLopt,
     NonconvexNOMAD, NonconvexMetaheuristics, NonconvexSearch, NonconvexJuniper,
     NonconvexPavito, NonconvexTOBS, NonconvexMultistart, NonconvexSemidefinite,
-    NonconvexAugLagLab
+    NonconvexAugLagLab, NonconvexBayesian, ReliabilityOptimization
 
 # Every package ships its documentation as a DocumenterFragments fragment in
 # its `docs/` directory; this site assembles all fragments plus its own pages.
@@ -25,6 +25,8 @@ const FRAGMENTS = [
     (NonconvexMultistart, "multistart"),
     (NonconvexSemidefinite, "semidefinite"),
     (NonconvexAugLagLab, "auglag"),
+    (NonconvexBayesian, "bayesian"),
+    (ReliabilityOptimization, "reliability"),
 ]
 
 main_src = joinpath(@__DIR__, "src")
@@ -41,6 +43,7 @@ makedocs(
     modules = integration.modules,
     pages = Any[
         "Getting started" => "index.md",
+        "Ecosystem" => "ecosystem.md",
         "Models, gradients and results" =>
             Any[[f.pages for f in core_fragments]...],
         "Algorithms" => Any[

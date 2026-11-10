@@ -8,6 +8,10 @@
 
 `Nonconvex.jl` is an umbrella package over implementations and wrappers of a number of nonconvex constrained optimization algorithms and packages making use of automatic differentiation. Zero, first and second order methods are available. Nonlinear equality and inequality constraints as well as integer and nonlinear semidefinite constraints are supported. A detailed description of all the algorithms and features available in `Nonconvex` can be found in the [documentation](https://JuliaNonconvex.github.io/Nonconvex.jl/stable).
 
+## Documentation
+
+The documentation site at [JuliaNonconvex.github.io/Nonconvex.jl](https://JuliaNonconvex.github.io/Nonconvex.jl) is assembled from [DocumenterFragments](https://github.com/JuliaDocs/DocumenterFragments.jl) fragments. Every subpackage ships its own documentation as a fragment in its `docs/` directory (built and previewed independently per pull request); the `docs/make.jl` script here integrates all of the fragments — `core`, `ipopt`, `mma`, `percival`, `nlopt`, `nomad`, `metaheuristics`, `search`, `juniper`, `pavito`, `tobs`, `multistart`, `semidefinite`, `auglag`, `bayesian` and `reliability` — into a single book together with this package's own pages.
+
 ## The `JuliaNonconvex` organization
 
 The `JuliaNonconvex` organization hosts a number of packages which are available for use in `Nonconvex.jl`. The correct package is loaded using the `Nonconvex.@load` macro with the algorithm or package name. See the [documentation](https://JuliaNonconvex.github.io/Nonconvex.jl/stable) for more details. The following is a summary of all the packages in the `JuliaNonconvex` organization.
