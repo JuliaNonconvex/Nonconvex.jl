@@ -18,6 +18,17 @@ Loads and re-exports NonconvexCore and every solver package on demand via `Nonco
 
 Nonconvex.jl is part of the [JuliaNonconvex](https://github.com/JuliaNonconvex) ecosystem built on [NonconvexCore.jl](https://github.com/JuliaNonconvex/NonconvexCore.jl).
 
+## Quick start
+
+```julia
+using Nonconvex
+Nonconvex.@load Ipopt
+
+m = Model(x -> sum(x .^ 2))
+addvar!(m, [-5.0, -5.0], [5.0, 5.0])
+r = optimize(m, IpoptAlg(), [1.0, 1.0])
+```
+
 ## Documentation
 
 The full documentation is available at [https://julianonconvex.github.io/Nonconvex.jl/stable](https://julianonconvex.github.io/Nonconvex.jl/stable) (stable) and [https://julianonconvex.github.io/Nonconvex.jl/dev](https://julianonconvex.github.io/Nonconvex.jl/dev) (development).
