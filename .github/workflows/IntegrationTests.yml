@@ -34,7 +34,6 @@ jobs:
           - {user: JuliaNonconvex, repo: NonconvexBayesian.jl}
           - {user: JuliaNonconvex, repo: NonconvexSearch.jl}
           - {user: JuliaNonconvex, repo: NonconvexAugLagLab.jl}
-          - {user: JuliaNonconvex, repo: NonconvexUtils.jl}
           - {user: JuliaNonconvex, repo: NonconvexTOBS.jl}
           - {user: JuliaNonconvex, repo: NonconvexMetaheuristics.jl}
           - {user: JuliaNonconvex, repo: NonconvexNOMAD.jl}
