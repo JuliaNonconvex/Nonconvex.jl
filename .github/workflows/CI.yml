@@ -50,12 +50,13 @@ jobs:
             ${{ runner.os }}-
       - uses: julia-actions/julia-buildpkg@v1
       # Julia 1.13 rejects package images built with different --check-bounds
-      # settings, so the test environment must be precompiled with the same
-      # flags the tests run with. Pkg.test is not used: its sandbox load path
-      # excludes the standard libraries (Pkg, Random, ...) that the tests and
-      # the generated @load code rely on.
+      # settings. Pkg.test is not used: its sandbox load path excludes the
+      # standard libraries (Pkg, Random, ...) that the tests and the generated
+      # @load code rely on, and the test run follows the same
+      # precompile-without / test-with --check-bounds pattern proven in the
+      # other ecosystem packages.
       - name: Instantiate and precompile the test environment
-        run: julia --check-bounds=yes --project=test -e 'using Pkg; Pkg.develop(PackageSpec(path=".")); Pkg.instantiate(); Pkg.precompile()'
+        run: julia --project=test -e 'using Pkg; Pkg.develop(PackageSpec(path=".")); Pkg.instantiate(); Pkg.precompile()'
       - name: Run tests
         env:
           GROUP: ${{ matrix.group }}
