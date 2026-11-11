@@ -7,10 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1'
       - name: Install JuliaFormatter and format
         run: |
-          julia  -e 'import Pkg; Pkg.add("JuliaFormatter")'
-          julia  -e 'using JuliaFormatter; format(".", BlueStyle())'
+          julia -e 'import Pkg; Pkg.add("JuliaFormatter")'
+          julia -e 'using JuliaFormatter; format(".", BlueStyle())'
       # https://github.com/marketplace/actions/create-pull-request
       # https://github.com/peter-evans/create-pull-request#reference-example
       - name: Create Pull Request
