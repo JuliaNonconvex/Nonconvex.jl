@@ -1,4 +1,4 @@
-using Test, Nonconvex, Pkg
+using Test, Nonconvex
 
 @testset "Macro regression tests" begin
     # Unsupported algorithms throw a proper ErrorException (wrapped in a
@@ -78,7 +78,7 @@ if GROUP == "All" || GROUP == "NonconvexAugLagLab"
     @testset "NonconvexAugLagLab" begin
         @test_throws ArgumentError using NonconvexAugLagLab
         Nonconvex.@load AugLag2
-        AugLag2()
+        AugLagAlg()
     end
 end
 
@@ -143,11 +143,7 @@ end
 
 @testset "Aqua" begin
     using Aqua
-    # Pkg is listed as a dependency because the generated @load code uses it
-    # (and Windows CI test environments do not expose stdlibs implicitly);
-    # Aqua's static scan cannot see the usage inside the quoted code, so the
-    # stale-dependency check is skipped.
-    Aqua.test_all(Nonconvex; stale_deps=false)
+    Aqua.test_all(Nonconvex)
 end
 
 @testset "JET" begin

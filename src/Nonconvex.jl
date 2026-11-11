@@ -1,6 +1,6 @@
 module Nonconvex
 
-using Reexport
+using Reexport, Pkg
 @reexport using NonconvexCore
 
 macro load(algo)
@@ -45,8 +45,8 @@ function _load(algo)
     end
 end
 function install_and_load_module(mod)
+    pkg = Pkg
     quote
-        using Pkg
         let modname = $(Meta.quot(mod))
             try
                 @info "Attempting to load the package $modname."
@@ -57,7 +57,7 @@ function install_and_load_module(mod)
                     occursin("not found in current path", sprint(showerror, e))
                     @info "Couldn't find the package $modname. Attempting to install it."
                     try
-                        Pkg.add(string(modname))
+                        $pkg.add(string(modname))
                     catch err
                         @info "Package installation failed! Please report an issue."
                         rethrow(err)
