@@ -145,7 +145,11 @@ end
 
 @testset "Aqua" begin
     using Aqua
-    Aqua.test_all(Nonconvex)
+    # Pkg is listed as a dependency because the generated @load code uses it
+    # (and Windows CI test environments do not expose stdlibs implicitly);
+    # Aqua's static scan cannot see the usage inside the quoted code, so the
+    # stale-dependency check is skipped.
+    Aqua.test_all(Nonconvex; stale_deps=false)
 end
 
 @testset "JET" begin

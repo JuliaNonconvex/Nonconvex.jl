@@ -5,10 +5,12 @@ version = "4.0.0"
 
 [deps]
 NonconvexCore = "035190e5-69f1-488f-aaab-becca2889735"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 
 [compat]
 NonconvexCore = "2"
+Pkg = "1"
 Reexport = "1"
 Aqua = "0.8, 0.9"
 JET = "0.8, 0.9, 0.10, 0.11, 0.12, 0.13"
