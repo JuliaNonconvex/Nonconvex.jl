@@ -5,6 +5,20 @@
 - Support NonconvexCore 2 (`NonconvexCore = "2"` compat); the
   NonconvexUtils dependency is dropped since its utilities were absorbed
   into NonconvexCore 2.
+- The documentation is now assembled from the documentation fragments of
+  NonconvexCore and of all the algorithm packages. The Core section became a
+  General section hosting the Core docs together with a new `@load` guide
+  (accepted names, the packages they install and load), and the
+  Gradients, Jacobians and Hessians section moved into NonconvexCore.
+- The landing page is an actual overview (features, installation and a quick
+  start) with a small centered logo; the same small-logo treatment applies
+  to every package page in the assembled docs.
+- The downstream integration tests run in a temporary environment, and the
+  Installation matrix precompiles the test environment with the test flags
+  instead of running through `Pkg.test`'s sandbox, which also fixes the
+  Julia 1.13 pkgimage rejections.
+- The generated `@load` code splices the captured `Pkg` module instead of
+  loading `Pkg` in the caller, so it works inside `Pkg.test`-style sandboxes.
 - The installation/group tests load Ipopt before constructing IpoptAlg
   sub-solvers, and the group testsets run independently (GROUP=All runs
   every group).
