@@ -1,18 +1,20 @@
 name = "Nonconvex"
 uuid = "01bcebdf-4d21-426d-b5c4-6132c1619978"
 authors = ["Mohamed Tarek <mohdibntarek@gmail.com> and contributors"]
-version = "3.2.0"
+version = "4.0.0"
 
 [deps]
 NonconvexCore = "035190e5-69f1-488f-aaab-becca2889735"
-NonconvexUtils = "c48e48a2-1f5e-44ff-8799-c8e168d11d1b"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 
 [compat]
-NonconvexCore = "1.4"
-NonconvexUtils = "1.0, 1.1"
+NonconvexCore = "2"
+Pkg = "1"
 Reexport = "1"
+Aqua = "0.8, 0.9"
+JET = "0.8, 0.9, 0.10, 0.11, 0.12, 0.13"
+Test = "1"
 julia = "1.10"
 
 [extras]
@@ -21,4 +23,4 @@ JET = "c3a54625-cd67-489e-a8e7-0a5a0ff4e31b"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test"]
+test = ["Test", "Aqua", "JET"]

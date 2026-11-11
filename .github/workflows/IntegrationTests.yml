@@ -51,14 +51,24 @@ jobs:
           repository: ${{ matrix.package.user }}/${{ matrix.package.repo }}
           path: downstream
       - name: Load this and run the downstream tests
-        shell: julia --color=yes --project=downstream {0}
+        shell: julia --color=yes {0}
+        env:
+          DOWNSTREAM_PACKAGE: ${{ matrix.package.repo }}
         run: |
           using Pkg
+          pkgname = replace(ENV["DOWNSTREAM_PACKAGE"], ".jl" => "")
           try
-            # force it to use this PR's version of the package
-            Pkg.develop(PackageSpec(path="."))  # resolver may fail with main deps
-            Pkg.update()
-            Pkg.test()  # resolver may fail with test time deps
+            # Run the downstream tests in a fresh temporary environment so the
+            # downstream's own Project.toml is not modified by developing this
+            # PR's package into it (which would trip the downstream's Aqua
+            # quality gates over the injected dependency).
+            mktempdir() do tmp
+              Pkg.activate(tmp)
+              Pkg.develop(PackageSpec(path = "downstream"))
+              # force it to use this PR's version of the package
+              Pkg.develop(PackageSpec(path = "."))  # resolver may fail with main deps
+              Pkg.test(pkgname)  # resolver may fail with test time deps
+            end
           catch err
             err isa Pkg.Resolve.ResolverError || rethrow()
             # If we can't resolve that means this is incompatible by SemVer and this is fine
