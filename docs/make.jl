@@ -64,6 +64,23 @@ end
 
 integration = integrate_fragments(MAIN_SRC, specs; module_map=module_map)
 
+# Fragment pages cross-link into the core mount with a `../core/...` path
+# written for a flat layout in which every fragment page sits directly under
+# its mount. The subdirectory mounts used here put each fragment page one
+# level deeper, so add the missing parent segment to keep the cross-fragment
+# links valid.
+for mount in values(MOUNTS)
+    for (root, _, files) in walkdir(joinpath(MAIN_SRC, mount))
+        for f in files
+            endswith(f, ".md") || continue
+            path = joinpath(root, f)
+            text = read(path, String)
+            occursin("../core/", text) || continue
+            write(path, replace(text, "../core/" => "../../core/"))
+        end
+    end
+end
+
 const CORE = [f for f in integration.fragments if f.name == "NonconvexCore"]
 const SOLVERS = [f for f in integration.fragments if f.name != "NonconvexCore"]
 
@@ -77,10 +94,14 @@ makedocs(;
     remotes=nothing,
     plugins=[integration.namespacing],
     format=Documenter.HTML(;
-        prettyurls=true, edit_link=nothing, repolink=nothing, inventory_version=""
+        prettyurls=true,
+        edit_link=nothing,
+        repolink=nothing,
+        inventory_version="",
+        assets=["assets/custom.css"],
     ),
     pages=Any[
-        "Getting started" => "index.md",
+        "Home" => "index.md",
         "Core" => [f.pages for f in CORE],
         "Gradients, Jacobians and Hessians" => [
             "Overview" => "gradients/gradients.md",

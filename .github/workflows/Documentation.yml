@@ -88,7 +88,6 @@ jobs:
           path: /tmp/site
       - name: Deploy to GitHub Pages
         id: deployment
-        environment: github-pages
         uses: actions/deploy-pages@v4
       - name: Post preview URL comment
         if: github.event_name == 'pull_request'
