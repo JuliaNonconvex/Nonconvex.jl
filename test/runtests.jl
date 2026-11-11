@@ -141,8 +141,6 @@ if GROUP == "All" || GROUP == "NonconvexPercival"
     end
 end
 
-
-
 @testset "Aqua" begin
     using Aqua
     # Pkg is listed as a dependency because the generated @load code uses it
