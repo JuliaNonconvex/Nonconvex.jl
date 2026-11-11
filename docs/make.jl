@@ -49,9 +49,7 @@ const MOUNTS = Dict(
     NonconvexAugLagLab => "algorithms/auglaglab",
 )
 
-specs = [
-    (; dir = joinpath(pkgdir(p), "docs"), mount = MOUNTS[p]) for p in FRAGMENT_PACKAGES
-]
+specs = [(; dir=joinpath(pkgdir(p), "docs"), mount=MOUNTS[p]) for p in FRAGMENT_PACKAGES]
 module_map = Dict(string(nameof(p)) => p for p in FRAGMENT_PACKAGES)
 
 # Read-only depot trees would propagate to the copied pages and prevent the
@@ -61,30 +59,27 @@ for p in FRAGMENT_PACKAGES
     run(`chmod -R u+w $(joinpath(pkgdir(p), "docs"))`)
 end
 for mount in values(MOUNTS)
-    rm(joinpath(MAIN_SRC, mount); recursive = true, force = true)
+    rm(joinpath(MAIN_SRC, mount); recursive=true, force=true)
 end
 
-integration = integrate_fragments(MAIN_SRC, specs; module_map = module_map)
+integration = integrate_fragments(MAIN_SRC, specs; module_map=module_map)
 
 const CORE = [f for f in integration.fragments if f.name == "NonconvexCore"]
 const SOLVERS = [f for f in integration.fragments if f.name != "NonconvexCore"]
 
 makedocs(;
-    sitename = "Nonconvex.jl",
-    modules = integration.modules,
-    source = MAIN_SRC,
-    build = BUILD,
-    doctest = false,
-    warnonly = true,
-    remotes = nothing,
-    plugins = [integration.namespacing],
-    format = Documenter.HTML(;
-        prettyurls = true,
-        edit_link = nothing,
-        repolink = nothing,
-        inventory_version = "",
+    sitename="Nonconvex.jl",
+    modules=integration.modules,
+    source=MAIN_SRC,
+    build=BUILD,
+    doctest=false,
+    warnonly=true,
+    remotes=nothing,
+    plugins=[integration.namespacing],
+    format=Documenter.HTML(;
+        prettyurls=true, edit_link=nothing, repolink=nothing, inventory_version=""
     ),
-    pages = Any[
+    pages=Any[
         "Getting started" => "index.md",
         "Core" => [f.pages for f in CORE],
         "Gradients, Jacobians and Hessians" => [
@@ -95,8 +90,7 @@ makedocs(;
             "gradients/history.md",
         ],
         "Algorithms" => Any[
-            "Overview" => "algorithms/algorithms.md",
-            [f.pages for f in SOLVERS]...,
+            "Overview" => "algorithms/algorithms.md", [f.pages for f in SOLVERS]...
         ],
     ],
 )
