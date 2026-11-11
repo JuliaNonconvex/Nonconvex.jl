@@ -6,9 +6,8 @@
 
 ## What is in these docs
 
-- **Core** — the modelling and automatic differentiation core provided by [`NonconvexCore.jl`](https://github.com/JuliaNonconvex/NonconvexCore.jl) and re-exported by `Nonconvex`: [`Model`](core/models.md) and `DictModel` for flat and named variables, objectives, constraints, the solver capability system and the [DifferentiationInterface](https://github.com/JuliaDiff/DifferentiationInterface.jl)-based AD machinery. See [Core](core/index.md).
+- **General** — the modelling and automatic differentiation core provided by [`NonconvexCore.jl`](https://github.com/JuliaNonconvex/NonconvexCore.jl) and re-exported by `Nonconvex`: [`Model`](core/models.md) and `DictModel` for flat and named variables, objectives, constraints, the solver capability system and the [DifferentiationInterface](https://github.com/JuliaDiff/DifferentiationInterface.jl)-based AD machinery. The [Gradients, Jacobians and Hessians](core/gradients/gradients.md) guide covers user-defined derivatives, ChainRules in ForwardDiff and gradient tracing, and [Loading algorithm packages](general/load.md) documents the `@load` macro used to install algorithm packages on demand.
 - **Algorithms** — wrappers around well-known optimizers such as [Ipopt](algorithms/ipopt/index.md), [NLopt](algorithms/nlopt/index.md), [MMA](algorithms/mma/index.md), [Percival](algorithms/auglag/index.md), [Juniper](algorithms/juniper/index.md), [Pavito](algorithms/pavito/index.md), [NOMAD](algorithms/nomad/index.md) and [TOBS](algorithms/tobs/index.md), and pure-Julia methods such as [metaheuristics](algorithms/metaheuristics/index.md), [Bayesian optimization](algorithms/bayesian/index.md), [multi-start](algorithms/hyperopt/index.md), [multiple trajectory search](algorithms/mts/index.md), [semidefinite programming](algorithms/sdp/index.md) and [augmented Lagrangian](algorithms/auglaglab/index.md). See the [algorithm overview](algorithms/algorithms.md) for the full capability table.
-- **Gradients, Jacobians and Hessians** — reverse- and forward-mode automatic differentiation, user-defined derivatives, [ChainRules](https://github.com/JuliaDiff/ChainRules.jl)-compatible AD backends, sparsity-aware and finite-difference differentiation. See [Gradients, Jacobians and Hessians](gradients/gradients.md).
 
 ## Installation
 
@@ -17,7 +16,7 @@ using Pkg
 Pkg.add("Nonconvex")
 ```
 
-Algorithm packages are installed on demand with the `@load` macro: `Nonconvex.@load Ipopt` installs and loads `NonconvexIpopt.jl`, and likewise for `MMA`, `NLopt`, `Bayesian`, `Metaheuristics`, and the rest of the algorithm packages.
+Algorithm packages are installed on demand with the [`@load`](general/load.md) macro: `Nonconvex.@load Ipopt` installs and loads `NonconvexIpopt.jl`, and likewise for `MMA`, `NLopt`, `Bayesian`, `Metaheuristics`, and the rest of the algorithm packages.
 
 ## Quick start
 
@@ -39,6 +38,6 @@ A `DictModel` works the same way with named variables, and JuMP models can be co
 
 ## Where to go next
 
-- [Core](core/index.md) — models, objectives, constraints and derivatives.
+- [General](core/index.md) — models, objectives, constraints and derivatives, plus the [`@load` macro](general/load.md).
 - [Algorithms](algorithms/algorithms.md) — the overview table and the documentation of every algorithm package.
-- [Gradients, Jacobians and Hessians](gradients/gradients.md) — how derivatives are computed and customized.
+- [Gradients, Jacobians and Hessians](core/gradients/gradients.md) — how derivatives are computed and customized.

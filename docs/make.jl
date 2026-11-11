@@ -7,9 +7,8 @@ Nonconvex.@load MMA Ipopt NLopt Percival Bayesian Hyperopt Juniper Pavito MTS Se
 # The package documentation fragments assembled into this site. The docs of
 # each package live in that package's repository (docs/ with a fragment.toml);
 # the sections covered by the fragments are not duplicated here — these docs
-# only retain the sections that no fragment covers (getting started, the
-# algorithm overview table and the gradient-modifier pages that predate
-# NonconvexCore's docs).
+# only retain the landing page, the algorithm overview table and the @load
+# guide that are specific to the Nonconvex.jl umbrella package itself.
 const FRAGMENT_PACKAGES = (
     NonconvexCore,
     NonconvexMMA,
@@ -102,13 +101,8 @@ makedocs(;
     ),
     pages=Any[
         "Home" => "index.md",
-        "Core" => [f.pages for f in CORE],
-        "Gradients, Jacobians and Hessians" => [
-            "Overview" => "gradients/gradients.md",
-            "gradients/user_defined.md",
-            "gradients/other_ad.md",
-            "gradients/chainrules_fd.md",
-            "gradients/history.md",
+        "General" => Any[
+            "Loading algorithm packages" => "general/load.md", [f.pages for f in CORE]...
         ],
         "Algorithms" => Any[
             "Overview" => "algorithms/algorithms.md", [f.pages for f in SOLVERS]...
