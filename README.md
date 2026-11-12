@@ -92,6 +92,7 @@ A summary of all the algorithms available in `Nonconvex` through different packa
 | Shifted limited-memory variable-metric | ❌ | `NLopt.jl` | 1 | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Augmented Lagrangian in `NLopt` | Limited | `NLopt.jl` | Depends on sub-solver | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
 | Augmented Lagrangian in `Percival` | ❌ | `Percival.jl` | 1 or 2 | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Augmented Lagrangian in `AugLagLab` | ❌ | `NonconvexAugLagLab.jl` | 1 | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
 | Multiple trajectory search | ❌ | `NonconvexSearch.jl` | 0 | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Branch and bound for mixed integer nonlinear programming | ❌ | `Juniper.jl` | 1 or 2 | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ |
 | Sequential polyhedral outer-approximations for mixed integer nonlinear programming | ❌ | `Pavito.jl` | 1 or 2 | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ |
