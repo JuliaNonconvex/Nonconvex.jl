@@ -11,8 +11,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Julia 1.13.3 errors instead of rebuilding package images whose
+        # flags do not match the running session, which the @load-triggered
+        # Pkg.add precompiles hit (their subprocesses do not inherit
+        # --pkgimages). Pin to 1.12 until the 1.13 pkgimage regressions
+        # settle; the other workflows still test the latest release.
         version:
-          - '1'
+          - '1.12'
         os:
           - ubuntu-latest
           - macOS-latest
