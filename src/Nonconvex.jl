@@ -37,7 +37,16 @@ function _load(algo)
         return install_and_load_module(:NonconvexAugLagLab)
     elseif algo in ("Bayesian", "BayesOpt", "BayesOptAlg")
         return install_and_load_module(:NonconvexBayesian)
-    elseif algo in ("SDP", "Semidefinite", "SDPBarrier", "SDPBarrierAlg", "Barrier", "BarrierAlg", "SDPQuad", "SDPQuadAlg")
+    elseif algo in (
+        "SDP",
+        "Semidefinite",
+        "SDPBarrier",
+        "SDPBarrierAlg",
+        "Barrier",
+        "BarrierAlg",
+        "SDPQuad",
+        "SDPQuadAlg",
+    )
         return install_and_load_module(:NonconvexSemidefinite)
     elseif algo in ("Search", "MTS", "LS1", "RCD", "MTSAlg", "LS1Alg", "RCDAlg")
         return install_and_load_module(:NonconvexSearch)
