@@ -8,6 +8,13 @@
 
 - **General** — the modelling and automatic differentiation core provided by [`NonconvexCore.jl`](https://github.com/JuliaNonconvex/NonconvexCore.jl) and re-exported by `Nonconvex`: [`Model`](core/models.md) and `DictModel` for flat and named variables, objectives, constraints, the solver capability system and the [DifferentiationInterface](https://github.com/JuliaDiff/DifferentiationInterface.jl)-based AD machinery. The [Gradients, Jacobians and Hessians](core/gradients/gradients.md) guide covers user-defined derivatives, ChainRules in ForwardDiff and gradient tracing, and [Loading algorithm packages](general/load.md) documents the `@load` macro used to install algorithm packages on demand.
 - **Algorithms** — wrappers around well-known optimizers such as [Ipopt](algorithms/ipopt/index.md), [NLopt](algorithms/nlopt/index.md), [MMA](algorithms/mma/index.md), [Percival](algorithms/auglag/index.md), [Juniper](algorithms/juniper/index.md), [Pavito](algorithms/pavito/index.md), [NOMAD](algorithms/nomad/index.md) and [TOBS](algorithms/tobs/index.md), and pure-Julia methods such as [metaheuristics](algorithms/metaheuristics/index.md), [Bayesian optimization](algorithms/bayesian/index.md), [multi-start](algorithms/hyperopt/index.md), [multiple trajectory search](algorithms/mts/index.md), [semidefinite programming](algorithms/sdp/index.md) and [augmented Lagrangian](algorithms/auglaglab/index.md). The full capability table is below.
+- **Reliability** — reliability analysis and reliability-based design optimization (FORM/SORM, probabilistic constraints) built on top of NonconvexCore, provided by [`ReliabilityOptimization.jl`](https://github.com/JuliaNonconvex/ReliabilityOptimization.jl); see the [Reliability introduction](reliability/index.md).
+- **Utilities** — the supporting infrastructure packages: [ConvergencePlots.jl](https://github.com/mohdibntarek/ConvergencePlots.jl) (documented standalone in its own repository, for live convergence tracking) and [DifferentiableFlatten.jl](https://github.com/JuliaNonconvex/DifferentiableFlatten.jl) for differentiable flattening of structured variables; see the [Utilities](utilities/differentiableflatten/index.md) section.
+
+> **Note:** `NonconvexUtils.jl` has been absorbed into `NonconvexCore.jl`
+> as of NonconvexCore 2.0.0 (its `diffiy` helper is now called
+> `NonconvexCore.diffy`); it remains available as a re-export shim for
+> backwards compatibility.
 
 ## Overview of algorithms
 
@@ -55,7 +62,9 @@ A summary of all the algorithms available in `Nonconvex` through different packa
 | Random search | ✅ | `Hyperopt.jl` | Depends on sub-solver | ✅ | ❌ | Depends on sub-solver | Depends on sub-solver | Depends on sub-solver | Depends on sub-solver |
 | Latin hypercube search | ✅ | `Hyperopt.jl` | Depends on sub-solver | ✅ | ❌ | Depends on sub-solver | Depends on sub-solver | Depends on sub-solver | Depends on sub-solver |
 | Surrogate assisted optimization | ✅ | `NonconvexBayesian.jl` | Depends on sub-solver | Depends on sub-solver | Depends on sub-solver | Depends on sub-solver | Depends on sub-solver | Depends on sub-solver | Depends on sub-solver |
-| Log barrier method for nonlinear semidefinite constraint handling | ✅ | `NonconvexSemidefinite.jl` | Depends on sub-solver | Depends on sub-solver | Depends on sub-solver | Depends on sub-solver | Depends on sub-solver | ✅ | Depends on sub-solver |
+| Log barrier meta-algorithm (`BarrierAlg`) | ✅ | `NonconvexSemidefinite.jl` | Depends on sub-solver | Depends on sub-solver | Depends on sub-solver | Depends on sub-solver | Depends on sub-solver | ✅ | Depends on sub-solver |
+| Quadratic re-parameterization of semidefinite constraints (`SDPQuadAlg`) | ✅ | `NonconvexSemidefinite.jl` | Depends on sub-solver | Depends on sub-solver | Depends on sub-solver | Depends on sub-solver | Depends on sub-solver | ✅ | Depends on sub-solver |
+| Quasi-Newton solver (`QuasiNewtonAlg`) | ❌ | `NonconvexAugLagLab.jl` | 1 | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
 
 
 The following is an explanation of all the columns in the table:

@@ -2,7 +2,9 @@ using Documenter
 using DocumenterFragments: integrate_fragments
 using Nonconvex
 using NonconvexCore
-Nonconvex.@load MMA Ipopt NLopt Percival Bayesian Hyperopt Juniper Pavito MTS Semidefinite Metaheuristics NOMAD TOBS AugLag2
+using ReliabilityOptimization
+using DifferentiableFlatten
+Nonconvex.@load MMA Ipopt NLopt Percival Bayesian Hyperopt Juniper Pavito MTS Semidefinite Metaheuristics NOMAD TOBS AugLag
 
 # The package documentation fragments assembled into this site. The docs of
 # each package live in that package's repository (docs/ with a fragment.toml);
@@ -25,6 +27,8 @@ const FRAGMENT_PACKAGES = (
     NonconvexNOMAD,
     NonconvexTOBS,
     NonconvexAugLagLab,
+    ReliabilityOptimization,
+    DifferentiableFlatten,
 )
 
 const MAIN_SRC = joinpath(@__DIR__, "src")
@@ -46,6 +50,8 @@ const MOUNTS = Dict(
     NonconvexNOMAD => "algorithms/nomad",
     NonconvexTOBS => "algorithms/tobs",
     NonconvexAugLagLab => "algorithms/auglaglab",
+    ReliabilityOptimization => "reliability",
+    DifferentiableFlatten => "utilities/differentiableflatten",
 )
 
 specs = [(; dir=joinpath(pkgdir(p), "docs"), mount=MOUNTS[p]) for p in FRAGMENT_PACKAGES]
@@ -81,7 +87,17 @@ for mount in values(MOUNTS)
 end
 
 const CORE = [f for f in integration.fragments if f.name == "NonconvexCore"]
-const SOLVERS = [f for f in integration.fragments if f.name != "NonconvexCore"]
+const RELIABILITY = [f for f in integration.fragments if f.name == "ReliabilityOptimization"]
+const UTILITIES = [
+    f for f in integration.fragments if f.name == "DifferentiableFlatten"
+]
+const SOLVERS = [
+    f for
+    f in integration.fragments if
+    f.name != "NonconvexCore" &&
+    f.name != "ReliabilityOptimization" &&
+    f.name != "DifferentiableFlatten"
+]
 
 makedocs(;
     sitename="Nonconvex.jl",
@@ -107,5 +123,7 @@ makedocs(;
         "Algorithms" => Any[
             "Overview" => "algorithms/algorithms.md", [f.pages for f in SOLVERS]...
         ],
+        "Reliability" => Any[[f.pages for f in RELIABILITY]...],
+        "Utilities" => Any[[f.pages for f in UTILITIES]...],
     ],
 )
