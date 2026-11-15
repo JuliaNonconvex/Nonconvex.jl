@@ -77,8 +77,10 @@ end
 if GROUP == "All" || GROUP == "NonconvexAugLagLab"
     @testset "NonconvexAugLagLab" begin
         @test_throws ArgumentError using NonconvexAugLagLab
-        Nonconvex.@load AugLag2
+        Nonconvex.@load AugLag
         AugLagAlg()
+        # deprecated alias keeps working
+        Nonconvex.@load AugLag2
     end
 end
 
@@ -136,7 +138,7 @@ end
 if GROUP == "All" || GROUP == "NonconvexPercival"
     @testset "NonconvexPercival" begin
         @test_throws ArgumentError using NonconvexPercival
-        Nonconvex.@load AugLag
+        Nonconvex.@load Percival
         AugLag()
     end
 end

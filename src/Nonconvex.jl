@@ -22,13 +22,31 @@ function _load(algo)
         return install_and_load_module(:NonconvexJuniper)
     elseif algo in ("Pavito", "PavitoIpoptCbc", "PavitoIpoptCbcAlg")
         return install_and_load_module(:NonconvexPavito)
-    elseif algo in ("Percival", "AugLag", "PercivalAlg")
+    elseif algo in ("Percival", "PercivalAlg")
         return install_and_load_module(:NonconvexPercival)
+    elseif algo in ("AugLag", "AugLagAlg", "AugLagLab", "QuasiNewtonAlg")
+        # The Julia-native augmented Lagrangian meta-algorithm and its
+        # standalone quasi-Newton subsolver. Note: `AugLag` used to map to
+        # NonconvexPercival (whose export is also called `AugLag`); it now
+        # loads the newer NonconvexAugLagLab, and Percival remains available
+        # through `Percival`/`PercivalAlg`.
+        return install_and_load_module(:NonconvexAugLagLab)
     elseif algo == "AugLag2"
+        # Deprecated alias for NonconvexAugLagLab; prefer `AugLag` or
+        # `AugLagAlg`.
         return install_and_load_module(:NonconvexAugLagLab)
     elseif algo in ("Bayesian", "BayesOpt", "BayesOptAlg")
         return install_and_load_module(:NonconvexBayesian)
-    elseif algo in ("SDP", "Semidefinite", "SDPBarrier", "SDPBarrierAlg")
+    elseif algo in (
+        "SDP",
+        "Semidefinite",
+        "SDPBarrier",
+        "SDPBarrierAlg",
+        "Barrier",
+        "BarrierAlg",
+        "SDPQuad",
+        "SDPQuadAlg",
+    )
         return install_and_load_module(:NonconvexSemidefinite)
     elseif algo in ("Search", "MTS", "LS1", "RCD", "MTSAlg", "LS1Alg", "RCDAlg")
         return install_and_load_module(:NonconvexSearch)
