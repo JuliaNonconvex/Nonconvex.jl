@@ -1,5 +1,10 @@
 # NEWS
 
+## 4.0.1
+
+- Documentation: the `@load` macro now accepts `AugLag`, `AugLagAlg`, `AugLagLab` and `QuasiNewtonAlg` for NonconvexAugLagLab (`AugLag2` remains as a deprecated alias), `Barrier`/`BarrierAlg`/`SDPQuad`/`SDPQuadAlg` for NonconvexSemidefinite, and `Percival`/`PercivalAlg` for NonconvexPercival. The docs site now also assembles the ReliabilityOptimization and DifferentiableFlatten fragments.
+
+
 ## 4.0.0
 
 - Support NonconvexCore 2 (`NonconvexCore = "2"` compat); the
