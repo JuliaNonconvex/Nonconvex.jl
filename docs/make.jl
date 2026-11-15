@@ -87,16 +87,14 @@ for mount in values(MOUNTS)
 end
 
 const CORE = [f for f in integration.fragments if f.name == "NonconvexCore"]
-const RELIABILITY = [f for f in integration.fragments if f.name == "ReliabilityOptimization"]
-const UTILITIES = [
-    f for f in integration.fragments if f.name == "DifferentiableFlatten"
+const RELIABILITY = [
+    f for f in integration.fragments if f.name == "ReliabilityOptimization"
 ]
+const UTILITIES = [f for f in integration.fragments if f.name == "DifferentiableFlatten"]
 const SOLVERS = [
-    f for
-    f in integration.fragments if
-    f.name != "NonconvexCore" &&
-    f.name != "ReliabilityOptimization" &&
-    f.name != "DifferentiableFlatten"
+    f for f in integration.fragments if f.name != "NonconvexCore" &&
+        f.name != "ReliabilityOptimization" &&
+        f.name != "DifferentiableFlatten"
 ]
 
 makedocs(;
