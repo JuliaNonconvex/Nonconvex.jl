@@ -66,28 +66,19 @@ function install_and_load_module(mod)
     pkg = Pkg
     quote
         let modname = $(Meta.quot(mod))
-            try
-                @info "Attempting to load the package $modname."
-                using $mod
-                @info "Loading succesful."
-            catch e
-                if e isa ArgumentError &&
-                    occursin("not found in current path", sprint(showerror, e))
-                    @info "Couldn't find the package $modname. Attempting to install it."
-                    try
-                        $pkg.add(string(modname))
-                    catch err
-                        @info "Package installation failed! Please report an issue."
-                        rethrow(err)
-                    end
-                    @info "$modname installed."
-                    @info "Attempting to load the package $modname."
-                    using $mod
-                    @info "Loading succesful."
-                else
-                    rethrow()
+            if Base.find_package(string(modname)) === nothing
+                @info "Couldn't find the package $modname. Attempting to install it."
+                try
+                    $pkg.add(string(modname))
+                catch err
+                    @info "Package installation failed! Please report an issue."
+                    rethrow(err)
                 end
+                @info "$modname installed."
             end
+            @info "Attempting to load the package $modname."
+            using $mod
+            @info "Loading succesful."
         end
     end
 end
