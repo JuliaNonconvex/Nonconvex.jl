@@ -1,7 +1,5 @@
 # Nonconvex.jl
 
-![JuliaNonconvex logo](https://raw.githubusercontent.com/JuliaNonconvex/Nonconvex.jl/master/docs/src/assets/logo.png)
-
 [Nonconvex.jl](https://github.com/JuliaNonconvex/Nonconvex.jl) is a Julia toolbox for **gradient-based** and **gradient-free** constrained optimization. It assembles the packages of the [JuliaNonconvex](https://github.com/JuliaNonconvex) ecosystem behind one consistent modelling and optimization interface.
 
 ## What is in these docs
