@@ -1,5 +1,8 @@
 # NEWS
 
+## 4.0.3
+
+- Docs-only release: the assembled documentation refreshes the fragment packages to their latest registered docs (package-name section titles, elaborated layouts and left-aligned logos) and the landing page drops its logo.
 ## 4.0.2
 
 - `@load` detects missing packages with `Base.find_package` instead of parsing an internal error message.
