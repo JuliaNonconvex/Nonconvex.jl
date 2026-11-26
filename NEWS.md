@@ -1,6 +1,10 @@
 # NEWS
 
+## 4.0.4
+
+- `Nonconvex.@load Uno` / `UnoAlg` loads NonconvexUno.jl (the [Uno.jl](https://github.com/cvanaret/Uno.jl) interior-point wrapper), now integrated into the docs under `algorithms/uno`, the accepted-names table, the wrapper table and the capability table.
 ## 4.0.3
+
 
 - Docs-only release: the assembled documentation refreshes the fragment packages to their latest registered docs (package-name section titles, elaborated layouts and left-aligned logos) and the landing page drops its logo.
 ## 4.0.2
