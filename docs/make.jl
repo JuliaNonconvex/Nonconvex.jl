@@ -4,7 +4,7 @@ using Nonconvex
 using NonconvexCore
 using ReliabilityOptimization
 using DifferentiableFlatten
-Nonconvex.@load MMA Ipopt NLopt Percival Bayesian Hyperopt Juniper Pavito MTS Semidefinite Metaheuristics NOMAD TOBS AugLag
+Nonconvex.@load MMA Ipopt NLopt Percival Bayesian Hyperopt Juniper Pavito MTS Semidefinite Metaheuristics NOMAD TOBS AugLag Uno
 
 # The package documentation fragments assembled into this site. The docs of
 # each package live in that package's repository (docs/ with a fragment.toml);
@@ -27,6 +27,7 @@ const FRAGMENT_PACKAGES = (
     NonconvexNOMAD,
     NonconvexTOBS,
     NonconvexAugLagLab,
+    NonconvexUno,
     ReliabilityOptimization,
     DifferentiableFlatten,
 )
@@ -50,6 +51,7 @@ const MOUNTS = Dict(
     NonconvexNOMAD => "algorithms/nomad",
     NonconvexTOBS => "algorithms/tobs",
     NonconvexAugLagLab => "algorithms/auglaglab",
+    NonconvexUno => "algorithms/uno",
     ReliabilityOptimization => "reliability",
     DifferentiableFlatten => "utilities/differentiableflatten",
 )

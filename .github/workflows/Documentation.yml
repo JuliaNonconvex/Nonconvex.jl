@@ -39,10 +39,10 @@ jobs:
           arch: x64
       - uses: julia-actions/cache@v2
         with:
-          cache-name: docs
+          cache-name: docs-uno
           cache-artifacts: true
           cache-packages: true
-          cache-compiled: true
+          cache-compiled: false
       - name: Use General git registry (avoids CDN lag for new versions)
         run: |
           rm -rf ~/.julia/registries/General.toml ~/.julia/registries/General.tar.gz
@@ -55,7 +55,7 @@ jobs:
             Pkg.instantiate()
             Pkg.precompile()'
       - name: Build docs with DocumenterFragments
-        run: julia --project=docs --color=yes docs/make.jl
+        run: julia --pkgimages=no --project=docs --color=yes docs/make.jl
       - name: Assemble site with the previous destinations
         env:
           DEST: ${{ startsWith(github.ref, 'refs/tags/') && 'stable' || (github.event_name == 'pull_request' && format('preview/PR{0}', github.event.pull_request.number) || github.event.inputs.destination) || 'dev' }}
