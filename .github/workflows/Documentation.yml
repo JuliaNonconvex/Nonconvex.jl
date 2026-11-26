@@ -42,7 +42,7 @@ jobs:
           cache-name: docs
           cache-artifacts: true
           cache-packages: true
-          cache-compiled: true
+          cache-compiled: false
       - name: Use General git registry (avoids CDN lag for new versions)
         run: |
           rm -rf ~/.julia/registries/General.toml ~/.julia/registries/General.tar.gz
