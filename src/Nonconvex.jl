@@ -58,6 +58,8 @@ function _load(algo)
         return install_and_load_module(:NonconvexMetaheuristics)
     elseif algo == "NOMAD"
         return install_and_load_module(:NonconvexNOMAD)
+    elseif algo in ("Uno", "UnoAlg")
+        return install_and_load_module(:NonconvexUno)
     else
         error("Unsupported algorithm. Please check the documentation of Nonconvex.jl.")
     end

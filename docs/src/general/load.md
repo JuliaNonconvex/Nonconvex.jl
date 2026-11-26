@@ -43,6 +43,7 @@ qualifier (or imported first with `using Nonconvex: @load`).
 | `TOBS` | `NonconvexTOBS.jl` |
 | `Metaheuristics` | `NonconvexMetaheuristics.jl` |
 | `NOMAD` | `NonconvexNOMAD.jl` |
+| `Uno`, `UnoAlg` | `NonconvexUno.jl` |
 
 Any other name raises an error listing the unsupported algorithm.
 

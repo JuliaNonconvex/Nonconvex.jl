@@ -14,7 +14,7 @@ using Test, Nonconvex
 
     # The generated install_and_load_module code must not leak the modname
     # binding into the caller's scope.
-    Nonconvex.install_and_load_module(:NonconvexCore) |> eval
+    eval(Nonconvex.install_and_load_module(:NonconvexCore))
     @test !isdefined(@__MODULE__, :modname)
 end
 
@@ -123,6 +123,14 @@ if GROUP == "All" || GROUP == "NonconvexNOMAD"
         @test_throws ArgumentError using NonconvexNOMAD
         Nonconvex.@load NOMAD
         NOMADAlg()
+    end
+end
+
+if GROUP == "All" || GROUP == "NonconvexUno"
+    @testset "NonconvexUno" begin
+        @test_throws ArgumentError using NonconvexUno
+        Nonconvex.@load Uno
+        UnoAlg()
     end
 end
 
