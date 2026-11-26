@@ -95,8 +95,8 @@ const RELIABILITY = [
 const UTILITIES = [f for f in integration.fragments if f.name == "DifferentiableFlatten"]
 const SOLVERS = [
     f for f in integration.fragments if f.name != "NonconvexCore" &&
-    f.name != "ReliabilityOptimization" &&
-    f.name != "DifferentiableFlatten"
+        f.name != "ReliabilityOptimization" &&
+        f.name != "DifferentiableFlatten"
 ]
 
 makedocs(;
