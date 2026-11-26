@@ -1,0 +1,17 @@
+/*
+ * JuliaNonconvex logo treatment.
+ *
+ * The logo is shared by the landing page and by every package page assembled
+ * into this site from the package documentation fragments. The markdown image
+ * (`![JuliaNonconvex logo](...)`) renders at the intrinsic PNG size
+ * (1302 x 1208), which floods the page, so cap it and center it. The selector
+ * matches only the logo images and leaves other images (badges, diagrams,
+ * animations) untouched.
+ */
+img[alt="JuliaNonconvex logo"] {
+    display: block;
+    max-width: 180px;
+    height: auto;
+    margin-left: auto;
+    margin-right: auto;
+}
