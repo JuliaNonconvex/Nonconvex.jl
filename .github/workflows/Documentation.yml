@@ -39,7 +39,7 @@ jobs:
           arch: x64
       - uses: julia-actions/cache@v2
         with:
-          cache-name: docs
+          cache-name: docs-uno
           cache-artifacts: true
           cache-packages: true
           cache-compiled: false
